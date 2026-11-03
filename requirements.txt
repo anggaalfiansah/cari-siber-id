@@ -1,0 +1,33 @@
+# ==============================================================================
+# DEPENDENCIES: CaRI-Siber ID (Desktop Standalone Application)
+# Cognitive Domain Intelligence & Narrative Threat Monitoring
+# ==============================================================================
+
+# Desktop Window & Security
+pywebview>=5.1
+keyring>=24.0.0
+
+# HTTP & AI Clients
+requests>=2.32.0
+google-genai>=1.0.0
+openai>=1.50.0
+pydantic>=2.10.0
+
+# Data Science & NLP Engines
+pandas>=2.2.0
+numpy>=2.0.0
+scikit-learn>=1.5.0
+sentence-transformers>=3.0.0
+bertopic>=0.16.0
+hdbscan>=0.8.38
+umap-learn>=0.5.6
+
+# Scraping Engine
+youtube-comment-downloader>=0.1.80
+instaloader>=4.14.0
+
+# Visualization & Reporting (XLSX only)
+matplotlib>=3.9.0
+seaborn>=0.13.0
+wordcloud>=1.9.3
+openpyxl>=3.1.5

@@ -1,0 +1,37 @@
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+.legacy_*
+
+# Python & Venv
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# Build & Dist
+dist/
+build/
+*.spec
+!CaRI-Siber-ID.spec
+models/
+# Keep compiled UI bundle so Python devs can run out-of-the-box
+!cari_siber/ui_dist/
+frontend/dist/
+frontend/node_modules/
+
+# Data & Output
+output/
+!output/.gitkeep
+.user_data/
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo

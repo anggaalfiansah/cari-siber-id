@@ -1,0 +1,21 @@
+{
+    "embedding_model": "indobenchmark/indobert-base-p1",
+    "hdbscan": {
+        "min_cluster_size": 10,
+        "metric": "euclidean",
+        "cluster_selection_method": "leaf",
+        "prediction_data": true
+    },
+    "bertopic": {
+        "language": "multilingual",
+        "calculate_probabilities": false,
+        "reduce_outliers_strategy": "c-tf-idf",
+        "similarity_threshold": 0.8,
+        "min_topic_size": 10,
+        "nr_topics": {
+            "negatif": 30,
+            "netral": 30,
+            "positif": 30
+        }
+    }
+}
