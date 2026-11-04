@@ -1,4 +1,4 @@
-import { Settings, RunHistoryItem, RunResult, PyWebViewEvent } from './types';
+import { Settings, RunHistoryItem, RunResult, PyWebViewEvent, VideoDiscoveryResponse } from './types';
 
 declare global {
   interface Window {
@@ -16,6 +16,8 @@ declare global {
         delete_history: (id: string) => Promise<{ success: boolean }>;
         export_xlsx: (id: string) => Promise<{ success: boolean; path?: string; error?: string }>;
         open_folder: (id: string) => Promise<{ success: boolean; error?: string }>;
+        get_author_comments: (payload: { run_id: string; author_key: string }) => Promise<{ success: boolean; comments?: any[]; error?: string }>;
+        search_and_curate_videos: (payload: { keyword: string; max_curated?: number }) => Promise<VideoDiscoveryResponse>;
       };
     };
     __cariEmit?: (event: PyWebViewEvent) => void;
@@ -63,8 +65,9 @@ export function waitForPyWebView(): Promise<boolean> {
 const mockApi = {
   get_settings: async (): Promise<Settings> => ({
     ai_provider: 'gemini',
-    ai_model: 'gemini-3.8-flash',
+    ai_model: 'gemini-2.5-flash',
     gemini_api_key: 'mock-key',
+    youtube_api_key: '',
     agentic_gates_enabled: true,
     default_comment_limit: 1000,
     default_sort_by: 'top',
@@ -81,6 +84,40 @@ const mockApi = {
   delete_history: async () => ({ success: true }),
   export_xlsx: async () => ({ success: true, path: 'C:/mock/report.xlsx' }),
   open_folder: async () => ({ success: true }),
+  get_author_comments: async () => ({ success: true, comments: [] }),
+  search_and_curate_videos: async ({ keyword }: { keyword: string }): Promise<VideoDiscoveryResponse> => ({
+    success: true,
+    keyword,
+    total_candidates_found: 12,
+    curated_videos: [
+      {
+        video_id: 'mock1',
+        url: 'https://www.youtube.com/watch?v=mock1',
+        title: `Debat Hangat Terkait ${keyword || 'Isu Terkini'}`,
+        channel: 'Kanal Berita Nasional',
+        duration: '14:20',
+        views: '240 rb x ditonton',
+        published: '2 hari yang lalu',
+        thumbnail: 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=600&auto=format&fit=crop&q=60',
+        relevance_score: 95,
+        curation_reason: 'Diskusi panelis resmi dengan volume komentar publik dan perdebatan argumentatif tinggi.',
+        is_recommended: true,
+      },
+      {
+        video_id: 'mock2',
+        url: 'https://www.youtube.com/watch?v=mock2',
+        title: `Kupas Tuntas Dampak dan Polemik ${keyword || 'Kebijakan'}`,
+        channel: 'Forum Investigasi Siber',
+        duration: '22:15',
+        views: '110 rb x ditonton',
+        published: '5 hari yang lalu',
+        thumbnail: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&auto=format&fit=crop&q=60',
+        relevance_score: 88,
+        curation_reason: 'Memuat sudut pandang kontra-narasi dan polarisasi opini akar rumput.',
+        is_recommended: false,
+      },
+    ],
+  }),
 };
 
 export const api = new Proxy({} as any, {

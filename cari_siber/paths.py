@@ -76,6 +76,14 @@ def get_settings_json_path() -> str:
     return os.path.join(get_user_data_dir(), "settings.json")
 
 
+def get_user_learned_slang_path() -> str:
+    return os.path.join(get_user_data_dir(), "kamus-alay-learned.csv")
+
+
+def get_user_custom_stopwords_path() -> str:
+    return os.path.join(get_user_data_dir(), "stopwords.txt")
+
+
 def get_logs_dir() -> str:
     logs_dir = os.path.join(get_user_data_dir(), "logs")
     os.makedirs(logs_dir, exist_ok=True)

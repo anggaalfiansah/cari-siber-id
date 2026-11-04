@@ -50,33 +50,21 @@ def merge_with_metadata(df_topic_mapped: pd.DataFrame, df_raw: pd.DataFrame, id_
 
 def calculate_confidence_level(df: pd.DataFrame, prob_col: str = 'main_topic_prob', topic_id_col: str = 'topic_id') -> pd.Series:
     """
-    Menghitung tingkat kepercayaan model terhadap klasifikasi (High/Medium/Low).
+    Menghitung tingkat kepercayaan model terhadap klasifikasi (High/Medium/Low) secara vectorized.
     """
-    def calculate_confidence(row):
-        prob = row.get(prob_col)
-        t_id = row.get(topic_id_col)
-        
-        # Konversi t_id ke integer atau string agar aman dari TypeError
-        is_outlier = False
-        if pd.notna(t_id):
-            if str(t_id) == '-1' or t_id == -1:
-                is_outlier = True
-                
-        if pd.isna(prob) or is_outlier:
-            return 'Low'
-            
-        try:
-            prob_val = float(prob)
-            if prob_val >= 0.7:
-                return 'High'
-            elif prob_val >= 0.5:
-                return 'Medium'
-            else:
-                return 'Low'
-        except:
-            return 'Low'
-            
-    return df.apply(calculate_confidence, axis=1)
+    if df.empty:
+        return pd.Series(dtype=object)
+
+    probs = pd.to_numeric(df.get(prob_col, 0.0), errors="coerce").fillna(0.0)
+    topics = df.get(topic_id_col, "")
+    is_outlier = topics.astype(str).isin(["-1", "-1.0"])
+
+    cond_high = (~is_outlier) & (probs >= 0.7)
+    cond_medium = (~is_outlier) & (probs >= 0.5)
+
+    choices = ["High", "Medium"]
+    res = np.select([cond_high, cond_medium], choices, default="Low")
+    return pd.Series(res, index=df.index)
 
 
 def generate_category_summary(df: pd.DataFrame, group_cols: list, score_col: str = None) -> pd.DataFrame:

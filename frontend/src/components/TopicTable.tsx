@@ -3,22 +3,24 @@ import { TopicItem } from '../api/types';
 import { Search } from 'lucide-react';
 
 interface TopicTableProps {
-  topics: TopicItem[];
+  topics?: TopicItem[];
 }
 
 export const TopicTable: React.FC<TopicTableProps> = ({ topics }) => {
   const [filter, setFilter] = useState('');
   const [selectedSentiment, setSelectedSentiment] = useState('ALL');
 
-  const filtered = topics.filter((t) => {
-    const textSearch = (t.topic_name + ' ' + (t.sub_issue || '') + ' ' + (t.category || '') + ' ' + t.sample_comment).toLowerCase();
+  const safeTopics = Array.isArray(topics) ? topics : [];
+
+  const filtered = safeTopics.filter((t) => {
+    const textSearch = (String(t.topic_name || '') + ' ' + String(t.sub_issue || '') + ' ' + String(t.category || '') + ' ' + String(t.sample_comment || '')).toLowerCase();
     const matchText = textSearch.includes(filter.toLowerCase());
-    const matchSent = selectedSentiment === 'ALL' || t.sentiment.toUpperCase() === selectedSentiment;
+    const matchSent = selectedSentiment === 'ALL' || String(t.sentiment || '').toUpperCase() === selectedSentiment;
     return matchText && matchSent;
   });
 
-  const getSentimentBadge = (sent: string) => {
-    switch (sent.toLowerCase()) {
+  const getSentimentBadge = (sent?: string) => {
+    switch (String(sent || '').toLowerCase()) {
       case 'positif':
         return <span className="badge badge-low">Positif</span>;
       case 'negatif':
@@ -78,7 +80,7 @@ export const TopicTable: React.FC<TopicTableProps> = ({ topics }) => {
             {filtered.length === 0 ? (
               <tr>
                 <td colSpan={6} style={{ padding: '30px', textAlign: 'center', color: '#64748b' }}>
-                  Tidak ada topik yang cocok dengan filter.
+                  Tidak ada topik yang cocok dengan filter atau data masih kosong.
                 </td>
               </tr>
             ) : (
@@ -98,31 +100,21 @@ export const TopicTable: React.FC<TopicTableProps> = ({ topics }) => {
                       {item.sub_issue || item.topic_name}
                     </div>
                     {item.keywords && (
-                      <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '3px' }}>
-                        Kata Kunci: <span style={{ color: '#94a3b8' }}>{item.keywords}</span>
+                      <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
+                        Kata Kunci: {item.keywords}
                       </div>
                     )}
                   </td>
-                  <td style={{ padding: '12px 14px' }}>
-                    <span style={{
-                      display: 'inline-block',
-                      background: 'rgba(51, 65, 85, 0.4)',
-                      border: '1px solid #334155',
-                      padding: '3px 8px',
-                      borderRadius: '4px',
-                      fontSize: '0.75rem',
-                      color: '#cbd5e1',
-                    }}>
-                      {item.category || 'Umum'}
-                    </span>
+                  <td style={{ padding: '12px 14px', color: '#cbd5e1' }}>
+                    {item.category || 'Isu Publik'}
                   </td>
                   <td style={{ padding: '12px 14px' }}>
                     {getSentimentBadge(item.sentiment)}
                   </td>
-                  <td style={{ padding: '12px 14px', fontFamily: 'monospace', color: '#38bdf8', fontWeight: 600, textAlign: 'right' }}>
-                    {item.total_comments.toLocaleString()}
+                  <td style={{ padding: '12px 14px', textAlign: 'right', fontFamily: 'monospace', color: '#38bdf8', fontWeight: 600 }}>
+                    {(Number(item.total_comments) || 0).toLocaleString()}
                   </td>
-                  <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: '0.8rem', fontStyle: 'italic', maxWidth: '320px' }}>
+                  <td style={{ padding: '12px 16px', color: '#94a3b8', fontStyle: 'italic', maxWidth: '340px' }}>
                     "{item.sample_comment || '-'}"
                   </td>
                 </tr>

@@ -181,7 +181,14 @@ def export_xlsx(eda_data: dict, output_path: str, csv_dir: str):
 
             for col_num, cell_value in enumerate(row_data, start=1):
                 cell = ws.cell(row=row_num, column=col_num)
-                cell.value = cell_value
+                col_name = str(df.columns[col_num - 1]).lower()
+
+                # Sanitasi Formula Injection untuk mencegah eksekusi macro/formula Excel dari input teks pengguna
+                if isinstance(cell_value, str) and cell_value.startswith(("=", "+", "-", "@")):
+                    cell.value = f"'{cell_value}"
+                else:
+                    cell.value = cell_value
+
                 cell.font = font_body
                 cell.border = border_all
                 cell.fill = row_fill
@@ -189,7 +196,8 @@ def export_xlsx(eda_data: dict, output_path: str, csv_dir: str):
                 if isinstance(cell_value, (int, float)):
                     cell.alignment = align_right
                     if isinstance(cell_value, float):
-                        if 0.0 < cell_value < 1.0:
+                        # Format persentase hanya untuk kolom rasio/proporsi/share
+                        if any(term in col_name for term in ["ratio", "share", "pct", "percent", "persen"]) and 0.0 <= cell_value <= 1.0:
                             cell.number_format = "0.00%"
                         else:
                             cell.number_format = "#,##0.00"
@@ -198,17 +206,19 @@ def export_xlsx(eda_data: dict, output_path: str, csv_dir: str):
                 else:
                     cell.alignment = align_left
 
-        for col in ws.columns:
-            max_len = 0
-            for cell in col:
-                if cell.row < 3:
-                    continue
+        for col_idx, col in enumerate(ws.columns, start=1):
+            col_name = str(df.columns[col_idx - 1]) if col_idx <= len(df.columns) else ""
+            max_len = len(col_name)
+            # Sample baris secukupnya (maks 50) agar penentuan lebar kolom tidak lambat pada data besar
+            for cell in list(col)[2:52]:
                 val_str = str(cell.value or "")
                 if len(val_str) > max_len:
                     max_len = len(val_str)
             col_letter = get_column_letter(col[0].column)
             ws.column_dimensions[col_letter].width = min(max(max_len + 4, 12), 60)
 
+    write_csv_sheet("Komparasi Video", "cross_video_comparison_matrix.csv", "Matriks Komparasi Lintas Video & Kanal", fill_color="0284C7")
+    write_csv_sheet("Buzzer & CIB Lintas Video", "cross_video_cib_buzzers.csv", "Daftar Akun Buzzer Terdeteksi Aktif di Multi-Video (+Link Profil)", fill_color="B91C1C")
     write_csv_sheet("Detail Kategori Topik", "business_category_youtube_summary.csv", "Detail Distribusi Topik & Sentimen", fill_color="991B1B")
     write_csv_sheet("Engagement Metrics", "youtube_engagement_metrics.csv", "Analisis Interaksi & Metrik Engagement", fill_color="1E3A8A")
     write_csv_sheet("Ulasan Low Confidence", "review_youtube_low_confidence.csv", "Daftar Komentar dengan Tingkat Keyakinan Rendah (< 0.5 atau Ambigu)", fill_color="B91C1C")

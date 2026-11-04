@@ -139,6 +139,24 @@ def parse_relative_time_to_iso(time_str: str, reference_dt: datetime = None) -> 
     return estimated.strftime("%Y-%m-%d %H:%M:%S")
 
 
+def build_author_channel_url(author_chan_id: str, username: str = "") -> str:
+    """
+    Menghasilkan URL profil kanal YouTube lengkap.
+    Mendukung format ID kanal (UC...) maupun YouTube handle (@username).
+    """
+    chan = str(author_chan_id or "").strip()
+    user = str(username or "").strip()
+    if chan.startswith("UC"):
+        return f"https://www.youtube.com/channel/{chan}"
+    if chan.startswith("@"):
+        return f"https://www.youtube.com/{chan}"
+    if chan:
+        return f"https://www.youtube.com/channel/{chan}"
+    if user.startswith("@"):
+        return f"https://www.youtube.com/{user}"
+    return ""
+
+
 # ==============================================================================
 # EKSTRAKSI METADATA VIDEO DARI HALAMAN WEB YOUTUBE (TANPA API KEY)
 # ==============================================================================
@@ -297,7 +315,7 @@ def scrape_via_youtube_api_v3(
             break
 
         for thread in thread_items:
-            if max_comments and len(comments_collected) >= max_comments:
+            if max_comments and max_comments > 0 and len(comments_collected) >= max_comments:
                 break
 
             top_Snippet_wrap = thread.get("snippet", {})
@@ -307,6 +325,7 @@ def scrape_via_youtube_api_v3(
 
             author_chan_id = (c_snip.get("authorChannelId") or {}).get("value", "")
             author_name = c_snip.get("authorDisplayName", "Anonim")
+            author_url = build_author_channel_url(author_chan_id, author_name)
             is_official = bool(channel_id and author_chan_id == channel_id)
             reply_total = int(top_Snippet_wrap.get("totalReplyCount", 0))
 
@@ -318,6 +337,7 @@ def scrape_via_youtube_api_v3(
                 "comment_id": top_id,
                 "username": author_name,
                 "author_channel_id": author_chan_id,
+                "author_channel_url": author_url,
                 "avatar": c_snip.get("authorProfileImageUrl", ""),
                 "comment_text": (c_snip.get("textDisplay") or c_snip.get("textOriginal") or "").strip(),
                 "like_count": int(c_snip.get("likeCount", 0)),
@@ -335,13 +355,14 @@ def scrape_via_youtube_api_v3(
                 fetched_reply_ids = set()
 
                 for rep in inline_replies:
-                    if max_comments and len(comments_collected) >= max_comments:
+                    if max_comments and max_comments > 0 and len(comments_collected) >= max_comments:
                         break
                     rep_id = rep.get("id", "")
                     fetched_reply_ids.add(rep_id)
                     r_snip = rep.get("snippet", {})
                     r_author_chan = (r_snip.get("authorChannelId") or {}).get("value", "")
                     r_author_name = r_snip.get("authorDisplayName", "Anonim")
+                    r_author_url = build_author_channel_url(r_author_chan, r_author_name)
 
                     comments_collected.append({
                         "video_id": video_id,
@@ -351,6 +372,7 @@ def scrape_via_youtube_api_v3(
                         "comment_id": rep_id,
                         "username": r_author_name,
                         "author_channel_id": r_author_chan,
+                        "author_channel_url": r_author_url,
                         "avatar": r_snip.get("authorProfileImageUrl", ""),
                         "comment_text": (r_snip.get("textDisplay") or r_snip.get("textOriginal") or "").strip(),
                         "like_count": int(r_snip.get("likeCount", 0)),
@@ -468,81 +490,88 @@ def scrape_via_comment_downloader(
         has_ycd = False
 
     if has_ycd:
-        print("\n[DOWNLOADER] Menggunakan pustaka 'youtube-comment-downloader' (tanpa API key)...")
-        downloader = YoutubeCommentDownloader()
-        sort_flag = SORT_BY_POPULAR if sort_by == "top" else SORT_BY_RECENT
-        generator = downloader.get_comments_from_url(
-            f"https://www.youtube.com/watch?v={video_id}",
-            sort_by=sort_flag,
-        )
-
-        comments_collected = []
-        reply_counts_by_parent = {}
-        ref_now = datetime.now()
-        channel_id = video_meta.get("channel_id", "")
-        channel_name_clean = (video_meta.get("channel_name") or "").strip().lower()
-
-        for item in generator:
-            cid = str(item.get("cid", ""))
-            is_reply = bool(item.get("reply", False) or ("." in cid))
-            if is_reply and not include_replies:
-                continue
-
-            parent_id = cid.split(".")[0] if is_reply and "." in cid else ""
-            if is_reply and parent_id:
-                reply_counts_by_parent[parent_id] = reply_counts_by_parent.get(parent_id, 0) + 1
-
-            author_name = str(item.get("author", "Anonim")).strip()
-            author_chan = str(item.get("channel", "")).strip()
-            is_official = bool(
-                (channel_id and author_chan == channel_id)
-                or (channel_name_clean and author_name.lstrip("@").lower() == channel_name_clean.lstrip("@"))
+        try:
+            print("\n[DOWNLOADER] Mencoba pustaka 'youtube-comment-downloader' (tanpa API key)...")
+            downloader = YoutubeCommentDownloader()
+            sort_flag = SORT_BY_POPULAR if sort_by == "top" else SORT_BY_RECENT
+            generator = downloader.get_comments_from_url(
+                f"https://www.youtube.com/watch?v={video_id}",
+                sort_by=sort_flag,
             )
 
-            time_parsed = item.get("time_parsed")
-            if time_parsed:
-                try:
-                    created_str = datetime.fromtimestamp(float(time_parsed)).strftime("%Y-%m-%d %H:%M:%S")
-                except Exception:
+            comments_collected = []
+            reply_counts_by_parent = {}
+            ref_now = datetime.now()
+            channel_id = video_meta.get("channel_id", "")
+            channel_name_clean = (video_meta.get("channel_name") or "").strip().lower()
+
+            for item in generator:
+                cid = str(item.get("cid", ""))
+                is_reply = bool(item.get("reply", False) or ("." in cid))
+                if is_reply and not include_replies:
+                    continue
+
+                parent_id = cid.split(".")[0] if is_reply and "." in cid else ""
+                if is_reply and parent_id:
+                    reply_counts_by_parent[parent_id] = reply_counts_by_parent.get(parent_id, 0) + 1
+
+                author_name = str(item.get("author", "Anonim")).strip()
+                author_chan = str(item.get("channel", "")).strip()
+                author_url = build_author_channel_url(author_chan, author_name)
+                is_official = bool(
+                    (channel_id and author_chan == channel_id)
+                    or (channel_name_clean and author_name.lstrip("@").lower() == channel_name_clean.lstrip("@"))
+                )
+
+                time_parsed = item.get("time_parsed")
+                if time_parsed:
+                    try:
+                        created_str = datetime.fromtimestamp(float(time_parsed)).strftime("%Y-%m-%d %H:%M:%S")
+                    except Exception:
+                        created_str = parse_relative_time_to_iso(item.get("time", ""), ref_now)
+                else:
                     created_str = parse_relative_time_to_iso(item.get("time", ""), ref_now)
-            else:
-                created_str = parse_relative_time_to_iso(item.get("time", ""), ref_now)
 
-            comments_collected.append({
-                "video_id": video_id,
-                "video_title": video_meta["video_title"],
-                "channel_name": video_meta["channel_name"],
-                "channel_id": channel_id,
-                "comment_id": cid,
-                "username": author_name,
-                "author_channel_id": author_chan,
-                "avatar": item.get("photo", ""),
-                "comment_text": str(item.get("text", "")).strip(),
-                "like_count": parse_compact_number(item.get("votes", 0)),
-                "reply_count": 0,
-                "is_hearted": bool(item.get("heart", False)),
-                "is_pinned": False,
-                "is_official": is_official,
-                "created_at": created_str,
-                "is_reply": is_reply,
-                "parent_comment_id": parent_id,
-            })
+                comments_collected.append({
+                    "video_id": video_id,
+                    "video_title": video_meta["video_title"],
+                    "channel_name": video_meta["channel_name"],
+                    "channel_id": channel_id,
+                    "comment_id": cid,
+                    "username": author_name,
+                    "author_channel_id": author_chan,
+                    "author_channel_url": author_url,
+                    "avatar": item.get("photo", ""),
+                    "comment_text": str(item.get("text", "")).strip(),
+                    "like_count": parse_compact_number(item.get("votes", 0)),
+                    "reply_count": 0,
+                    "is_hearted": bool(item.get("heart", False)),
+                    "is_pinned": False,
+                    "is_official": is_official,
+                    "created_at": created_str,
+                    "is_reply": is_reply,
+                    "parent_comment_id": parent_id,
+                })
 
-            if len(comments_collected) % 25 == 0:
-                print(f" -> Terkumpul {len(comments_collected)} komentar...", end="\r", flush=True)
+                if len(comments_collected) % 25 == 0:
+                    print(f" -> Terkumpul {len(comments_collected)} komentar...", end="\r", flush=True)
 
-            if max_comments and len(comments_collected) >= max_comments:
-                print(f"\n -> [INFO] Batas maksimal komentar ({max_comments}) tercapai.")
-                break
+                if max_comments and max_comments > 0 and len(comments_collected) >= max_comments:
+                    print(f"\n -> [INFO] Batas maksimal komentar ({max_comments}) tercapai.")
+                    break
 
-        for c in comments_collected:
-            if not c["is_reply"] and c["comment_id"] in reply_counts_by_parent:
-                c["reply_count"] = max(c["reply_count"], reply_counts_by_parent[c["comment_id"]])
+            for c in comments_collected:
+                if not c["is_reply"] and c["comment_id"] in reply_counts_by_parent:
+                    c["reply_count"] = max(c["reply_count"], reply_counts_by_parent[c["comment_id"]])
 
-        print(f"\n[SUCCESS] Berhasil mengunduh {len(comments_collected)} komentar via youtube-comment-downloader.")
-        return video_meta, comments_collected
+            if comments_collected:
+                print(f"\n[SUCCESS] Berhasil mengunduh {len(comments_collected)} komentar via youtube-comment-downloader.")
+                return video_meta, comments_collected
+        except Exception as e:
+            print(f"\n[WARNING] youtube-comment-downloader gagal ({e}).")
+            print("[INFO] Beralih otomatis ke Built-in YouTube InnerTube Web Client...")
 
-    print("\n[INNERTUBE] Pustaka 'youtube-comment-downloader' tidak ditemukan. Menggunakan built-in YouTube InnerTube Web Client...")
+    print("\n[INNERTUBE] Menggunakan built-in YouTube InnerTube Web Client...")
     return scrape_via_innertube_web(video_id, video_meta, session, max_comments, sort_by, include_replies)
 
 
@@ -589,10 +618,8 @@ def scrape_via_innertube_web(
 
     m_key = re.search(r'"INNERTUBE_API_KEY"\s*:\s*"([^"]+)"', html)
     m_ctx = re.search(r'"INNERTUBE_CONTEXT"\s*:\s*(\{.+?\})\s*,\s*"INNERTUBE_', html)
-    if not m_key:
-        raise RuntimeError("Gagal menemukan INNERTUBE_API_KEY dari halaman YouTube.")
+    api_key = m_key.group(1) if m_key else ""
 
-    api_key = m_key.group(1)
     context = {
         "client": {
             "hl": "id",
@@ -610,10 +637,33 @@ def scrape_via_innertube_web(
     m_init = re.search(r"var ytInitialData\s*=\s*(\{.+?\});\s*</script>", html, re.DOTALL)
     if not m_init:
         m_init = re.search(r"ytInitialData\s*=\s*(\{.+?\});", html, re.DOTALL)
-    if not m_init:
-        raise RuntimeError("Gagal menemukan ytInitialData di halaman YouTube.")
 
-    init_data = json.loads(m_init.group(1))
+    init_data = None
+    if m_init:
+        try:
+            init_data = json.loads(m_init.group(1))
+        except Exception:
+            pass
+
+    if not init_data:
+        # Fallback langsung via endpoint /youtubei/v1/next
+        next_endpoint = "https://www.youtube.com/youtubei/v1/next"
+        if api_key:
+            next_endpoint += f"?key={api_key}"
+        try:
+            direct_resp = session.post(
+                next_endpoint,
+                headers=DEFAULT_HEADERS,
+                json={"context": context, "videoId": video_id},
+                timeout=20,
+            )
+            if direct_resp.status_code == 200:
+                init_data = direct_resp.json()
+        except Exception as e:
+            print(f"[WARNING] Direct next init gagal: {e}")
+
+    if not init_data:
+        raise RuntimeError(f"Gagal mengambil struktur komentar untuk Video ID '{video_id}' dari YouTube.")
 
     visited_tokens = set()
     page_continuations = []
@@ -703,7 +753,7 @@ def scrape_via_innertube_web(
 
         # Ekstrak commentEntityPayload (format baru YouTube) & commentRenderer (format lama)
         for ep in _find_json_values(data, "commentEntityPayload"):
-            if max_comments and len(comments_collected) >= max_comments:
+            if max_comments and max_comments > 0 and len(comments_collected) >= max_comments:
                 break
             props = ep.get("properties", {})
             cid = str(props.get("commentId", ""))
@@ -719,6 +769,8 @@ def scrape_via_innertube_web(
                 continue
 
             author_chan = str(author.get("channelId", ""))
+            author_display = str(author.get("displayName", "Anonim"))
+            author_url = build_author_channel_url(author_chan, author_display)
             is_official = bool(author.get("isCreator", False) or (channel_id and author_chan == channel_id))
 
             comments_collected.append({
@@ -727,8 +779,9 @@ def scrape_via_innertube_web(
                 "channel_name": video_meta["channel_name"],
                 "channel_id": channel_id,
                 "comment_id": cid,
-                "username": str(author.get("displayName", "Anonim")),
+                "username": author_display,
                 "author_channel_id": author_chan,
+                "author_channel_url": author_url,
                 "avatar": str(author.get("avatarThumbnailUrl", "")),
                 "comment_text": str(text_content).strip(),
                 "like_count": parse_compact_number(toolbar.get("likeCountNotliked") or toolbar.get("likeCountLiked") or 0),
@@ -742,7 +795,7 @@ def scrape_via_innertube_web(
             })
 
         for cr in _find_json_values(data, "commentRenderer"):
-            if max_comments and len(comments_collected) >= max_comments:
+            if max_comments and max_comments > 0 and len(comments_collected) >= max_comments:
                 break
             cid = str(cr.get("commentId", ""))
             if not cid or cid in seen_ids:
@@ -756,9 +809,14 @@ def scrape_via_innertube_web(
             runs = (cr.get("contentText") or {}).get("runs", [])
             text_content = "".join(r.get("text", "") for r in runs)
             author_name = ((cr.get("authorText") or {}).get("simpleText") or "Anonim").strip()
-            author_chan = (
-                ((cr.get("authorEndpoint") or {}).get("browseEndpoint") or {}).get("browseId", "")
-            )
+            author_endpoint = (cr.get("authorEndpoint") or {}).get("browseEndpoint") or {}
+            author_chan = author_endpoint.get("browseId", "")
+            canonical_url = author_endpoint.get("canonicalBaseUrl", "")
+            if canonical_url:
+                author_url = f"https://www.youtube.com{canonical_url}"
+            else:
+                author_url = build_author_channel_url(author_chan, author_name)
+
             pub_runs = (cr.get("publishedTimeText") or {}).get("runs", [])
             pub_str = pub_runs[0].get("text", "") if pub_runs else ""
             votes_str = (cr.get("voteCount") or {}).get("simpleText", "0")
@@ -773,6 +831,7 @@ def scrape_via_innertube_web(
                 "comment_id": cid,
                 "username": author_name,
                 "author_channel_id": author_chan,
+                "author_channel_url": author_url,
                 "avatar": avatar_url,
                 "comment_text": text_content.strip(),
                 "like_count": parse_compact_number(votes_str),
@@ -851,7 +910,7 @@ def save_youtube_outputs(video_meta: dict, comments: list, output_dir: str):
     comments_csv_path = os.path.join(scrap_dir, f"youtube_comments_video_{video_id}.csv")
     comment_fields = [
         "video_id", "video_title", "channel_name", "channel_id",
-        "comment_id", "username", "author_channel_id", "avatar",
+        "comment_id", "username", "author_channel_id", "author_channel_url", "avatar",
         "comment_text", "like_count", "reply_count",
         "is_hearted", "is_pinned", "is_official",
         "created_at", "is_reply", "parent_comment_id"
@@ -863,7 +922,7 @@ def save_youtube_outputs(video_meta: dict, comments: list, output_dir: str):
             writer.writerow({k: c.get(k, "") for k in comment_fields})
 
     print("\n" + "=" * 65)
-    print("[SUCCESS] SCRAPING KOMENTAR YOUTUBE SELESAI!")
+    print(f"[SUCCESS] SCRAPING KOMENTAR SELESAI UNTUK VIDEO: {video_id}!")
     print(f" -> File Komentar : {comments_csv_path}")
     print(f" -> File Metadata : {meta_csv_path}")
     print(f" -> Total Komentar: {len(comments):,} baris")
@@ -871,35 +930,14 @@ def save_youtube_outputs(video_meta: dict, comments: list, output_dir: str):
     return comments_csv_path, meta_csv_path
 
 
-def run_scraper(config_override=None):
-    """Orkestrator utama Langkah 0 untuk scraping komentar dari satu video YouTube."""
-    print("=" * 65)
-    print("   LANGKAH 0: YOUTUBE VIDEO COMMENTS SCRAPER (API v3 + FALLBACK)")
-    print("=" * 65)
-
-    cfg = config_override or {}
-    raw_url = cfg.get("YOUTUBE_VIDEO_URL", AppConfig.YOUTUBE_VIDEO_URL)
-    video_id = extract_youtube_video_id(raw_url)
-
-    if not video_id and config_override is None:
-        user_input = input("\nMasukkan URL atau ID Video YouTube: ").strip()
-        video_id = extract_youtube_video_id(user_input)
-
-    if not video_id:
-        raise PipelineError("YOUTUBE_VIDEO_URL tidak valid atau belum diatur di file .env!")
-
-    api_key = cfg.get("YOUTUBE_API_KEY", AppConfig.YOUTUBE_API_KEY)
-    max_comments = cfg.get("YOUTUBE_LIMIT_COMMENTS", AppConfig.YOUTUBE_LIMIT_COMMENTS)
-    sort_by = cfg.get("YOUTUBE_SORT", AppConfig.YOUTUBE_SORT)
-    include_replies = cfg.get("YOUTUBE_INCLUDE_REPLIES", AppConfig.YOUTUBE_INCLUDE_REPLIES)
-    output_dir = cfg.get("OUTPUT_DIR", AppConfig.OUTPUT_YOUTUBE_DIR)
-
-    print(f"[INFO] Target Video ID    : {video_id}")
-    print(f"[INFO] URL Video          : https://www.youtube.com/watch?v={video_id}")
-    print(f"[INFO] Batas Komentar     : {max_comments if max_comments else 'Semua Komentar'}")
-    print(f"[INFO] Urutan Sortir      : {'Terpopuler (Top)' if sort_by == 'top' else 'Terbaru (New)'}")
-    print(f"[INFO] Sertakan Balasan   : {include_replies}")
-
+def scrape_single_video(
+    video_id: str,
+    api_key: str = "",
+    max_comments: int = 1000,
+    sort_by: str = "top",
+    include_replies: bool = True,
+):
+    """Mengambil metadata dan komentar untuk 1 video YouTube (dengan fallback bertingkat)."""
     video_meta = None
     comments = []
 
@@ -913,8 +951,7 @@ def run_scraper(config_override=None):
                 include_replies=include_replies,
             )
         except Exception as e:
-            print(f"\n[WARNING] YouTube Data API v3 gagal ({e}).")
-            print("[INFO] Beralih otomatis ke metode fallback tanpa API key...")
+            print(f"\n[WARNING] YouTube Data API v3 gagal ({e}). Beralih ke fallback tanpa API key...")
 
     if not comments:
         video_meta, comments = scrape_via_comment_downloader(
@@ -924,11 +961,128 @@ def run_scraper(config_override=None):
             include_replies=include_replies,
         )
 
-    if not comments:
-        print("\n[WARNING] Tidak ada komentar yang berhasil diambil dari video ini.")
+    return video_meta, comments
+
+
+def run_scraper(config_override=None):
+    """
+    Orkestrator utama Langkah 0.
+    Mendukung scraping video tunggal maupun multi-video batch (5, 10, unlimited).
+    """
+    print("=" * 65)
+    print("   LANGKAH 0: YOUTUBE VIDEO COMMENTS SCRAPER (MULTI-VIDEO CORPUS)")
+    print("=" * 65)
+
+    cfg = config_override or {}
+    output_dir = cfg.get("OUTPUT_DIR", AppConfig.OUTPUT_YOUTUBE_DIR)
+    api_key = cfg.get("YOUTUBE_API_KEY", AppConfig.YOUTUBE_API_KEY)
+    max_comments = cfg.get("YOUTUBE_LIMIT_COMMENTS", AppConfig.YOUTUBE_LIMIT_COMMENTS)
+    sort_by = cfg.get("YOUTUBE_SORT", AppConfig.YOUTUBE_SORT)
+    include_replies = cfg.get("YOUTUBE_INCLUDE_REPLIES", AppConfig.YOUTUBE_INCLUDE_REPLIES)
+
+    # 1. Kumpulkan daftar target video (multi-video support)
+    raw_urls = cfg.get("YOUTUBE_VIDEO_URLS") or getattr(AppConfig, "YOUTUBE_VIDEO_URLS", [])
+    if not raw_urls:
+        single_url = cfg.get("YOUTUBE_VIDEO_URL", AppConfig.YOUTUBE_VIDEO_URL)
+        if single_url:
+            raw_urls = [single_url]
+
+    target_video_ids = []
+    for u in raw_urls:
+        vid = extract_youtube_video_id(str(u).strip())
+        if vid and vid not in target_video_ids:
+            target_video_ids.append(vid)
+
+    if not target_video_ids:
+        raise PipelineError(f"Target URL video YouTube tidak valid atau kosong: {raw_urls}")
+
+    primary_video_id = target_video_ids[0]
+    total_videos = len(target_video_ids)
+
+    print(f"[INFO] Mode Analisis      : {'Multi-Video (' + str(total_videos) + ' Video)' if total_videos > 1 else 'Single-Video'}")
+    print(f"[INFO] Target Video IDs   : {', '.join(target_video_ids)}")
+    print(f"[INFO] Batas Komentar     : {'Unlimited (Seluruh Komentar)' if not max_comments or max_comments <= 0 else f'{max_comments} per video'}")
+    print(f"[INFO] Urutan Sortir      : {'Terpopuler (Top)' if sort_by == 'top' else 'Terbaru (New)'}")
+    print(f"[INFO] Sertakan Balasan   : {include_replies}")
+
+    all_comments = []
+    all_metas = []
+
+    for idx, vid_id in enumerate(target_video_ids, 1):
+        print("\n" + "-" * 60)
+        print(f"[PROSES {idx}/{total_videos}] Mengunduh Video ID: {vid_id}")
+        print(f"URL: https://www.youtube.com/watch?v={vid_id}")
+        print("-" * 60)
+
+        v_meta, v_comments = scrape_single_video(
+            video_id=vid_id,
+            api_key=api_key,
+            max_comments=max_comments,
+            sort_by=sort_by,
+            include_replies=include_replies,
+        )
+
+        if v_meta and v_comments:
+            # Simpan file per video
+            save_youtube_outputs(v_meta, v_comments, output_dir)
+            all_metas.append(v_meta)
+            all_comments.extend(v_comments)
+            print(f"[INFO] Video {idx} selesai: {len(v_comments):,} komentar.")
+        else:
+            print(f"[WARNING] Tidak ada komentar dari video {vid_id}.")
+
+    if not all_comments:
+        print("\n[WARNING] Tidak ada komentar yang berhasil diambil dari seluruh video target.")
         return None
 
-    return save_youtube_outputs(video_meta, comments, output_dir)
+    # Simpan dataset konsolidasi (all videos corpus)
+    scrap_dir = os.path.join(output_dir, "scrap")
+    os.makedirs(scrap_dir, exist_ok=True)
+
+    comment_fields = [
+        "video_id", "video_title", "channel_name", "channel_id",
+        "comment_id", "username", "author_channel_id", "author_channel_url", "avatar",
+        "comment_text", "like_count", "reply_count",
+        "is_hearted", "is_pinned", "is_official",
+        "created_at", "is_reply", "parent_comment_id"
+    ]
+
+    # Simpan master file youtube_comments_video_{primary_video_id}.csv untuk kompatibilitas pipeline downstream
+    primary_csv = os.path.join(scrap_dir, f"youtube_comments_video_{primary_video_id}.csv")
+    with open(primary_csv, mode="w", encoding="utf-8-sig", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=comment_fields)
+        writer.writeheader()
+        for c in all_comments:
+            writer.writerow({k: c.get(k, "") for k in comment_fields})
+
+    # Simpan juga file eksplisit youtube_comments_all_videos.csv
+    corpus_csv = os.path.join(scrap_dir, "youtube_comments_all_videos.csv")
+    with open(corpus_csv, mode="w", encoding="utf-8-sig", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=comment_fields)
+        writer.writeheader()
+        for c in all_comments:
+            writer.writerow({k: c.get(k, "") for k in comment_fields})
+
+    # Simpan metadata konsolidasi seluruh video
+    meta_fields = [
+        "video_id", "video_url", "video_title", "channel_name", "channel_id",
+        "published_at", "views", "video_likes", "total_comments_reported", "description"
+    ]
+    all_meta_csv = os.path.join(scrap_dir, "youtube_videos_meta_all.csv")
+    with open(all_meta_csv, mode="w", encoding="utf-8-sig", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=meta_fields)
+        writer.writeheader()
+        for m in all_metas:
+            writer.writerow({k: m.get(k, "") for k in meta_fields})
+
+    print("\n" + "=" * 65)
+    print(f"[SUCCESS] BATCH MULTI-VIDEO SCRAPING SELESAI ({total_videos} Video)!")
+    print(f" -> Total Komentar Gabungan: {len(all_comments):,} baris")
+    print(f" -> Master Corpus File     : {primary_csv}")
+    print(f" -> Metadata Seluruh Video : {all_meta_csv}")
+    print("=" * 65)
+
+    return primary_csv, all_meta_csv
 
 
 if __name__ == "__main__":

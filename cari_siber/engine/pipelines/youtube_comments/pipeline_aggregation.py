@@ -141,10 +141,12 @@ def run_aggregation(config_override=None):
     df_topic_labeled = pd.merge(df_mapping, df_agg_subset, on="topic_id", how="left")
 
     df_topic_labeled["comment_id"] = df_topic_labeled["comment_id"].astype(str)
-    df_raw_subset = df_raw.drop(
-        columns=["comment_text", "like_count", "reply_count", "username"],
-        errors="ignore",
-    )
+    # Hindari duplikasi kolom yang sudah ada di df_topic_labeled agar tidak muncul suffix _x/_y
+    cols_to_drop_from_raw = [
+        c for c in df_raw.columns
+        if (c in df_topic_labeled.columns and c != "comment_id") or c in ["comment_text", "like_count", "reply_count", "username"]
+    ]
+    df_raw_subset = df_raw.drop(columns=cols_to_drop_from_raw, errors="ignore")
 
     df_merged = pd.merge(df_topic_labeled, df_raw_subset, on="comment_id", how="left")
 

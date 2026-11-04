@@ -5,6 +5,7 @@ import { ProgressPage } from './pages/ProgressPage';
 import { ResultPage } from './pages/ResultPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { subscribePyWebViewEvents, waitForPyWebView, api } from './api/bridge';
 import { PyWebViewEvent } from './api/types';
 
@@ -26,31 +27,33 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     waitForPyWebView().then(() => {
-      api.is_runner_busy().then((busy: boolean) => setIsBusy(busy));
+      api.is_runner_busy()
+        .then((busy: boolean) => setIsBusy(busy))
+        .catch(() => setIsBusy(false));
     });
 
     const unsubscribe = subscribePyWebViewEvents((event: PyWebViewEvent) => {
       if (event.type === 'progress') {
-        setProgress({
+        setProgress((prev) => ({
           status: event.status,
           percent: event.percent,
-          stepIndex: event.step_index !== undefined ? event.step_index : 0,
+          stepIndex: event.step_index !== undefined ? event.step_index : prev.stepIndex,
           stepName: event.step_name,
           message: event.message,
-          runId: event.run_id || progress.runId,
-        });
+          runId: event.run_id || prev.runId,
+        }));
         setIsBusy(event.status === 'RUNNING' || event.status === 'CANCELLING');
       } else if (event.type === 'log') {
         setLogs((prev) => [...prev.slice(-400), event.line]);
       } else if (event.type === 'completed') {
-        setProgress({
+        setProgress((prev) => ({
           status: 'COMPLETED',
           percent: 100,
           stepIndex: 7,
           stepName: 'Selesai',
           message: event.message,
-          runId: event.run_id,
-        });
+          runId: event.run_id || prev.runId,
+        }));
         setIsBusy(false);
         setSelectedRunId(event.run_id);
         setCurrentTab('result');
@@ -87,47 +90,56 @@ export const App: React.FC = () => {
     setCurrentTab('result');
   };
 
+  const handleNavigateNew = () => {
+    setCurrentTab('new');
+  };
+
   return (
-    <div style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
-      <Sidebar
-        currentTab={currentTab}
-        onSelectTab={(tab) => setCurrentTab(tab as any)}
-        isBusy={isBusy}
-      />
+    <ErrorBoundary fallbackMessage="Terjadi kendala visual pada kerangka utama aplikasi.">
+      <div style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+        <Sidebar
+          currentTab={currentTab}
+          onSelectTab={(tab) => setCurrentTab(tab as any)}
+          isBusy={isBusy}
+        />
 
-      <main style={{ flex: 1, padding: '24px 28px', overflowY: 'auto', background: '#0b0f19', display: 'flex', flexDirection: 'column' }}>
-        {currentTab === 'new' && (
-          <NewAnalysisPage onRunStarted={handleRunStarted} isBusy={isBusy} />
-        )}
+        <main style={{ flex: 1, padding: '24px 28px', overflowY: 'auto', background: '#0b0f19', display: 'flex', flexDirection: 'column' }}>
+          <ErrorBoundary onReset={handleNavigateNew}>
+            {currentTab === 'new' && (
+              <NewAnalysisPage onRunStarted={handleRunStarted} isBusy={isBusy} />
+            )}
 
-        {currentTab === 'progress' && (
-          <ProgressPage
-            progress={progress}
-            logs={logs}
-            onClearLogs={() => setLogs([])}
-            onViewResult={(id) => {
-              setSelectedRunId(id);
-              setCurrentTab('result');
-            }}
-          />
-        )}
+            {currentTab === 'progress' && (
+              <ProgressPage
+                progress={progress}
+                logs={logs}
+                onClearLogs={() => setLogs([])}
+                onViewResult={(id) => {
+                  setSelectedRunId(id);
+                  setCurrentTab('result');
+                }}
+              />
+            )}
 
-        {currentTab === 'result' && (
-          <ResultPage
-            runId={selectedRunId}
-            onNavigateNew={() => setCurrentTab('new')}
-          />
-        )}
+            {currentTab === 'result' && (
+              <ResultPage
+                runId={selectedRunId}
+                onNavigateNew={handleNavigateNew}
+              />
+            )}
 
-        {currentTab === 'history' && (
-          <HistoryPage onSelectRun={handleSelectHistoryRun} />
-        )}
+            {currentTab === 'history' && (
+              <HistoryPage onSelectRun={handleSelectHistoryRun} />
+            )}
 
-        {currentTab === 'settings' && (
-          <SettingsPage />
-        )}
-      </main>
-    </div>
+            {currentTab === 'settings' && (
+              <SettingsPage />
+            )}
+          </ErrorBoundary>
+        </main>
+      </div>
+    </ErrorBoundary>
   );
 };
+
 export default App;

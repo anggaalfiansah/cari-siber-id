@@ -50,7 +50,6 @@ hiddenimports = [
     'openai',
     'pydantic',
     'youtube_comment_downloader',
-    'instaloader',
 ]
 
 hiddenimports += collect_submodules('cari_siber')

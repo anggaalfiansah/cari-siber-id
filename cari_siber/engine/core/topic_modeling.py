@@ -28,7 +28,12 @@ except ImportError:
     BERTopic = None
     HDBSCAN = None
 
-from cari_siber.paths import get_resources_dir, get_user_data_dir
+from cari_siber.paths import (
+    get_resources_dir,
+    get_user_data_dir,
+    get_user_learned_slang_path,
+    get_user_custom_stopwords_path,
+)
 
 def _resolve_resource_file(filename: str) -> str:
     p = os.path.join(get_resources_dir(), filename)
@@ -114,31 +119,42 @@ DEFAULT_BERTOPIC_CONFIG = {
 }
 
 
+_CACHED_BASE_KAMUS = None
+
+
 def load_kamus_slang():
     """
     Memuat kamus alay dari:
     1. DEFAULT_KAMUS_SLANG (bawaan sistem)
-    2. 'data/kamus-alay-nasalsabila.csv' (Kredit dasar: Nasalsabila - Colloquial Indonesian Lexicon)
-    3. 'data/kamus-alay-learned.csv' (Hasil incremental learning CaRI Sentimen ID)
+    2. 'kamus-alay-nasalsabila.csv' (Kredit dasar: Nasalsabila, di-cache di memori)
+    3. User writable 'kamus-alay-learned.csv' (Hasil incremental learning CaRI Siber ID)
     """
-    fresh_kamus = dict(DEFAULT_KAMUS_SLANG)
+    global _CACHED_BASE_KAMUS
 
-    # 1. Base dictionary (Kredit: Nasalsabila)
-    csv_kamus_path = _resolve_resource_file('kamus-alay-nasalsabila.csv')
-    if os.path.exists(csv_kamus_path):
-        print(f"[INFO] Memuat kamus alay dasar dari '{csv_kamus_path}' (Kredit: Nasalsabila)...")
-        try:
-            df_kamus = pd.read_csv(csv_kamus_path, usecols=['slang', 'formal'])
-            df_kamus = df_kamus.dropna(subset=['slang', 'formal'])
-            kamus_csv = dict(zip(df_kamus['slang'].astype(str).str.strip().str.lower(), 
-                                 df_kamus['formal'].astype(str).str.strip().str.lower()))
-            fresh_kamus = {**kamus_csv, **fresh_kamus}
-            print(f"[INFO] Berhasil memuat {len(kamus_csv):,} entri kamus dasar Nasalsabila.")
-        except Exception as e:
-            print(f"[WARNING] Gagal memuat kamus dasar CSV: {e}")
+    if _CACHED_BASE_KAMUS is None:
+        base_kamus = dict(DEFAULT_KAMUS_SLANG)
+        # 1. Base dictionary (Kredit: Nasalsabila)
+        csv_kamus_path = _resolve_resource_file('kamus-alay-nasalsabila.csv')
+        if os.path.exists(csv_kamus_path):
+            print(f"[INFO] Memuat kamus alay dasar dari '{csv_kamus_path}' (Kredit: Nasalsabila)...")
+            try:
+                df_kamus = pd.read_csv(csv_kamus_path, usecols=['slang', 'formal'])
+                df_kamus = df_kamus.dropna(subset=['slang', 'formal'])
+                kamus_csv = dict(zip(df_kamus['slang'].astype(str).str.strip().str.lower(), 
+                                     df_kamus['formal'].astype(str).str.strip().str.lower()))
+                base_kamus = {**kamus_csv, **base_kamus}
+                print(f"[INFO] Berhasil memuat {len(kamus_csv):,} entri kamus dasar Nasalsabila.")
+            except Exception as e:
+                print(f"[WARNING] Gagal memuat kamus dasar CSV: {e}")
+        _CACHED_BASE_KAMUS = base_kamus
 
-    # 2. Learned dictionary (Incremental Learning)
-    learned_kamus_path = _resolve_resource_file('kamus-alay-learned.csv')
+    fresh_kamus = dict(_CACHED_BASE_KAMUS)
+
+    # 2. Learned dictionary (Incremental Learning) dari direktori writable pengguna
+    learned_kamus_path = get_user_learned_slang_path()
+    if not os.path.exists(learned_kamus_path):
+        learned_kamus_path = _resolve_resource_file('kamus-alay-learned.csv')
+
     if os.path.exists(learned_kamus_path):
         try:
             df_learned = pd.read_csv(learned_kamus_path, usecols=['slang', 'formal'])
@@ -198,18 +214,21 @@ def get_stopwords(title_name):
         except Exception as e:
             print(f"[WARNING] Gagal memuat default stopwords: {e}")
 
-    # Memuat & mengakumulasikan custom stopwords tanpa menghapus kata yang sudah ada
-    custom_stopwords_path = _resolve_resource_file('stopwords.txt')
+    # Memuat & mengakumulasikan custom stopwords dari direktori pengguna yang writable
+    custom_stopwords_path = get_user_custom_stopwords_path()
+    fallback_sw_path = _resolve_resource_file('stopwords.txt')
     existing_custom = set()
-    if os.path.exists(custom_stopwords_path):
-        try:
-            with open(custom_stopwords_path, 'r', encoding='utf-8') as f:
-                for line in f:
-                    w = line.strip().lower()
-                    if w and len(w) > 1:
-                        existing_custom.add(w)
-        except Exception:
-            pass
+
+    for p in [fallback_sw_path, custom_stopwords_path]:
+        if os.path.exists(p):
+            try:
+                with open(p, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        w = line.strip().lower()
+                        if w and len(w) > 1:
+                            existing_custom.add(w)
+            except Exception:
+                pass
 
     words_in_app = re.findall(r'\b\w+\b', title_name.lower())
     new_app_words = set([w for w in words_in_app if len(w) > 1])

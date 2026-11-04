@@ -25,10 +25,9 @@ from cari_siber.engine.core.config import AppConfig
 from cari_siber.engine.core.exceptions import PipelineError
 
 GEMINI_FALLBACK_MODELS = [
-    "gemini-3.8-flash",
-    "gemini-flash-latest",
-    "gemini-3.5-flash",
     "gemini-2.5-flash",
+    "gemini-2.0-flash",
+    "gemini-1.5-flash",
 ]
 
 
@@ -70,6 +69,15 @@ def _log_api_traffic(
         try:
             from cari_siber.paths import get_logs_dir
             global_log = os.path.join(get_logs_dir(), "api_traffic.log")
+            # Rotasi log jika melebihi 5 MB agar kapasitas disk tidak membengkak
+            if os.path.exists(global_log) and os.path.getsize(global_log) > 5 * 1024 * 1024:
+                try:
+                    bak_log = global_log + ".1"
+                    if os.path.exists(bak_log):
+                        os.remove(bak_log)
+                    os.rename(global_log, bak_log)
+                except Exception:
+                    pass
             with open(global_log, "a", encoding="utf-8") as gf:
                 gf.write(log_text)
         except Exception:
@@ -406,10 +414,9 @@ def generate_text(prompt: str, provider: str, model: str, api_key: str = None, m
                 }
                 if not is_edgeone and not is_custom:
                     kwargs["extra_headers"] = {
-                        "HTTP-Referer": "https://github.com/pengikut-raja-capybara/cari-sentimen-id",
-                        "X-Title": "CaRI Sentimen ID",
+                        "HTTP-Referer": "https://github.com/pengikut-raja-capybara/cari-siber-id",
+                        "X-Title": "CaRI Siber ID",
                     }
-                kwargs["max_tokens"] = 2500
                 content = ""
                 response_usage = None
                 try:

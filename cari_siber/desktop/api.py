@@ -53,17 +53,24 @@ class DesktopApi:
 
     def start_run(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         video_url = payload.get("video_url", "").strip()
+        raw_urls = payload.get("video_urls", [])
+        video_urls = [str(u).strip() for u in raw_urls if str(u).strip() and str(u).strip().lower() != "undefined"]
+
+        if (not video_url or video_url.lower() == "undefined") and video_urls:
+            video_url = video_urls[0]
+
         limit_comments = int(payload.get("limit_comments", 1000))
         sort_by = payload.get("sort_by", "top")
         include_replies = bool(payload.get("include_replies", True))
         skip_scrape = bool(payload.get("skip_scrape", False))
 
         if not video_url:
-            return {"success": False, "error": "URL Video YouTube wajib diisi."}
+            return {"success": False, "error": "URL Video YouTube wajib diisi atau dipilih."}
 
         try:
             run_id = self.runner.start_youtube_analysis(
                 video_url=video_url,
+                video_urls=video_urls if video_urls else None,
                 limit_comments=limit_comments,
                 sort_by=sort_by,
                 include_replies=include_replies,
@@ -81,17 +88,33 @@ class DesktopApi:
         return self.runner.is_busy()
 
     def list_history(self) -> list:
-        return HistoryService.list_runs()
+        try:
+            return HistoryService.list_runs() or []
+        except Exception as e:
+            print(f"[API ERROR] list_history failed: {e}")
+            return []
 
     def get_run(self, run_id: str) -> Optional[Dict[str, Any]]:
-        return HistoryService.get_run(run_id)
+        if not run_id:
+            return None
+        try:
+            return HistoryService.get_run(run_id)
+        except Exception as e:
+            print(f"[API ERROR] get_run failed for {run_id}: {e}")
+            return None
 
     def get_run_results(self, run_id: str) -> Optional[Dict[str, Any]]:
-        run = HistoryService.get_run(run_id)
-        run_dir = run["run_dir"] if run and run.get("run_dir") else get_run_dir(run_id)
-        if not os.path.exists(run_dir):
+        if not run_id:
             return None
-        return ResultsService.load_run_results(run_dir)
+        try:
+            run = HistoryService.get_run(run_id)
+            run_dir = run["run_dir"] if run and run.get("run_dir") else get_run_dir(run_id)
+            if not run_dir or not os.path.exists(run_dir):
+                return None
+            return ResultsService.load_run_results(run_dir)
+        except Exception as e:
+            print(f"[API ERROR] get_run_results failed for {run_id}: {e}")
+            return None
 
     def delete_history(self, run_id: str) -> Dict[str, Any]:
         success = HistoryService.delete_run(run_id)
@@ -114,7 +137,42 @@ class DesktopApi:
             return {"success": False, "error": "Folder run tidak ditemukan."}
 
         try:
-            os.startfile(run["run_dir"])
+            folder = run["run_dir"]
+            if hasattr(os, "startfile"):
+                os.startfile(folder)
+            elif sys.platform == "darwin":
+                import subprocess
+                subprocess.Popen(["open", folder])
+            else:
+                import subprocess
+                subprocess.Popen(["xdg-open", folder])
             return {"success": True}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    def search_and_curate_videos(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        keyword = payload.get("keyword", "").strip()
+        max_curated = int(payload.get("max_curated", 10))
+        if not keyword:
+            return {"success": False, "error": "Kata kunci pencarian tidak boleh kosong."}
+
+        try:
+            from cari_siber.services.discovery import VideoDiscoveryService
+            res = VideoDiscoveryService.discover_and_curate(keyword=keyword, max_curated=max_curated)
+            return res
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    def get_author_comments(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        run_id = str(payload.get("run_id", "")).strip()
+        author_key = str(payload.get("author_key", "")).strip()
+        if not run_id or not author_key:
+            return {"success": False, "error": "run_id dan author_key tidak boleh kosong."}
+
+        try:
+            run = HistoryService.get_run(run_id)
+            run_dir = run["run_dir"] if run and run.get("run_dir") else get_run_dir(run_id)
+            comments = ResultsService.get_comments_by_author(run_dir, author_key)
+            return {"success": True, "comments": comments}
         except Exception as e:
             return {"success": False, "error": str(e)}

@@ -24,7 +24,6 @@ umap-learn>=0.5.6
 
 # Scraping Engine
 youtube-comment-downloader>=0.1.80
-instaloader>=4.14.0
 
 # Visualization & Reporting (XLSX only)
 matplotlib>=3.9.0

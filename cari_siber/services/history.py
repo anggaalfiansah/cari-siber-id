@@ -13,24 +13,6 @@ class HistoryService:
         os.makedirs(os.path.dirname(db_path), exist_ok=True)
         conn = sqlite3.connect(db_path, timeout=30.0)
         conn.row_factory = sqlite3.Row
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS runs (
-                id TEXT PRIMARY KEY,
-                target_url TEXT NOT NULL,
-                video_title TEXT DEFAULT '',
-                channel_name TEXT DEFAULT '',
-                total_comments INTEGER DEFAULT 0,
-                cib_score REAL DEFAULT 0.0,
-                cib_level TEXT DEFAULT 'LOW',
-                polarization_index REAL DEFAULT 0.0,
-                status TEXT NOT NULL,
-                error_message TEXT DEFAULT '',
-                created_at TEXT NOT NULL,
-                completed_at TEXT DEFAULT '',
-                run_dir TEXT NOT NULL
-            )
-        """)
-        conn.commit()
         return conn
 
     @staticmethod
@@ -52,6 +34,12 @@ class HistoryService:
                     completed_at TEXT DEFAULT '',
                     run_dir TEXT NOT NULL
                 )
+            """)
+            # Bersihkan status 'RUNNING' zombie yang tertinggal jika aplikasi ditutup paksa
+            conn.execute("""
+                UPDATE runs
+                SET status = 'FAILED', error_message = 'Aplikasi ditutup atau terhenti sebelum analisis selesai.'
+                WHERE status = 'RUNNING'
             """)
             conn.commit()
 

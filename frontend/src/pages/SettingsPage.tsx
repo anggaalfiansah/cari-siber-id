@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Save, CheckCircle, AlertCircle, Key, ShieldCheck, Zap } from 'lucide-react';
 import { Settings } from '../api/types';
-import { api } from '../api/bridge';
+import { api, waitForPyWebView } from '../api/bridge';
 
 export const SettingsPage: React.FC = () => {
   const [settings, setSettings] = useState<Settings>({
     ai_provider: 'gemini',
-    ai_model: 'gemini-3.8-flash',
+    ai_model: 'gemini-2.5-flash',
     gemini_api_key: '',
     openrouter_api_key: '',
     edgeone_api_key: '',
     custom_base_url: 'https://api.tokenai.id/v1',
     custom_api_key: '',
+    youtube_api_key: '',
     agentic_gates_enabled: true,
     default_comment_limit: 1000,
     default_sort_by: 'top',
@@ -30,6 +31,7 @@ export const SettingsPage: React.FC = () => {
   const loadSettings = async () => {
     setLoading(true);
     try {
+      await waitForPyWebView();
       const data = await api.get_settings();
       setSettings(data);
     } catch (e) {
@@ -43,6 +45,7 @@ export const SettingsPage: React.FC = () => {
     e.preventDefault();
     setSaveSuccess(false);
     try {
+      await waitForPyWebView();
       await api.save_settings(settings);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
@@ -207,6 +210,20 @@ export const SettingsPage: React.FC = () => {
                 value={settings.edgeone_api_key || ''}
                 onChange={(e) => setSettings({ ...settings, edgeone_api_key: e.target.value })}
               />
+            </div>
+
+            <div className="form-group" style={{ margin: 0 }}>
+              <label className="form-label">YouTube Data API v3 Key (Opsional)</label>
+              <input
+                type="password"
+                className="form-input mono-font"
+                placeholder="AIzaSy..."
+                value={settings.youtube_api_key || ''}
+                onChange={(e) => setSettings({ ...settings, youtube_api_key: e.target.value })}
+              />
+              <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px', display: 'block' }}>
+                Digunakan untuk pencarian cepat video. Jika kosong, sistem otomatis beralih ke pencarian web tanpa kuota API.
+              </span>
             </div>
           </div>
         </div>

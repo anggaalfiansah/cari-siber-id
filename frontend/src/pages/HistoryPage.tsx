@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { History, Trash2, ExternalLink, RefreshCw, AlertCircle } from 'lucide-react';
+import { History, Trash2, ExternalLink, RefreshCw, AlertCircle, AlertTriangle } from 'lucide-react';
 import { RunHistoryItem } from '../api/types';
-import { api } from '../api/bridge';
+import { api, waitForPyWebView } from '../api/bridge';
 
 interface HistoryPageProps {
   onSelectRun: (runId: string) => void;
@@ -16,8 +16,9 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ onSelectRun }) => {
     setLoading(true);
     setError('');
     try {
+      await waitForPyWebView();
       const list = await api.list_history();
-      setRuns(list);
+      setRuns(Array.isArray(list) ? list : []);
     } catch (err: any) {
       setError(err?.message || 'Gagal memuat riwayat audit.');
     } finally {
@@ -56,8 +57,8 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ onSelectRun }) => {
     }
   };
 
-  const getCibBadge = (level: string) => {
-    switch (level) {
+  const getCibBadge = (level?: string) => {
+    switch (String(level || 'LOW').toUpperCase()) {
       case 'CRITICAL': return 'badge-critical';
       case 'HIGH': return 'badge-high';
       case 'MEDIUM': return 'badge-medium';
@@ -110,70 +111,83 @@ export const HistoryPage: React.FC<HistoryPageProps> = ({ onSelectRun }) => {
                 </td>
               </tr>
             ) : (
-              runs.map((r) => (
-                <tr
-                  key={r.id}
-                  onClick={() => r.status === 'COMPLETED' && onSelectRun(r.id)}
-                  style={{
-                    borderBottom: '1px solid rgba(51, 65, 85, 0.25)',
-                    cursor: r.status === 'COMPLETED' ? 'pointer' : 'default',
-                    transition: 'background 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(15, 23, 42, 0.6)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-                >
-                  <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
-                    {r.created_at}
-                  </td>
-                  <td style={{ padding: '12px 16px' }}>
-                    <div style={{ fontWeight: 600, color: '#f1f5f9', maxWidth: '320px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {r.video_title || r.target_url}
-                    </div>
-                    {r.channel_name && <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{r.channel_name}</div>}
-                  </td>
-                  <td style={{ padding: '12px 16px' }}>
-                    {getStatusBadge(r.status)}
-                  </td>
-                  <td style={{ padding: '12px 16px', fontFamily: 'monospace', color: '#cbd5e1' }}>
-                    {r.total_comments > 0 ? r.total_comments.toLocaleString() : '-'}
-                  </td>
-                  <td style={{ padding: '12px 16px' }}>
-                    {r.status === 'COMPLETED' ? (
-                      <span className={`badge ${getCibBadge(r.cib_level)}`}>
-                        {r.cib_score.toFixed(2)} ({r.cib_level})
-                      </span>
-                    ) : '-'}
-                  </td>
-                  <td style={{ padding: '12px 16px', fontFamily: 'monospace', color: '#cbd5e1' }}>
-                    {r.status === 'COMPLETED' ? r.polarization_index.toFixed(2) : '-'}
-                  </td>
-                  <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                    <div style={{ display: 'inline-flex', gap: '6px' }}>
-                      {r.status === 'COMPLETED' && (
-                        <button
-                          className="btn btn-secondary"
-                          style={{ padding: '5px 8px' }}
-                          title="Buka Hasil"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onSelectRun(r.id);
-                          }}
-                        >
-                          <ExternalLink size={14} />
-                        </button>
+              runs.map((r) => {
+                const isCompleted = r.status === 'COMPLETED';
+                const isFailed = r.status === 'FAILED';
+                const cibScoreNum = typeof r.cib_score === 'number' ? r.cib_score : Number(r.cib_score);
+                const polIndexNum = typeof r.polarization_index === 'number' ? r.polarization_index : Number(r.polarization_index);
+
+                return (
+                  <tr
+                    key={r.id}
+                    onClick={() => isCompleted && onSelectRun(r.id)}
+                    style={{
+                      borderBottom: '1px solid rgba(51, 65, 85, 0.25)',
+                      cursor: isCompleted ? 'pointer' : 'default',
+                      transition: 'background 0.15s ease',
+                      opacity: isFailed ? 0.85 : 1,
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(15, 23, 42, 0.6)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    <td style={{ padding: '12px 16px', color: '#94a3b8', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
+                      {r.created_at}
+                    </td>
+                    <td style={{ padding: '12px 16px' }}>
+                      <div style={{ fontWeight: 600, color: '#f1f5f9', maxWidth: '320px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {r.video_title || r.target_url}
+                      </div>
+                      {r.channel_name && <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{r.channel_name}</div>}
+                      {isFailed && r.error_message && (
+                        <div style={{ fontSize: '0.7rem', color: '#f87171', marginTop: '2px', maxWidth: '320px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          Error: {r.error_message}
+                        </div>
                       )}
-                      <button
-                        className="btn btn-danger"
-                        style={{ padding: '5px 8px' }}
-                        title="Hapus Run"
-                        onClick={(e) => handleDelete(e, r.id)}
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                    </td>
+                    <td style={{ padding: '12px 16px' }}>
+                      {getStatusBadge(r.status)}
+                    </td>
+                    <td style={{ padding: '12px 16px', fontFamily: 'monospace', color: '#cbd5e1' }}>
+                      {(Number(r.total_comments) || 0) > 0 ? Number(r.total_comments).toLocaleString() : '-'}
+                    </td>
+                    <td style={{ padding: '12px 16px' }}>
+                      {isCompleted && !isNaN(cibScoreNum) ? (
+                        <span className={`badge ${getCibBadge(r.cib_level)}`}>
+                          {cibScoreNum.toFixed(2)} ({r.cib_level || 'LOW'})
+                        </span>
+                      ) : '-'}
+                    </td>
+                    <td style={{ padding: '12px 16px', fontFamily: 'monospace', color: '#cbd5e1' }}>
+                      {isCompleted && !isNaN(polIndexNum) ? polIndexNum.toFixed(2) : '-'}
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                      <div style={{ display: 'inline-flex', gap: '6px' }}>
+                        {isCompleted && (
+                          <button
+                            className="btn btn-secondary"
+                            style={{ padding: '5px 8px' }}
+                            title="Buka Hasil"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onSelectRun(r.id);
+                            }}
+                          >
+                            <ExternalLink size={14} />
+                          </button>
+                        )}
+                        <button
+                          className="btn btn-danger"
+                          style={{ padding: '5px 8px' }}
+                          title="Hapus Run"
+                          onClick={(e) => handleDelete(e, r.id)}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

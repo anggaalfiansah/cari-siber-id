@@ -29,20 +29,24 @@ class PipelineRunner:
         self.active_run_id: Optional[str] = None
         self._cancel_requested = False
         self._is_running = False
+        self._lock = threading.Lock()
 
     def is_busy(self) -> bool:
-        return self._is_running
+        with self._lock:
+            return self._is_running
 
     def request_cancel(self):
-        if self._is_running:
-            self._cancel_requested = True
-            self._emit({
-                "type": "progress",
-                "status": "CANCELLING",
-                "percent": 0,
-                "step_name": "Membatalkan...",
-                "message": "Permintaan pembatalan diterima. Menunggu tahap saat ini selesai...",
-            })
+        with self._lock:
+            if self._is_running:
+                self._cancel_requested = True
+                self._emit({
+                    "type": "progress",
+                    "run_id": self.active_run_id or "",
+                    "status": "CANCELLING",
+                    "percent": 0,
+                    "step_name": "Membatalkan...",
+                    "message": "Permintaan pembatalan diterima. Menunggu tahap saat ini selesai...",
+                })
 
     def _emit(self, event: Dict[str, Any]):
         if self.event_emitter:
@@ -53,43 +57,55 @@ class PipelineRunner:
 
     def start_youtube_analysis(
         self,
-        video_url: str,
+        video_url: str = "",
+        video_urls: Optional[list] = None,
         limit_comments: int = 1000,
         sort_by: str = "top",
         include_replies: bool = True,
         skip_scrape: bool = False,
     ) -> str:
-        if self._is_running:
-            raise RuntimeError("Analisis lain sedang berjalan. Harap tunggu hingga selesai.")
+        with self._lock:
+            if self._is_running:
+                raise RuntimeError("Analisis lain sedang berjalan. Harap tunggu hingga selesai.")
 
-        run_id = datetime.now().strftime("%Y%m%d_%H%M%S_") + str(uuid.uuid4())[:6]
-        run_dir = get_run_dir(run_id)
+            run_id = datetime.now().strftime("%Y%m%d_%H%M%S_") + str(uuid.uuid4())[:6]
+            run_dir = get_run_dir(run_id)
 
-        # 1. Load settings & configure engine
-        settings = AppSettings.load()
-        AppConfig.configure_run(
-            run_dir=run_dir,
-            settings=settings,
-            video_url=video_url,
-            limit_comments=limit_comments,
-            sort_by=sort_by,
-            include_replies=include_replies,
-        )
+            resolved_urls = []
+            if video_urls and isinstance(video_urls, list):
+                resolved_urls = [str(u).strip() for u in video_urls if str(u).strip()]
+            elif video_url and str(video_url).strip():
+                resolved_urls = [str(video_url).strip()]
 
-        # 2. Record to SQLite
-        HistoryService.create_run(run_id, video_url, run_dir)
+            primary_url = resolved_urls[0] if resolved_urls else (video_url or "")
 
-        self.active_run_id = run_id
-        self._cancel_requested = False
-        self._is_running = True
+            # 1. Load settings & configure engine
+            settings = AppSettings.load()
+            AppConfig.configure_run(
+                run_dir=run_dir,
+                settings=settings,
+                video_url=primary_url,
+                video_urls=resolved_urls,
+                limit_comments=limit_comments,
+                sort_by=sort_by,
+                include_replies=include_replies,
+            )
 
-        self.active_thread = threading.Thread(
-            target=self._worker_thread,
-            args=(run_id, run_dir, video_url, skip_scrape),
-            daemon=True,
-        )
-        self.active_thread.start()
-        return run_id
+            # 2. Record to SQLite (Store primary url or campaign summary)
+            history_target = primary_url if len(resolved_urls) <= 1 else f"{primary_url} (+{len(resolved_urls)-1} video lainnya)"
+            HistoryService.create_run(run_id, history_target, run_dir)
+
+            self.active_run_id = run_id
+            self._cancel_requested = False
+            self._is_running = True
+
+            self.active_thread = threading.Thread(
+                target=self._worker_thread,
+                args=(run_id, run_dir, primary_url, skip_scrape),
+                daemon=True,
+            )
+            self.active_thread.start()
+            return run_id
 
     def _worker_thread(self, run_id: str, run_dir: str, video_url: str, skip_scrape: bool):
         # Lazy imports of pipelines inside background worker
@@ -126,14 +142,12 @@ class PipelineRunner:
             # Step 1: Scraping Komentar
             if self._check_cancelled(run_id): return
             if not skip_scrape:
-                platform = getattr(AppConfig, "TARGET_PLATFORM", "youtube")
-                if platform == "instagram":
-                    from cari_siber.engine.pipelines.instagram_comments.pipeline_scrape import run_instagram_scraper
-                    self._emit_step("Scraping Komentar", 1, 10, f"Mengunduh komentar dari Instagram target: {video_url}...")
-                    run_instagram_scraper()
+                target_vids = getattr(AppConfig, "YOUTUBE_VIDEO_URLS", [])
+                if len(target_vids) > 1:
+                    self._emit_step("Scraping Komentar", 1, 10, f"Mengunduh komentar dari {len(target_vids)} video target secara kolektif...")
                 else:
                     self._emit_step("Scraping Komentar", 1, 10, f"Mengunduh komentar dari YouTube target: {video_url}...")
-                    run_scraper()
+                run_scraper()
             else:
                 self._emit_step("Scraping Komentar", 1, 20, "Melewati scraping (menggunakan data yang sudah ada)...")
 
@@ -176,6 +190,7 @@ class PipelineRunner:
 
             cib_metrics = IntelligenceService.calculate_cib_metrics(df_final)
             pol_metrics = IntelligenceService.calculate_polarization_metrics(df_final)
+            cross_intel = IntelligenceService.calculate_cross_video_intelligence(df_final, run_dir)
 
             # Metadata video
             eda_json = os.path.join(run_dir, "json", "youtube_eda_summary.json")
@@ -202,8 +217,7 @@ class PipelineRunner:
                 polarization_index=pol_metrics.polarization_index,
             )
 
-            # Emit completion event with full result object
-            result_data = ResultsService.load_run_results(run_dir)
+            # Emit lightweight completion event (frontend memuat data grafik on-demand via get_run_results)
             self._emit({
                 "type": "completed",
                 "run_id": run_id,
@@ -220,7 +234,6 @@ class PipelineRunner:
                     "polarization_index": pol_metrics.polarization_index,
                     "sentiment_distribution": pol_metrics.sentiment_distribution,
                 },
-                "result": result_data,
             })
 
         except PipelineError as pe:
@@ -247,11 +260,13 @@ class PipelineRunner:
         finally:
             if log_stream:
                 log_stream.unsubscribe(log_subscriber)
-            self._is_running = False
+            with self._lock:
+                self._is_running = False
 
-    def _emit_step(self, step_name: str, step_index: int, percent: int, message: str):
+    def _emit_step(self, step_name: str, step_index: int, percent: int, message: str, run_id: str = ""):
         self._emit({
             "type": "progress",
+            "run_id": run_id or self.active_run_id or "",
             "status": "RUNNING",
             "step_index": step_index,
             "percent": percent,
@@ -260,11 +275,14 @@ class PipelineRunner:
         })
 
     def _check_cancelled(self, run_id: str) -> bool:
-        if self._cancel_requested:
+        with self._lock:
+            cancelled = self._cancel_requested
+        if cancelled:
             print("[INFO] Pipeline dibatalkan oleh pengguna.")
             HistoryService.update_run_status(run_id, "CANCELLED", error="Dibatalkan oleh pengguna")
             self._emit({
                 "type": "progress",
+                "run_id": run_id,
                 "status": "CANCELLED",
                 "percent": 0,
                 "step_name": "Dibatalkan",

@@ -97,28 +97,40 @@ def process_youtube_bertopic(df, kamus, embedding_model, config, stopwords, csv_
                 norm = np.linalg.norm(mean_emb)
                 centroids[t] = mean_emb / norm if norm > 0 else mean_emb
 
-        main_probs, alt1_id, alt1_prob, alt2_id, alt2_prob = [], [], [], [], []
-        for i in range(len(df_sub)):
-            doc_emb = embeddings[i]
-            local_main = new_topics[i]
+        # Hitung probabilitas & topik alternatif secara vektorisasi (NumPy BLAS)
+        if centroids:
+            centroid_ids = np.array(list(centroids.keys()))
+            centroid_matrix = np.array(list(centroids.values()))
+            sim_matrix = np.dot(embeddings[:len(df_sub)], centroid_matrix.T)
+            topic_to_col = {tid: idx for idx, tid in enumerate(centroid_ids)}
 
-            sidebar = {}
-            for t, cent in centroids.items():
-                sidebar[t] = float(np.dot(doc_emb, cent))
+            main_probs, alt1_id, alt1_prob, alt2_id, alt2_prob = [], [], [], [], []
+            for i in range(len(df_sub)):
+                local_main = new_topics[i]
+                sims = sim_matrix[i]
 
-            sorted_sims = sorted(sidebar.items(), key=lambda item: -item[1])
+                if local_main != -1 and local_main in topic_to_col:
+                    main_probs.append(float(sims[topic_to_col[local_main]]))
+                    top_indices = np.argsort(-sims)
+                    alts = [centroid_ids[idx] for idx in top_indices if centroid_ids[idx] != local_main]
+                    alt_probs = [float(sims[idx]) for idx in top_indices if centroid_ids[idx] != local_main]
+                else:
+                    main_probs.append(0.0)
+                    top_indices = np.argsort(-sims)
+                    alts = [centroid_ids[idx] for idx in top_indices]
+                    alt_probs = [float(sims[idx]) for idx in top_indices]
 
-            if local_main != -1 and local_main in centroids:
-                main_probs.append(sidebar[local_main])
-                alts = [item for item in sorted_sims if item[0] != local_main]
-            else:
-                main_probs.append(0.0)
-                alts = sorted_sims
-
-            alt1_id.append(int(alts[0][0]) if len(alts) >= 1 else None)
-            alt1_prob.append(alts[0][1] if len(alts) >= 1 else None)
-            alt2_id.append(int(alts[1][0]) if len(alts) >= 2 else None)
-            alt2_prob.append(alts[1][1] if len(alts) >= 2 else None)
+                alt1_id.append(int(alts[0]) if len(alts) >= 1 else None)
+                alt1_prob.append(alt_probs[0] if len(alt_probs) >= 1 else None)
+                alt2_id.append(int(alts[1]) if len(alts) >= 2 else None)
+                alt2_prob.append(alt_probs[1] if len(alt_probs) >= 2 else None)
+        else:
+            n_rows = len(df_sub)
+            main_probs = [0.0] * n_rows
+            alt1_id = [None] * n_rows
+            alt1_prob = [None] * n_rows
+            alt2_id = [None] * n_rows
+            alt2_prob = [None] * n_rows
 
         df_sub["main_topic_prob"] = main_probs
         df_sub["alt_topic_1"] = alt1_id
@@ -131,24 +143,8 @@ def process_youtube_bertopic(df, kamus, embedding_model, config, stopwords, csv_
         df_topics["Representation"] = df_topics["Representation"].astype(str)
         df_topics["Representative_Docs"] = df_topics["Representative_Docs"].astype(str)
 
-        df_mapping = df_sub[
-            [
-                "comment_id",
-                "username",
-                "comment_text",
-                "like_count",
-                "reply_count",
-                "topic_id",
-                "topic_name",
-                "main_topic_prob",
-                "alt_topic_1",
-                "alt_topic_1_name",
-                "alt_topic_1_prob",
-                "alt_topic_2",
-                "alt_topic_2_name",
-                "alt_topic_2_prob",
-            ]
-        ].copy()
+        # Pertahankan seluruh kolom metadata video dan penulis untuk analisis downstream
+        df_mapping = df_sub.copy()
 
         master_csv_path = os.path.join(csv_output_dir, f"master_topic_youtube_{suffix}.csv")
         mapping_csv_path = os.path.join(csv_output_dir, f"mapping_review_topic_youtube_{suffix}.csv")
@@ -234,6 +230,21 @@ def process_youtube_bertopic(df, kamus, embedding_model, config, stopwords, csv_
     save_results(topic_model, probs, "reduced")
 
 
+_CACHED_EMBEDDING_MODEL = None
+_CACHED_MODEL_PATH = None
+
+
+def get_cached_embedding_model(model_name_or_path: str):
+    """Mengambil atau memuat model SentenceTransformer di memori agar run berikutnya instan."""
+    global _CACHED_EMBEDDING_MODEL, _CACHED_MODEL_PATH
+    if _CACHED_EMBEDDING_MODEL is not None and _CACHED_MODEL_PATH == model_name_or_path:
+        return _CACHED_EMBEDDING_MODEL
+    print(f"[INFO] Memuat Model Embedding: {model_name_or_path}...")
+    _CACHED_EMBEDDING_MODEL = SentenceTransformer(model_name_or_path)
+    _CACHED_MODEL_PATH = model_name_or_path
+    return _CACHED_EMBEDDING_MODEL
+
+
 def run_topic_modeling(config_override=None):
     """Orkestrator utama Langkah 1 untuk Topic Modeling komentar YouTube."""
     print("=== LANGKAH 1: NLP TOPIC MODELING YOUTUBE DENGAN BERTOPIC ===")
@@ -257,14 +268,14 @@ def run_topic_modeling(config_override=None):
     config = get_bertopic_config()
     stopwords = get_stopwords(f"youtube video channel {AppConfig.YOUTUBE_APP_NAME}")
 
-    print("[INFO] Memuat Model Embedding... Mohon tunggu.")
+    print("[INFO] Menyiapkan Model Embedding...")
     from cari_siber.paths import get_models_dir
     model_name_or_path = config["embedding_model"]
     local_model = os.path.join(get_models_dir(), "indobert-base-p1")
     if os.path.isdir(local_model):
         print(f"[INFO] Menggunakan model IndoBERT lokal offline dari: {local_model}")
         model_name_or_path = local_model
-    embedding_model = SentenceTransformer(model_name_or_path)
+    embedding_model = get_cached_embedding_model(model_name_or_path)
 
     process_youtube_bertopic(df, kamus, embedding_model, config, stopwords, csv_output_dir, output_dir=output_dir, config_override=config_override)
 

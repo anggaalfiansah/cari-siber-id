@@ -6,6 +6,7 @@ export interface Settings {
   edgeone_api_key?: string;
   custom_base_url?: string;
   custom_api_key?: string;
+  youtube_api_key?: string;
   agentic_gates_enabled: boolean;
   default_comment_limit: number;
   default_sort_by: string;
@@ -57,6 +58,83 @@ export interface InteractiveData {
   }>;
 }
 
+export interface AuthorCommentItem {
+  comment_id: string;
+  comment_text: string;
+  like_count: number;
+  reply_count: number;
+  ai_sentiment: string;
+  topic_name?: string;
+  business_category?: string;
+  sub_issue?: string;
+  video_id?: string;
+  video_title?: string;
+  created_at?: string;
+  is_reply?: boolean;
+  is_hearted?: boolean;
+  is_pinned?: boolean;
+}
+
+export interface FlaggedAccountItem {
+  username: string;
+  author_channel_id: string;
+  author_channel_url: string;
+  avatar?: string;
+  videos_count: number;
+  total_comments: number;
+  total_likes_received?: number;
+  target_video_ids: string[];
+  target_video_titles: string[];
+  sample_comments: string[];
+  all_comments: AuthorCommentItem[];
+  cib_risk_level: 'SUSPICIOUS' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  threat_tags?: string[];
+  sentiment_breakdown?: { Positif: number; Netral: number; Negatif: number };
+}
+
+export interface CrossVideoBuzzer {
+  username: string;
+  author_channel_id: string;
+  author_channel_url: string;
+  videos_count: number;
+  total_comments: number;
+  total_likes_received?: number;
+  target_video_ids: string[];
+  target_video_titles: string[];
+  sample_comments: string[];
+  all_comments?: AuthorCommentItem[];
+  cib_risk_level: 'SUSPICIOUS' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  threat_tags?: string[];
+  sentiment_breakdown?: { Positif: number; Netral: number; Negatif: number };
+}
+
+export interface VideoComparisonRow {
+  video_id: string;
+  video_title: string;
+  channel_name: string;
+  total_comments: number;
+  unique_commenters: number;
+  positive_pct: number;
+  negative_pct: number;
+  neutral_pct: number;
+  net_sentiment: number;
+  top_topic: string;
+  cib_score: number;
+}
+
+export interface CrossVideoIntelligence {
+  is_multi_video: boolean;
+  total_videos: number;
+  total_comments: number;
+  unique_authors_overall: number;
+  shared_authors_count: number;
+  sentiment_divergence_score: number;
+  audience_overlap_ratio: number;
+  cross_video_buzzers: CrossVideoBuzzer[];
+  flagged_accounts?: FlaggedAccountItem[];
+  video_comparison_matrix: VideoComparisonRow[];
+}
+
 export interface RunResult {
   meta: {
     video_title: string;
@@ -68,6 +146,9 @@ export interface RunResult {
   charts: ChartItem[];
   narrative_md: string;
   interactive_data: InteractiveData;
+  flagged_accounts?: FlaggedAccountItem[];
+  corpus_comments?: AuthorCommentItem[];
+  cross_video?: CrossVideoIntelligence;
 }
 
 export interface ProgressEvent {
@@ -112,3 +193,26 @@ export interface ErrorEvent {
 }
 
 export type PyWebViewEvent = ProgressEvent | LogEvent | CompletedEvent | ErrorEvent;
+
+export interface CuratedVideoItem {
+  video_id: string;
+  url: string;
+  title: string;
+  channel: string;
+  duration?: string;
+  views?: string;
+  published?: string;
+  thumbnail?: string;
+  relevance_score?: number;
+  curation_reason?: string;
+  is_recommended?: boolean;
+}
+
+export interface VideoDiscoveryResponse {
+  success: boolean;
+  keyword?: string;
+  total_candidates_found?: number;
+  curated_videos?: CuratedVideoItem[];
+  error?: string;
+}
+

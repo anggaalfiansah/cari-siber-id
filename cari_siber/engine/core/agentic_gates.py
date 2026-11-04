@@ -53,6 +53,7 @@ except ImportError:
 
 from cari_siber.engine.core.config import AppConfig
 from cari_siber.engine.core.ai_client import generate_structured_json, generate_text, TOKEN_USAGE_TRACKER, reset_token_tracker
+from cari_siber.paths import get_user_learned_slang_path, get_user_custom_stopwords_path
 
 
 # ==============================================================================
@@ -186,7 +187,7 @@ def _get_active_ai_credentials(config_override: dict = None):
 def _can_call_llm(provider: str, api_key: str) -> bool:
     if provider == "gemini":
         return bool(api_key and not api_key.startswith("["))
-    if provider in ("openrouter", "edgeone"):
+    if provider in ("openrouter", "edgeone", "custom"):
         return bool(api_key and not api_key.startswith("["))
     if provider == "ollama":
         return True
@@ -221,22 +222,30 @@ class QualityGateAuditSchema(BaseModel):
     audit_notes: str = Field(description="Ringkasan evaluasi kualitas teks dalam Bahasa Indonesia.")
 
 
+_RE_URL = re.compile(r"https?://\S+|www\.\S+")
+_RE_MENTION = re.compile(r"@\w+")
+_RE_NON_WORD = re.compile(r"[^\w\s]")
+_RE_REPEATS = re.compile(r"(.)\1{2,}")
+_RE_END_REPEATS = re.compile(r"(.)\1+$")
+
+
 def normalisasi_teks_hardened(text: str, kamus: dict, collapse_repeats: bool = False) -> str:
     """
     Normalisasi teks yang dapat dikustomisasi parameternya saat retry oleh Quality Gate.
+    Menggunakan pre-compiled regex untuk performa tinggi pada ribuan ulasan.
     """
     text = str(text).lower()
-    text = re.sub(r"https?://\S+|www\.\S+", " ", text)
-    text = re.sub(r"@\w+", " ", text)
-    text = re.sub(r"[^\w\s]", " ", text)
+    text = _RE_URL.sub(" ", text)
+    text = _RE_MENTION.sub(" ", text)
+    text = _RE_NON_WORD.sub(" ", text)
     if collapse_repeats:
-        text = re.sub(r"(.)\1{2,}", r"\1", text)
+        text = _RE_REPEATS.sub(r"\1", text)
     words = text.split()
     normalized_words = []
     for word in words:
         mapped = kamus.get(word, word)
         if collapse_repeats and mapped == word and len(word) > 3:
-            trimmed = re.sub(r"(.)\1+$", r"\1", word)
+            trimmed = _RE_END_REPEATS.sub(r"\1", word)
             mapped = kamus.get(trimmed, word)
         normalized_words.append(mapped)
     return " ".join(normalized_words)
@@ -293,17 +302,21 @@ def _compute_cleaning_stats(docs_raw: list[str], docs_clean: list[str], stopword
     }
 
 
-def save_learned_slang(new_slang_dict: dict, data_dir: str = "data") -> int:
+def save_learned_slang(new_slang_dict: dict, data_dir: str = None) -> int:
     """
     Menyimpan kata slang baru hasil pembelajaran (incremental learning) ke file pendamping
-    'data/kamus-alay-learned.csv' tanpa mengubah file dasar 'data/kamus-alay-nasalsabila.csv'
+    writable kamus-alay-learned.csv tanpa mengubah file dasar 'kamus-alay-nasalsabila.csv'
     sehingga kredit hak cipta Nasalsabila tetap aman dan terpisah.
     """
     if not new_slang_dict:
         return 0
 
-    os.makedirs(data_dir, exist_ok=True)
-    learned_path = os.path.join(data_dir, "kamus-alay-learned.csv")
+    if data_dir is not None:
+        os.makedirs(data_dir, exist_ok=True)
+        learned_path = os.path.join(data_dir, "kamus-alay-learned.csv")
+    else:
+        learned_path = get_user_learned_slang_path()
+        os.makedirs(os.path.dirname(learned_path), exist_ok=True)
     existing_learned = {}
 
     if os.path.exists(learned_path):
@@ -347,15 +360,19 @@ def save_learned_slang(new_slang_dict: dict, data_dir: str = "data") -> int:
         return 0
 
 
-def save_learned_stopwords(new_stopwords: list[str], data_dir: str = "data") -> int:
+def save_learned_stopwords(new_stopwords: list[str], data_dir: str = None) -> int:
     """
-    Menyimpan stopwords baru secara akumulatif ke 'data/stopwords.txt' tanpa menimpa kata lama.
+    Menyimpan stopwords baru secara akumulatif ke stopwords.txt writable pengguna tanpa menimpa kata lama.
     """
     if not new_stopwords:
         return 0
 
-    os.makedirs(data_dir, exist_ok=True)
-    sw_path = os.path.join(data_dir, "stopwords.txt")
+    if data_dir is not None:
+        os.makedirs(data_dir, exist_ok=True)
+        sw_path = os.path.join(data_dir, "stopwords.txt")
+    else:
+        sw_path = get_user_custom_stopwords_path()
+        os.makedirs(os.path.dirname(sw_path), exist_ok=True)
     existing_sw = set()
 
     if os.path.exists(sw_path):
@@ -976,7 +993,7 @@ def audit_and_heal_topic_clustering(
     for gate_attempt in range(max_retries + 1):
         # 1. Fit BERTopic dengan UMAP deterministik (random_state=42)
         for fit_try in range(3):
-            hdbscan_model = HDBSCAN(**hdbscan_params, core_dist_n_jobs=-1)
+            hdbscan_model = HDBSCAN(**hdbscan_params, core_dist_n_jobs=1)
             umap_model = (
                 UMAP(n_neighbors=15, n_components=5, min_dist=0.0, metric="cosine", random_state=42)
                 if UMAP is not None

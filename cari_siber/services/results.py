@@ -183,6 +183,62 @@ class ResultsService:
                 "sentiment": t["sentiment"],
             })
 
+        # 5. Load Cross-Video Intelligence (if multi-video run)
+        cross_intel = None
+        cross_json_path = os.path.join(run_dir, "json", "cross_video_intelligence.json")
+        if os.path.exists(cross_json_path):
+            try:
+                with open(cross_json_path, "r", encoding="utf-8") as cjf:
+                    cross_intel = json.load(cjf)
+            except Exception:
+                pass
+
+        # 6. Load Flagged Accounts (Buzzer, Spam Bot, & CIB Indicators)
+        flagged_accounts = []
+        flagged_json_path = os.path.join(run_dir, "json", "flagged_accounts.json")
+        if os.path.exists(flagged_json_path):
+            try:
+                with open(flagged_json_path, "r", encoding="utf-8") as faf:
+                    flagged_accounts = json.load(faf)
+            except Exception:
+                pass
+        elif cross_intel and cross_intel.get("flagged_accounts"):
+            flagged_accounts = cross_intel.get("flagged_accounts", [])
+        elif df_final is not None and not df_final.empty:
+            try:
+                from cari_siber.services.intelligence import IntelligenceService
+                flagged_accounts = IntelligenceService.calculate_flagged_accounts(df_final)
+            except Exception:
+                pass
+
+        # 7. Sampel Komentar untuk Corpus Explorer (hingga 1.000 komentar)
+        corpus_comments = []
+        if df_final is not None and not df_final.empty:
+            try:
+                sample_df = df_final.head(1000)
+                for _, crow in sample_df.iterrows():
+                    corpus_comments.append({
+                        "comment_id": str(crow.get("comment_id", "")),
+                        "username": str(crow.get("username", "Anonim")),
+                        "author_channel_id": str(crow.get("author_channel_id", "")),
+                        "author_channel_url": str(crow.get("author_channel_url", "")),
+                        "comment_text": str(crow.get("comment_text", "")),
+                        "like_count": int(pd.to_numeric(crow.get("like_count", 0), errors="coerce") or 0),
+                        "reply_count": int(pd.to_numeric(crow.get("reply_count", 0), errors="coerce") or 0),
+                        "ai_sentiment": str(crow.get("ai_sentiment", "Netral")),
+                        "topic_name": str(crow.get("topic_name", "")),
+                        "business_category": str(crow.get("business_category", "")),
+                        "sub_issue": str(crow.get("sub_issue", "")),
+                        "video_id": str(crow.get("video_id", "")),
+                        "video_title": str(crow.get("video_title", "")),
+                        "created_at": str(crow.get("created_at", "")),
+                        "is_reply": bool(str(crow.get("is_reply", "")).lower() in ["true", "1"]),
+                        "is_hearted": bool(str(crow.get("is_hearted", "")).lower() in ["true", "1"]),
+                        "is_pinned": bool(str(crow.get("is_pinned", "")).lower() in ["true", "1"]),
+                    })
+            except Exception:
+                pass
+
         return {
             "meta": {
                 "video_title": video_title,
@@ -197,4 +253,46 @@ class ResultsService:
                 "sentiment": sentiment_chart_data,
                 "topics": topic_chart_data,
             },
+            "flagged_accounts": flagged_accounts,
+            "corpus_comments": corpus_comments,
+            "cross_video": cross_intel,
         }
+
+    @staticmethod
+    def get_comments_by_author(run_dir: str, author_key: str) -> List[Dict[str, Any]]:
+        """Mengambil seluruh riwayat komentar dari satu akun tertentu di suatu sesi run."""
+        final_csv = os.path.join(run_dir, "csv", "mapping_review_topic_youtube_final.csv")
+        if not os.path.exists(final_csv):
+            final_csv = os.path.join(run_dir, "csv", "mapping_review_topic_youtube_raw.csv")
+        if not os.path.exists(final_csv):
+            return []
+        try:
+            df = pd.read_csv(final_csv)
+            author_id_col = "author_channel_id" if "author_channel_id" in df.columns else "username"
+            user_col = "username" if "username" in df.columns else author_id_col
+
+            mask = (df[author_id_col].astype(str) == str(author_key)) | (df[user_col].astype(str) == str(author_key))
+            matched_df = df[mask]
+
+            comments = []
+            for _, crow in matched_df.iterrows():
+                comments.append({
+                    "comment_id": str(crow.get("comment_id", "")),
+                    "comment_text": str(crow.get("comment_text", "")),
+                    "like_count": int(pd.to_numeric(crow.get("like_count", 0), errors="coerce") or 0),
+                    "reply_count": int(pd.to_numeric(crow.get("reply_count", 0), errors="coerce") or 0),
+                    "ai_sentiment": str(crow.get("ai_sentiment", "Netral")),
+                    "topic_name": str(crow.get("topic_name", "")),
+                    "business_category": str(crow.get("business_category", "")),
+                    "sub_issue": str(crow.get("sub_issue", "")),
+                    "video_id": str(crow.get("video_id", "")),
+                    "video_title": str(crow.get("video_title", "")),
+                    "created_at": str(crow.get("created_at", "")),
+                    "is_reply": bool(str(crow.get("is_reply", "")).lower() in ["true", "1"]),
+                    "is_hearted": bool(str(crow.get("is_hearted", "")).lower() in ["true", "1"]),
+                    "is_pinned": bool(str(crow.get("is_pinned", "")).lower() in ["true", "1"]),
+                })
+            comments.sort(key=lambda x: x["like_count"], reverse=True)
+            return comments
+        except Exception:
+            return []

@@ -28,42 +28,6 @@ def extract_youtube_video_id(url_or_id: str) -> str:
             return match.group(1)
     return ""
 
-def extract_instagram_shortcode(url_or_id: str) -> str:
-    """
-    Mengekstrak shortcode Instagram (biasanya 9-14 karakter) dari URL postingan atau reel:
-    https://www.instagram.com/p/{shortcode}/
-    https://www.instagram.com/reel/{shortcode}/
-    https://www.instagram.com/reels/{shortcode}/
-    https://instagr.am/p/{shortcode}/
-    atau shortcode langsung.
-    """
-    if not url_or_id:
-        return ""
-    text = url_or_id.strip().split("?")[0].rstrip("/")
-    match = re.search(r'instagram\.com/(?:p|reel|reels)/([A-Za-z0-9_-]+)', text, re.IGNORECASE)
-    if match:
-        return match.group(1)
-    match_short = re.search(r'instagr\.am/(?:p|reel|reels)/([A-Za-z0-9_-]+)', text, re.IGNORECASE)
-    if match_short:
-        return match_short.group(1)
-    match_direct = re.search(r'/(?:p|reel|reels)/([A-Za-z0-9_-]+)', text, re.IGNORECASE)
-    if match_direct:
-        return match_direct.group(1)
-    if ("http" not in text) and re.fullmatch(r'[A-Za-z0-9_-]{9,15}', text):
-        return text
-    return ""
-
-def detect_target_platform(url_or_id: str) -> str:
-    """
-    Mendeteksi platform media sosial dari URL/ID input: 'instagram' | 'youtube'
-    """
-    if not url_or_id:
-        return "youtube"
-    text = url_or_id.lower().strip()
-    if "instagram.com" in text or "instagr.am" in text or "/reel/" in text or "/reels/" in text or "/p/" in text:
-        return "instagram"
-    return "youtube"
-
 
 class AppConfig:
     """
@@ -79,13 +43,12 @@ class AppConfig:
     CUSTOM_BASE_URL = "https://api.tokenai.id/v1"
     
     # 2. Target Config
-    TARGET_PLATFORM = "youtube"  # 'youtube' | 'instagram'
+    TARGET_PLATFORM = "youtube"
     TARGET_URL = ""
-    INSTAGRAM_SHORTCODE = ""
-    INSTAGRAM_SESSION_USER = ""
     
     YOUTUBE_API_KEY = ""
     YOUTUBE_VIDEO_URL = ""
+    YOUTUBE_VIDEO_URLS = []
     YOUTUBE_VIDEO_ID = ""
     YOUTUBE_APP_NAME = "YouTube Video"
     YOUTUBE_APP_DESC = "Komentar video YouTube"
@@ -101,9 +64,9 @@ class AppConfig:
     
     # 4. Pengaturan AI Model
     ACTIVE_AI_PROVIDER = "gemini"
-    ACTIVE_AI_MODEL = "gemini-3.8-flash"
+    ACTIVE_AI_MODEL = "gemini-2.5-flash"
     AI_PROVIDER = "gemini"
-    AI_MODEL = "gemini-3.8-flash"
+    AI_MODEL = "gemini-2.5-flash"
     AI_OVERWRITE = True
     AI_NARRATION_MODEL = ""
     
@@ -127,7 +90,16 @@ class AppConfig:
     AGENTIC_VERIFY_LLM_REROUTE_BATCH = 30
 
     @classmethod
-    def configure_run(cls, run_dir: str, settings: dict = None, video_url: str = "", limit_comments: int = 1000, sort_by: str = "top", include_replies: bool = True):
+    def configure_run(
+        cls,
+        run_dir: str,
+        settings: dict = None,
+        video_url: str = "",
+        video_urls: list = None,
+        limit_comments: int = 1000,
+        sort_by: str = "top",
+        include_replies: bool = True,
+    ):
         """Mengonfigurasi state engine untuk satu sesi pengerjaan analisis terisolasi."""
         os.makedirs(run_dir, exist_ok=True)
         cls.OUTPUT_DIR = run_dir
@@ -135,20 +107,23 @@ class AppConfig:
         cls.OUTPUT_TIKTOK_DIR = run_dir
         cls.OUTPUT_APP_REVIEWS_DIR = run_dir
 
-        cls.TARGET_URL = video_url
-        platform = detect_target_platform(video_url)
-        cls.TARGET_PLATFORM = platform
+        resolved_urls = []
+        if video_urls and isinstance(video_urls, list):
+            resolved_urls = [str(u).strip() for u in video_urls if str(u).strip()]
+        elif video_url and str(video_url).strip():
+            resolved_urls = [str(video_url).strip()]
 
-        if platform == "instagram":
-            shortcode = extract_instagram_shortcode(video_url)
-            cls.INSTAGRAM_SHORTCODE = shortcode
-            cls.YOUTUBE_VIDEO_URL = video_url
-            cls.YOUTUBE_VIDEO_ID = shortcode or "instagram_post"
-            cls.YOUTUBE_APP_NAME = f"Instagram - {shortcode}" if shortcode else "Instagram Post"
-            cls.YOUTUBE_APP_DESC = "Komentar postingan/reels Instagram"
+        cls.YOUTUBE_VIDEO_URLS = resolved_urls
+        primary_url = resolved_urls[0] if resolved_urls else (video_url or "")
+        cls.TARGET_URL = primary_url
+        cls.TARGET_PLATFORM = "youtube"
+
+        cls.YOUTUBE_VIDEO_URL = primary_url
+        cls.YOUTUBE_VIDEO_ID = extract_youtube_video_id(primary_url)
+        if len(resolved_urls) > 1:
+            cls.YOUTUBE_APP_NAME = f"YouTube Corpus ({len(resolved_urls)} Video)"
+            cls.YOUTUBE_APP_DESC = f"Koleksi {len(resolved_urls)} video YouTube"
         else:
-            cls.YOUTUBE_VIDEO_URL = video_url
-            cls.YOUTUBE_VIDEO_ID = extract_youtube_video_id(video_url)
             cls.YOUTUBE_APP_NAME = f"YouTube - {cls.YOUTUBE_VIDEO_ID}" if cls.YOUTUBE_VIDEO_ID else "YouTube Video"
             cls.YOUTUBE_APP_DESC = "Komentar video YouTube"
 
@@ -158,7 +133,7 @@ class AppConfig:
 
         if settings:
             cls.ACTIVE_AI_PROVIDER = settings.get("ai_provider", "gemini")
-            cls.ACTIVE_AI_MODEL = settings.get("ai_model", "gemini-3.8-flash")
+            cls.ACTIVE_AI_MODEL = settings.get("ai_model", "gemini-2.5-flash")
             cls.AI_PROVIDER = cls.ACTIVE_AI_PROVIDER
             cls.AI_MODEL = cls.ACTIVE_AI_MODEL
 
@@ -167,6 +142,7 @@ class AppConfig:
             cls.EDGEONE_API_KEY = settings.get("edgeone_api_key", "").strip()
             cls.CUSTOM_API_KEY = settings.get("custom_api_key", "").strip()
             cls.CUSTOM_BASE_URL = settings.get("custom_base_url", "https://api.tokenai.id/v1").strip()
+            cls.YOUTUBE_API_KEY = settings.get("youtube_api_key", "").strip()
             cls.AGENTIC_GATES_ENABLED = bool(settings.get("agentic_gates_enabled", True))
 
     @classmethod

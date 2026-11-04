@@ -132,39 +132,107 @@ def _compute_topic_analysis(df_bcs, df_all):
 
 
 def _compute_video_analysis(meta_csv_path: str, df_all: pd.DataFrame, video_id: str):
-    """Menganalisis metadata video YouTube beserta daftar komentar terpopuler (top comments)."""
+    """Menganalisis metadata video YouTube (single maupun multi-video corpus) beserta top comments."""
     df_all_copy = df_all.copy() if not df_all.empty else pd.DataFrame()
     if not df_all_copy.empty:
         df_all_copy["like_count"] = pd.to_numeric(df_all_copy.get("like_count", 0), errors="coerce").fillna(0)
         df_all_copy["reply_count"] = pd.to_numeric(df_all_copy.get("reply_count", 0), errors="coerce").fillna(0)
 
-    comment_count = len(df_all_copy)
+    total_comment_count = len(df_all_copy)
     total_comment_likes = int(df_all_copy["like_count"].sum()) if not df_all_copy.empty else 0
     sent_counts = df_all_copy["ai_sentiment"].value_counts() if (not df_all_copy.empty and "ai_sentiment" in df_all_copy.columns) else pd.Series(dtype=int)
-    dominant_sentiment = sent_counts.index[0] if not sent_counts.empty else "Netral"
+    overall_dominant_sentiment = sent_counts.index[0] if not sent_counts.empty else "Netral"
 
-    video_title = f"Video YouTube ({video_id})"
-    channel_name = "YouTube Channel"
-    video_url = f"https://www.youtube.com/watch?v={video_id}"
-    published_at = "-"
-    views_int = 0
-    video_likes = 0
+    # Periksa apakah ada metadata agregat multi-video (youtube_videos_meta_all.csv)
+    scrap_dir = os.path.dirname(meta_csv_path) if meta_csv_path else ""
+    all_meta_csv = os.path.join(scrap_dir, "youtube_videos_meta_all.csv") if scrap_dir else ""
+    target_meta_csv = all_meta_csv if (all_meta_csv and os.path.exists(all_meta_csv)) else meta_csv_path
 
-    if os.path.exists(meta_csv_path):
+    video_list = []
+    total_views = 0
+    total_video_likes = 0
+    primary_title = f"Video YouTube ({video_id})"
+    primary_channel = "YouTube Channel"
+    primary_url = f"https://www.youtube.com/watch?v={video_id}"
+    primary_published = "-"
+
+    if os.path.exists(target_meta_csv):
         try:
-            df_meta = pd.read_csv(meta_csv_path)
+            df_meta = pd.read_csv(target_meta_csv)
             if not df_meta.empty:
-                m_row = df_meta.iloc[0]
-                video_title = str(m_row.get("video_title") or video_title)
-                channel_name = str(m_row.get("channel_name") or channel_name)
-                video_url = str(m_row.get("video_url") or video_url)
-                published_at = str(m_row.get("published_at") or "-")
-                views_int = int(pd.to_numeric(m_row.get("views", 0), errors="coerce") or 0)
-                video_likes = int(pd.to_numeric(m_row.get("video_likes", 0), errors="coerce") or 0)
+                for idx, m_row in df_meta.iterrows():
+                    v_id = str(m_row.get("video_id") or f"video_{idx}")
+                    v_title = str(m_row.get("video_title") or f"Video {v_id}")
+                    v_channel = str(m_row.get("channel_name") or "YouTube Channel")
+                    v_url = str(m_row.get("video_url") or f"https://www.youtube.com/watch?v={v_id}")
+                    v_published = str(m_row.get("published_at") or "-")
+                    v_views_int = int(pd.to_numeric(m_row.get("views", 0), errors="coerce") or 0)
+                    v_likes_int = int(pd.to_numeric(m_row.get("video_likes", 0), errors="coerce") or 0)
+
+                    total_views += v_views_int
+                    total_video_likes += v_likes_int
+
+                    # Filter komentar khusus video ini jika kolom video_id tersedia
+                    if not df_all_copy.empty and "video_id" in df_all_copy.columns:
+                        v_df = df_all_copy[df_all_copy["video_id"].astype(str) == v_id]
+                    else:
+                        v_df = df_all_copy if idx == 0 else pd.DataFrame()
+
+                    v_comment_count = len(v_df)
+                    v_comment_likes = int(v_df["like_count"].sum()) if not v_df.empty else 0
+                    v_sents = v_df["ai_sentiment"].value_counts() if (not v_df.empty and "ai_sentiment" in v_df.columns) else pd.Series(dtype=int)
+                    v_dom_sent = v_sents.index[0] if not v_sents.empty else overall_dominant_sentiment
+
+                    video_entry = {
+                        "video_id": v_id,
+                        "video_url": v_url,
+                        "caption": v_title,
+                        "video_title": v_title,
+                        "channel_name": v_channel,
+                        "published_at": v_published,
+                        "views": f"{v_views_int:,}",
+                        "views_int": v_views_int,
+                        "video_likes": v_likes_int,
+                        "comment_count": v_comment_count,
+                        "total_likes": v_comment_likes,
+                        "dominant_sentiment": v_dom_sent,
+                    }
+                    video_list.append(video_entry)
+
+                    if idx == 0:
+                        primary_title = v_title
+                        primary_channel = v_channel
+                        primary_url = v_url
+                        primary_published = v_published
         except Exception as e:
             print(f"[WARNING] Gagal membaca metadata video CSV: {e}")
 
-    # Kumpulkan Top 10 komentar dengan likes tertinggi
+    # Fallback jika video_list kosong
+    if not video_list:
+        fallback_entry = {
+            "video_id": video_id,
+            "video_url": primary_url,
+            "caption": primary_title,
+            "video_title": primary_title,
+            "channel_name": primary_channel,
+            "published_at": primary_published,
+            "views": "0",
+            "views_int": 0,
+            "video_likes": 0,
+            "comment_count": total_comment_count,
+            "total_likes": total_comment_likes,
+            "dominant_sentiment": overall_dominant_sentiment,
+        }
+        video_list = [fallback_entry]
+
+    total_videos = len(video_list)
+    avg_views = int(total_views / total_videos) if total_videos > 0 else 0
+    top_videos = sorted(video_list, key=lambda x: x.get("views_int", 0), reverse=True)[:10]
+
+    if total_videos > 1:
+        primary_title = f"Multi-Video Corpus ({total_videos} Video): {primary_title}"
+
+    # Kumpulkan Top 10 komentar dengan likes tertinggi dari seluruh corpus
     top_comments = []
     if not df_all_copy.empty:
         top_df = df_all_copy.sort_values(by=["like_count", "reply_count"], ascending=[False, False]).head(10)
@@ -179,35 +247,21 @@ def _compute_video_analysis(meta_csv_path: str, df_all: pd.DataFrame, video_id: 
                     "ai_sentiment": str(crow.get("ai_sentiment", "Netral")),
                     "business_category": str(crow.get("business_category", "")),
                     "is_hearted": bool(str(crow.get("is_hearted", "")).lower() in ["true", "1"]),
+                    "video_title": str(crow.get("video_title", "")),
                 }
             )
 
-    video_entry = {
-        "video_id": video_id,
-        "video_url": video_url,
-        "caption": video_title,
-        "video_title": video_title,
-        "channel_name": channel_name,
-        "published_at": published_at,
-        "views": f"{views_int:,}",
-        "views_int": views_int,
-        "video_likes": video_likes,
-        "comment_count": comment_count,
-        "total_likes": total_comment_likes,
-        "dominant_sentiment": dominant_sentiment,
-    }
-
     return {
-        "total_videos": 1,
-        "total_views": views_int,
-        "average_views": views_int,
-        "video_likes": video_likes,
-        "video_title": video_title,
-        "channel_name": channel_name,
-        "video_url": video_url,
-        "published_at": published_at,
-        "video_list": [video_entry],
-        "top_videos": [video_entry],
+        "total_videos": total_videos,
+        "total_views": total_views,
+        "average_views": avg_views,
+        "video_likes": total_video_likes,
+        "video_title": primary_title,
+        "channel_name": primary_channel,
+        "video_url": primary_url,
+        "published_at": primary_published,
+        "video_list": video_list,
+        "top_videos": top_videos,
         "top_comments": top_comments,
     }
 

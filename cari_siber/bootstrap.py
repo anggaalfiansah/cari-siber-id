@@ -13,7 +13,12 @@ class DesktopLogStream:
         self.log_filepath = log_filepath
         self.original_stream = original_stream
         self._subscribers = []
+        self._log_file = None
         os.makedirs(os.path.dirname(log_filepath), exist_ok=True)
+        try:
+            self._log_file = open(self.log_filepath, "a", encoding="utf-8", buffering=1)
+        except Exception:
+            pass
 
     def write(self, message: str):
         if not message:
@@ -27,12 +32,19 @@ class DesktopLogStream:
             except Exception:
                 pass
 
-        # 2. Append to log file
-        try:
-            with open(self.log_filepath, "a", encoding="utf-8") as f:
-                f.write(message)
-        except Exception:
-            pass
+        # 2. Append to log file using persistent handle
+        if self._log_file:
+            try:
+                self._log_file.write(message)
+                self._log_file.flush()
+            except Exception:
+                pass
+        else:
+            try:
+                with open(self.log_filepath, "a", encoding="utf-8") as f:
+                    f.write(message)
+            except Exception:
+                pass
 
         # 3. Notify UI subscribers
         for line in message.splitlines():
