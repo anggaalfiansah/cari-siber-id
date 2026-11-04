@@ -94,16 +94,53 @@ class DesktopApi:
             print(f"[API ERROR] list_history failed: {e}")
             return []
 
-    def get_run(self, run_id: str) -> Optional[Dict[str, Any]]:
+    def get_run(self, run_id: Any) -> Optional[Dict[str, Any]]:
+        if isinstance(run_id, dict):
+            run_id = run_id.get("run_id") or run_id.get("id")
+        run_id = str(run_id).strip() if run_id else ""
         if not run_id:
             return None
         try:
-            return HistoryService.get_run(run_id)
+            run = HistoryService.get_run(run_id)
+            if run:
+                res = dict(run)
+                # Pastikan numerik terkonversi ke float murni
+                if res.get("cib_score") is not None:
+                    res["cib_score"] = float(res["cib_score"])
+                if res.get("polarization_index") is not None:
+                    res["polarization_index"] = float(res["polarization_index"])
+                return res
+
+            # Fallback jika run belum tersinkron di SQLite tapi foldernya ada
+            run_dir = get_run_dir(run_id)
+            if os.path.exists(run_dir):
+                data = ResultsService.load_run_results(run_dir)
+                if data:
+                    meta = data.get("meta", {})
+                    return {
+                        "id": run_id,
+                        "target_url": "",
+                        "video_title": meta.get("video_title", "YouTube Video"),
+                        "channel_name": meta.get("channel_name", ""),
+                        "total_comments": meta.get("total_comments", 0),
+                        "cib_score": float(data.get("cib_score", 0.0)),
+                        "cib_level": str(data.get("cib_level", "LOW")),
+                        "polarization_index": float(data.get("polarization_index", 0.0)),
+                        "status": "COMPLETED",
+                        "error_message": None,
+                        "created_at": "",
+                        "completed_at": "",
+                        "run_dir": run_dir,
+                    }
+            return None
         except Exception as e:
             print(f"[API ERROR] get_run failed for {run_id}: {e}")
             return None
 
-    def get_run_results(self, run_id: str) -> Optional[Dict[str, Any]]:
+    def get_run_results(self, run_id: Any) -> Optional[Dict[str, Any]]:
+        if isinstance(run_id, dict):
+            run_id = run_id.get("run_id") or run_id.get("id")
+        run_id = str(run_id).strip() if run_id else ""
         if not run_id:
             return None
         try:

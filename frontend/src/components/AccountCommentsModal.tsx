@@ -24,6 +24,33 @@ interface AccountCommentsModalProps {
   onClose: () => void;
 }
 
+const renderHighlightedText = (text: string, keywords?: string[]) => {
+  if (!keywords || keywords.length === 0 || !text) return text;
+  const pattern = new RegExp(`(${keywords.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi');
+  const parts = text.split(pattern);
+  return parts.map((part, i) => {
+    const isHit = keywords.some(k => k.toLowerCase() === part.toLowerCase());
+    if (isHit) {
+      return (
+        <mark
+          key={i}
+          style={{
+            background: 'rgba(239, 68, 68, 0.25)',
+            color: '#fca5a5',
+            padding: '1px 5px',
+            borderRadius: '4px',
+            border: '1px solid rgba(239, 68, 68, 0.5)',
+            fontWeight: 700,
+          }}
+        >
+          {part}
+        </mark>
+      );
+    }
+    return part;
+  });
+};
+
 export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
   account,
   runId,
@@ -171,6 +198,35 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
                 <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc', margin: 0 }}>
                   {account.username}
                 </h2>
+                {account.actor_label && (
+                  <span
+                    style={{
+                      background: account.actor_type?.startsWith('PROVOCATEUR')
+                        ? 'rgba(239, 68, 68, 0.2)'
+                        : account.actor_type === 'HYBRID_THREAT'
+                        ? 'rgba(168, 85, 247, 0.2)'
+                        : 'rgba(2, 132, 199, 0.2)',
+                      color: account.actor_type?.startsWith('PROVOCATEUR')
+                        ? '#fca5a5'
+                        : account.actor_type === 'HYBRID_THREAT'
+                        ? '#c084fc'
+                        : '#38bdf8',
+                      border: `1px solid ${
+                        account.actor_type?.startsWith('PROVOCATEUR')
+                          ? '#ef4444'
+                          : account.actor_type === 'HYBRID_THREAT'
+                          ? '#a855f7'
+                          : '#0284c7'
+                      }`,
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      padding: '2px 8px',
+                      borderRadius: '12px',
+                    }}
+                  >
+                    {account.actor_label}
+                  </span>
+                )}
                 <span
                   style={{
                     background: riskBg,
@@ -259,13 +315,13 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
           </button>
         </div>
 
-        {/* Quick Stats Dossier Strip */}
+        {/* Quick Stats Dossier Strip (Dual-Engine: Provokasi vs Bot) */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: '12px',
-            padding: '14px 24px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+            gap: '10px',
+            padding: '12px 24px',
             background: 'rgba(15, 23, 42, 0.6)',
             borderBottom: '1px solid rgba(51, 65, 85, 0.4)',
           }}
@@ -291,13 +347,44 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
             </div>
           </div>
 
-          <div style={{ background: 'rgba(30, 41, 59, 0.4)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(51, 65, 85, 0.3)' }}>
-            <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 600 }}>POLARISASI SENTIMEN</div>
-            <div style={{ display: 'flex', gap: '6px', fontSize: '0.75rem', fontWeight: 700, marginTop: '4px' }}>
-              <span style={{ color: '#10b981' }}>{posCount} Pos</span> /
-              <span style={{ color: '#94a3b8' }}>{netCount} Net</span> /
-              <span style={{ color: '#ef4444' }}>{negCount} Neg</span>
+          {/* Engine 2: Skor Provokasi */}
+          <div style={{ background: 'rgba(239, 68, 68, 0.08)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.35)' }}>
+            <div style={{ fontSize: '0.7rem', color: '#f87171', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span>🔥 SKOR PROVOKASI</span>
             </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginTop: '2px' }}>
+              <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f87171' }}>
+                {account.provocation_score ?? 0}
+              </span>
+              <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>/ 100</span>
+            </div>
+            {account.score_breakdown && (
+              <div style={{ fontSize: '0.62rem', color: '#fca5a5', marginTop: '2px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                <span>Hasut: {account.score_breakdown.prov_lexicon ?? 0}</span>
+                <span>• Utas: {account.score_breakdown.prov_thread ?? 0}</span>
+                <span>• Like: {account.score_breakdown.prov_resonance ?? 0}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Engine 1: Skor Bot */}
+          <div style={{ background: 'rgba(2, 132, 199, 0.08)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(2, 132, 199, 0.35)' }}>
+            <div style={{ fontSize: '0.7rem', color: '#38bdf8', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span>🤖 SKOR BOT</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginTop: '2px' }}>
+              <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#38bdf8' }}>
+                {account.bot_score ?? 0}
+              </span>
+              <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>/ 100</span>
+            </div>
+            {account.score_breakdown && (
+              <div style={{ fontSize: '0.62rem', color: '#7dd3fc', marginTop: '2px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                <span>Copy: {account.score_breakdown.copypasta ?? 0}</span>
+                <span>• Vid: {account.score_breakdown.cross_video ?? 0}</span>
+                <span>• Spd: {account.score_breakdown.temporal ?? 0}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -501,7 +588,7 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
                       borderLeft: `3px solid ${sentColor}`,
                     }}
                   >
-                    "{c.comment_text}"
+                    "{renderHighlightedText(c.comment_text, account.detected_keywords)}"
                   </div>
 
                   {/* Bottom Stats & Indicators */}

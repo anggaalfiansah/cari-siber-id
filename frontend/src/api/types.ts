@@ -83,12 +83,29 @@ export interface FlaggedAccountItem {
   videos_count: number;
   total_comments: number;
   total_likes_received?: number;
+  total_replies_received?: number;
   target_video_ids: string[];
   target_video_titles: string[];
   sample_comments: string[];
   all_comments: AuthorCommentItem[];
   cib_risk_level: 'SUSPICIOUS' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
   threat_tags?: string[];
+  inauthenticity_score?: number;
+  bot_score?: number;
+  provocation_score?: number;
+  actor_type?: 'PROVOCATEUR_HIGH_IMPACT' | 'PROVOCATEUR_AGITATOR' | 'BUZZER_COORDINATED' | 'SPAM_BOT' | 'HYBRID_THREAT';
+  actor_label?: string;
+  detected_keywords?: string[];
+  score_breakdown?: {
+    copypasta?: number;
+    cross_video?: number;
+    temporal?: number;
+    dialogue?: number;
+    prov_lexicon?: number;
+    prov_thread?: number;
+    prov_resonance?: number;
+    prov_sentiment?: number;
+  };
   sentiment_breakdown?: { Positif: number; Netral: number; Negatif: number };
 }
 
@@ -105,6 +122,13 @@ export interface CrossVideoBuzzer {
   all_comments?: AuthorCommentItem[];
   cib_risk_level: 'SUSPICIOUS' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
   threat_tags?: string[];
+  inauthenticity_score?: number;
+  score_breakdown?: {
+    copypasta: number;
+    cross_video: number;
+    temporal: number;
+    dialogue: number;
+  };
   sentiment_breakdown?: { Positif: number; Netral: number; Negatif: number };
 }
 
@@ -140,8 +164,18 @@ export interface RunResult {
     video_title: string;
     channel_name: string;
     total_comments: number;
+    unique_authors_total?: number;
+    cib_score?: number;
+    cib_level?: string;
+    polarization_index?: number;
     run_dir: string;
   };
+  cib_score?: number;
+  cib_level?: string;
+  polarization_index?: number;
+  unique_authors_total?: number;
+  cib_metrics?: any;
+  polarization_metrics?: any;
   topics: TopicItem[];
   charts: ChartItem[];
   narrative_md: string;

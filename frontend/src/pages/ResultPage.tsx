@@ -66,6 +66,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
   // Filter untuk Tab Akun Terindikasi
   const [buzzerSearch, setBuzzerSearch] = useState('');
   const [buzzerRiskFilter, setBuzzerRiskFilter] = useState<'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'SUSPICIOUS'>('ALL');
+  const [buzzerActorFilter, setBuzzerActorFilter] = useState<'ALL' | 'PROVOCATEUR' | 'BUZZER' | 'BOT' | 'HYBRID'>('ALL');
 
   // Filter untuk Tab Eksplorasi Seluruh Komentar
   const [commentSearch, setCommentSearch] = useState('');
@@ -149,23 +150,37 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
     return [];
   }, [result?.flagged_accounts, cross?.cross_video_buzzers]);
 
-  // Filtered Flagged Accounts
+  // Filtered Flagged Accounts (Dual-Engine: Bot vs Provokator)
   const filteredFlaggedAccounts = useMemo(() => {
     return flaggedAccounts.filter((acc) => {
       if (buzzerRiskFilter !== 'ALL' && acc.cib_risk_level !== buzzerRiskFilter) {
         return false;
+      }
+      if (buzzerActorFilter !== 'ALL') {
+        if (buzzerActorFilter === 'PROVOCATEUR') {
+          const isProv = acc.actor_type?.startsWith('PROVOCATEUR') || (acc.provocation_score ?? 0) >= 40;
+          if (!isProv) return false;
+        } else if (buzzerActorFilter === 'BUZZER') {
+          if (acc.actor_type !== 'BUZZER_COORDINATED') return false;
+        } else if (buzzerActorFilter === 'BOT') {
+          if (acc.actor_type !== 'SPAM_BOT') return false;
+        } else if (buzzerActorFilter === 'HYBRID') {
+          if (acc.actor_type !== 'HYBRID_THREAT') return false;
+        }
       }
       if (buzzerSearch.trim()) {
         const q = buzzerSearch.toLowerCase();
         const matchUser = (acc.username || '').toLowerCase().includes(q);
         const matchId = (acc.author_channel_id || '').toLowerCase().includes(q);
         const matchTags = (acc.threat_tags || []).some((t) => t.toLowerCase().includes(q));
+        const matchKeywords = (acc.detected_keywords || []).some((k) => k.toLowerCase().includes(q));
+        const matchActor = (acc.actor_label || '').toLowerCase().includes(q);
         const matchSample = (acc.sample_comments || []).some((s) => s.toLowerCase().includes(q));
-        return matchUser || matchId || matchTags || matchSample;
+        return matchUser || matchId || matchTags || matchKeywords || matchActor || matchSample;
       }
       return true;
     });
-  }, [flaggedAccounts, buzzerRiskFilter, buzzerSearch]);
+  }, [flaggedAccounts, buzzerRiskFilter, buzzerActorFilter, buzzerSearch]);
 
   // Filtered Corpus Comments
   const filteredCorpusComments = useMemo(() => {
@@ -308,19 +323,36 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
     );
   }
 
-  // Safe KPI calculations
-  const rawCibLevel = runInfo?.cib_level || 'LOW';
-  const cibLevel = String(rawCibLevel).toLowerCase() as any;
-  const rawCibScore = runInfo?.cib_score;
-  const cibScoreNum = typeof rawCibScore === 'number' && !isNaN(rawCibScore) ? rawCibScore : 0.0;
+  // Safe KPI calculations (mendukung pembacaan dari result direct maupun runInfo sqlite)
+  const rawCibScore = (result?.cib_score !== undefined && result?.cib_score !== null)
+    ? result.cib_score
+    : (result?.meta?.cib_score !== undefined && result?.meta?.cib_score !== null)
+      ? result.meta.cib_score
+      : runInfo?.cib_score;
+  const cibScoreNum = (rawCibScore !== undefined && rawCibScore !== null && !isNaN(Number(rawCibScore)))
+    ? Number(rawCibScore)
+    : 0.0;
 
-  const rawPol = runInfo?.polarization_index;
-  const polIndex = typeof rawPol === 'number' && !isNaN(rawPol) ? rawPol : 0.0;
+  const rawCibLevel = result?.cib_level
+    || result?.meta?.cib_level
+    || runInfo?.cib_level
+    || (cibScoreNum >= 0.7 ? 'CRITICAL' : cibScoreNum >= 0.35 ? 'HIGH' : cibScoreNum >= 0.2 ? 'MEDIUM' : 'LOW');
+  const cibLevel = String(rawCibLevel).toLowerCase() as any;
+
+  const rawPol = (result?.polarization_index !== undefined && result?.polarization_index !== null)
+    ? result.polarization_index
+    : (result?.meta?.polarization_index !== undefined && result?.meta?.polarization_index !== null)
+      ? result.meta.polarization_index
+      : runInfo?.polarization_index;
+  const polIndex = (rawPol !== undefined && rawPol !== null && !isNaN(Number(rawPol)))
+    ? Number(rawPol)
+    : 0.0;
   const polBadgeLevel = polIndex >= 0.75 ? 'critical' : polIndex >= 0.5 ? 'high' : polIndex >= 0.25 ? 'medium' : 'low';
   const polBadgeText = polIndex >= 0.75 ? 'EKSTREM' : polIndex >= 0.5 ? 'TINGGI' : polIndex >= 0.25 ? 'MODERAT' : 'RENDAH';
   const polDesc = polIndex >= 0.5 ? 'Masyarakat terbelah secara tajam' : 'Sentimen relatif terarah atau satu kubu';
 
   const totalComments = Number(result?.meta?.total_comments) || 0;
+  const totalCommenters = Number(result?.unique_authors_total || result?.meta?.unique_authors_total || totalComments) || 1;
 
   // Hitung jumlah risiko akun
   const critCount = flaggedAccounts.filter((a) => a.cib_risk_level === 'CRITICAL').length;
@@ -523,62 +555,95 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
           {/* ======================================================== */}
           {activeTab === 'buzzers' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                     <span>Pelacakan Akun Terindikasi Buzzer, Bot & Provokator</span>
-                    <span style={{ fontSize: '0.75rem', background: 'rgba(2, 132, 199, 0.2)', color: '#38bdf8', padding: '2px 8px', borderRadius: '10px' }}>
-                      {filteredFlaggedAccounts.length} dari {flaggedAccounts.length} Akun
+                    <span style={{ fontSize: '0.75rem', background: 'rgba(2, 132, 199, 0.2)', color: '#38bdf8', border: '1px solid rgba(2, 132, 199, 0.35)', padding: '2px 9px', borderRadius: '10px', fontWeight: 600 }}>
+                      {filteredFlaggedAccounts.length} Terindikasi dari {totalCommenters.toLocaleString()} Total Komentator ({((filteredFlaggedAccounts.length / totalCommenters) * 100).toFixed(1)}%)
                     </span>
                   </h3>
-                  <p style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: '2px' }}>
-                    Klik tombol <strong>"Lihat Semua Komentar"</strong> pada akun mana pun untuk memeriksa seluruh riwayat komentar, framing sentimen, dan video tempat akun tersebut aktif.
+                  <p style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: '3px', maxWidth: '680px', lineHeight: 1.4 }}>
+                    Dual-Engine Forensik Siber membedakan <strong>Provokator Berdampak / Agitator Utas</strong> dengan <strong>Automated Bot & Buzzer Terarah</strong>. Klik tombol <strong>"Lihat Komentar & Dossier"</strong> untuk investigasi mendalam.
                   </p>
                 </div>
 
                 {/* Filter and Search Bar for Buzzers */}
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <div style={{ position: 'relative', width: '220px' }}>
-                    <Search size={14} color="#64748b" style={{ position: 'absolute', left: '10px', top: '8px' }} />
-                    <input
-                      type="text"
-                      placeholder="Cari akun atau teks..."
-                      value={buzzerSearch}
-                      onChange={(e) => setBuzzerSearch(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '5px 10px 5px 30px',
-                        background: 'rgba(30, 41, 59, 0.6)',
-                        border: '1px solid rgba(51, 65, 85, 0.6)',
-                        borderRadius: '6px',
-                        color: '#f8fafc',
-                        fontSize: '0.78rem',
-                        outline: 'none',
-                      }}
-                    />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div style={{ position: 'relative', width: '220px' }}>
+                      <Search size={14} color="#64748b" style={{ position: 'absolute', left: '10px', top: '8px' }} />
+                      <input
+                        type="text"
+                        placeholder="Cari akun atau teks..."
+                        value={buzzerSearch}
+                        onChange={(e) => setBuzzerSearch(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '5px 10px 5px 30px',
+                          background: 'rgba(30, 41, 59, 0.6)',
+                          border: '1px solid rgba(51, 65, 85, 0.6)',
+                          borderRadius: '6px',
+                          color: '#f8fafc',
+                          fontSize: '0.78rem',
+                          outline: 'none',
+                        }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      {(['ALL', 'CRITICAL', 'HIGH', 'MEDIUM', 'SUSPICIOUS'] as const).map((r) => {
+                        const active = buzzerRiskFilter === r;
+                        const col =
+                          r === 'CRITICAL' ? '#ef4444' : r === 'HIGH' ? '#f59e0b' : r === 'MEDIUM' ? '#38bdf8' : '#94a3b8';
+                        return (
+                          <button
+                            key={r}
+                            onClick={() => setBuzzerRiskFilter(r)}
+                            style={{
+                              background: active ? `${col}25` : 'transparent',
+                              border: `1px solid ${active ? col : 'rgba(51, 65, 85, 0.5)'}`,
+                              color: active ? col : '#94a3b8',
+                              padding: '4px 8px',
+                              borderRadius: '6px',
+                              fontSize: '0.7rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {r}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '4px' }}>
-                    {(['ALL', 'CRITICAL', 'HIGH', 'MEDIUM', 'SUSPICIOUS'] as const).map((r) => {
-                      const active = buzzerRiskFilter === r;
-                      const col =
-                        r === 'CRITICAL' ? '#ef4444' : r === 'HIGH' ? '#f59e0b' : r === 'MEDIUM' ? '#38bdf8' : '#94a3b8';
+                  {/* Actor Typology Filter Chips */}
+                  <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                    {[
+                      { id: 'ALL', label: 'SEMUA TIPE', col: '#94a3b8' },
+                      { id: 'PROVOCATEUR', label: '🔥 PROVOKATOR', col: '#ef4444' },
+                      { id: 'BUZZER', label: '📢 BUZZER', col: '#f59e0b' },
+                      { id: 'BOT', label: '🤖 SPAM BOT', col: '#38bdf8' },
+                      { id: 'HYBRID', label: '⚔️ HYBRID', col: '#a855f7' },
+                    ].map((t) => {
+                      const active = buzzerActorFilter === t.id;
                       return (
                         <button
-                          key={r}
-                          onClick={() => setBuzzerRiskFilter(r)}
+                          key={t.id}
+                          onClick={() => setBuzzerActorFilter(t.id as any)}
                           style={{
-                            background: active ? `${col}25` : 'transparent',
-                            border: `1px solid ${active ? col : 'rgba(51, 65, 85, 0.5)'}`,
-                            color: active ? col : '#94a3b8',
-                            padding: '4px 8px',
-                            borderRadius: '6px',
-                            fontSize: '0.7rem',
-                            fontWeight: 600,
+                            background: active ? `${t.col}25` : 'rgba(15, 23, 42, 0.4)',
+                            border: `1px solid ${active ? t.col : 'rgba(51, 65, 85, 0.4)'}`,
+                            color: active ? t.col : '#94a3b8',
+                            padding: '3px 8px',
+                            borderRadius: '5px',
+                            fontSize: '0.68rem',
+                            fontWeight: 700,
                             cursor: 'pointer',
                           }}
                         >
-                          {r}
+                          {t.label}
                         </button>
                       );
                     })}
@@ -601,10 +666,11 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                     <thead>
                       <tr style={{ background: 'rgba(30, 41, 59, 0.85)', borderBottom: '1px solid #334155', color: '#94a3b8', textAlign: 'left' }}>
-                        <th style={{ padding: '12px 14px' }}>Akun & Kanal YouTube</th>
-                        <th style={{ padding: '12px 14px' }}>Indikasi Ancaman / Karakteristik</th>
-                        <th style={{ padding: '12px 14px', textAlign: 'center' }}>Aktivitas</th>
-                        <th style={{ padding: '12px 14px', textAlign: 'center' }}>Total Suka</th>
+                        <th style={{ padding: '12px 14px' }}>Akun & Tipologi Aktor</th>
+                        <th style={{ padding: '12px 14px', textAlign: 'center' }}>Skor Provokasi (🔥)</th>
+                        <th style={{ padding: '12px 14px', textAlign: 'center' }}>Skor Bot (🤖)</th>
+                        <th style={{ padding: '12px 14px' }}>Bukti Forensik & Leksikon</th>
+                        <th style={{ padding: '12px 14px', textAlign: 'center' }}>Aktivitas & Suka</th>
                         <th style={{ padding: '12px 14px', textAlign: 'center' }}>Polarisasi Sentimen</th>
                         <th style={{ padding: '12px 14px', textAlign: 'center' }}>Tingkat Risiko</th>
                         <th style={{ padding: '12px 14px', textAlign: 'center' }}>Tindakan</th>
@@ -624,6 +690,9 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
                             ? 'rgba(56, 189, 248, 0.15)'
                             : 'rgba(148, 163, 184, 0.15)';
 
+                        const provScore = b.provocation_score ?? 0;
+                        const botScore = b.bot_score ?? (b.inauthenticity_score ?? 0);
+
                         const pos = b.sentiment_breakdown?.Positif ?? (b.all_comments ? b.all_comments.filter((c) => c.ai_sentiment === 'Positif').length : 0);
                         const net = b.sentiment_breakdown?.Netral ?? (b.all_comments ? b.all_comments.filter((c) => c.ai_sentiment === 'Netral').length : 0);
                         const neg = b.sentiment_breakdown?.Negatif ?? (b.all_comments ? b.all_comments.filter((c) => c.ai_sentiment === 'Negatif').length : 0);
@@ -637,36 +706,72 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
                               background: 'rgba(15, 23, 42, 0.4)',
                             }}
                           >
-                            {/* Akun */}
+                            {/* Akun & Tipologi Aktor */}
                             <td style={{ padding: '12px 14px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <div
                                   style={{
-                                    width: '34px',
-                                    height: '34px',
+                                    width: '36px',
+                                    height: '36px',
                                     borderRadius: '50%',
-                                    background: 'linear-gradient(135deg, #0284c7 0%, #1e1b4b 100%)',
+                                    background: b.actor_type?.startsWith('PROVOCATEUR')
+                                      ? 'linear-gradient(135deg, #ef4444 0%, #450a0a 100%)'
+                                      : b.actor_type === 'HYBRID_THREAT'
+                                      ? 'linear-gradient(135deg, #a855f7 0%, #3b0764 100%)'
+                                      : 'linear-gradient(135deg, #0284c7 0%, #1e1b4b 100%)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     fontWeight: 700,
                                     fontSize: '0.85rem',
                                     color: '#f8fafc',
+                                    flexShrink: 0,
                                   }}
                                 >
                                   {b.username.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
-                                  <div style={{ fontWeight: 600, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <div style={{ fontWeight: 600, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                                     <span>{b.username}</span>
                                   </div>
+                                  {b.actor_label && (
+                                    <div style={{ marginTop: '2px' }}>
+                                      <span
+                                        style={{
+                                          fontSize: '0.66rem',
+                                          fontWeight: 700,
+                                          padding: '1px 6px',
+                                          borderRadius: '4px',
+                                          background: b.actor_type?.startsWith('PROVOCATEUR')
+                                            ? 'rgba(239, 68, 68, 0.18)'
+                                            : b.actor_type === 'HYBRID_THREAT'
+                                            ? 'rgba(168, 85, 247, 0.18)'
+                                            : 'rgba(2, 132, 199, 0.18)',
+                                          color: b.actor_type?.startsWith('PROVOCATEUR')
+                                            ? '#fca5a5'
+                                            : b.actor_type === 'HYBRID_THREAT'
+                                            ? '#c084fc'
+                                            : '#7dd3fc',
+                                          border: `1px solid ${
+                                            b.actor_type?.startsWith('PROVOCATEUR')
+                                              ? 'rgba(239, 68, 68, 0.4)'
+                                              : b.actor_type === 'HYBRID_THREAT'
+                                              ? 'rgba(168, 85, 247, 0.4)'
+                                              : 'rgba(2, 132, 199, 0.4)'
+                                          }`,
+                                        }}
+                                      >
+                                        {b.actor_label}
+                                      </span>
+                                    </div>
+                                  )}
                                   {b.author_channel_url ? (
                                     <a
                                       href={b.author_channel_url}
                                       target="_blank"
                                       rel="noreferrer"
                                       style={{
-                                        fontSize: '0.7rem',
+                                        fontSize: '0.68rem',
                                         color: '#38bdf8',
                                         textDecoration: 'none',
                                         display: 'inline-flex',
@@ -679,7 +784,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
                                       <ExternalLink size={10} />
                                     </a>
                                   ) : (
-                                    <span style={{ fontSize: '0.68rem', color: '#64748b' }} className="mono-font">
+                                    <span style={{ fontSize: '0.66rem', color: '#64748b' }} className="mono-font">
                                       {b.author_channel_id}
                                     </span>
                                   )}
@@ -687,9 +792,60 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
                               </div>
                             </td>
 
-                            {/* Indikasi Ancaman */}
+                            {/* Skor Provokasi (🔥) */}
+                            <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                              <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '3px' }}>
+                                <span style={{ fontWeight: 800, fontSize: '0.85rem', color: provScore >= 50 ? '#ef4444' : provScore >= 35 ? '#f87171' : '#94a3b8' }}>
+                                  {provScore}/100
+                                </span>
+                                <div style={{ width: '48px', height: '4px', background: 'rgba(51, 65, 85, 0.5)', borderRadius: '2px', overflow: 'hidden' }}>
+                                  <div
+                                    style={{
+                                      width: `${provScore}%`,
+                                      height: '100%',
+                                      background: '#ef4444',
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </td>
+
+                            {/* Skor Bot (🤖) */}
+                            <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                              <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '3px' }}>
+                                <span style={{ fontWeight: 800, fontSize: '0.85rem', color: botScore >= 50 ? '#0284c7' : botScore >= 35 ? '#38bdf8' : '#94a3b8' }}>
+                                  {botScore}/100
+                                </span>
+                                <div style={{ width: '48px', height: '4px', background: 'rgba(51, 65, 85, 0.5)', borderRadius: '2px', overflow: 'hidden' }}>
+                                  <div
+                                    style={{
+                                      width: `${botScore}%`,
+                                      height: '100%',
+                                      background: '#0284c7',
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </td>
+
+                            {/* Bukti Forensik & Leksikon */}
                             <td style={{ padding: '12px 14px' }}>
                               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                                {b.detected_keywords && b.detected_keywords.length > 0 && (
+                                  <span
+                                    style={{
+                                      fontSize: '0.68rem',
+                                      background: 'rgba(239, 68, 68, 0.18)',
+                                      color: '#fca5a5',
+                                      padding: '2px 7px',
+                                      borderRadius: '4px',
+                                      border: '1px solid rgba(239, 68, 68, 0.4)',
+                                      fontWeight: 600,
+                                    }}
+                                  >
+                                    Kata Hasutan: {b.detected_keywords.slice(0, 3).join(', ')}
+                                  </span>
+                                )}
                                 {(b.threat_tags && b.threat_tags.length > 0 ? b.threat_tags : ['Aktivitas Berulang']).map((t, idx) => (
                                   <span
                                     key={idx}
@@ -709,7 +865,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
                               </div>
                             </td>
 
-                            {/* Aktivitas */}
+                            {/* Aktivitas & Suka */}
                             <td style={{ padding: '12px 14px', textAlign: 'center' }}>
                               <div style={{ fontWeight: 700, color: '#f8fafc', fontSize: '0.85rem' }}>
                                 {b.total_comments} Komentar
@@ -717,13 +873,9 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
                               <div style={{ fontSize: '0.7rem', color: '#38bdf8', marginTop: '2px' }}>
                                 {b.videos_count} Video
                               </div>
-                            </td>
-
-                            {/* Total Suka */}
-                            <td style={{ padding: '12px 14px', textAlign: 'center' }}>
-                              <span style={{ color: (b.total_likes_received || 0) > 0 ? '#fbbf24' : '#94a3b8', fontWeight: 600 }}>
-                                {(b.total_likes_received || 0).toLocaleString()} Suka
-                              </span>
+                              <div style={{ fontSize: '0.7rem', color: (b.total_likes_received || 0) > 0 ? '#fbbf24' : '#94a3b8', marginTop: '2px', fontWeight: 600 }}>
+                                ❤️ {(b.total_likes_received || 0).toLocaleString()} Suka
+                              </div>
                             </td>
 
                             {/* Sentimen */}
@@ -770,7 +922,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
                                 title="Lihat semua komentar yang ditulis oleh akun ini"
                               >
                                 <Eye size={13} />
-                                <span>Lihat {b.total_comments} Komentar</span>
+                                <span>Lihat {b.total_comments} Komentar & Dossier</span>
                               </button>
                             </td>
                           </tr>

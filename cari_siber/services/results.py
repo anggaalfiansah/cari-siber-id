@@ -96,6 +96,16 @@ class ResultsService:
         if not total_comments and topics:
             total_comments = sum(t["total_comments"] for t in topics)
 
+        unique_authors_total = 0
+        if df_final is not None and not df_final.empty:
+            author_id_col = "author_channel_id" if "author_channel_id" in df_final.columns and df_final["author_channel_id"].dropna().astype(str).str.strip().ne("").any() else "username"
+            if author_id_col in df_final.columns:
+                unique_authors_total = int(df_final[author_id_col].dropna().nunique())
+        if not unique_authors_total and overview.get("unique_authors"):
+            unique_authors_total = int(overview.get("unique_authors"))
+        if not unique_authors_total:
+            unique_authors_total = total_comments
+
         # 4. Load narrative insights markdown
         narrative_path = os.path.join(run_dir, "reports", "narrative_insights.md")
         narrative_md = ""
@@ -193,23 +203,34 @@ class ResultsService:
             except Exception:
                 pass
 
-        # 6. Load Flagged Accounts (Buzzer, Spam Bot, & CIB Indicators)
+        # 6. Load or Compute Flagged Accounts (Buzzer, Spam Bot, & CIB Indicators)
         flagged_accounts = []
         flagged_json_path = os.path.join(run_dir, "json", "flagged_accounts.json")
+        loaded_valid_json = False
         if os.path.exists(flagged_json_path):
             try:
                 with open(flagged_json_path, "r", encoding="utf-8") as faf:
-                    flagged_accounts = json.load(faf)
+                    raw_flagged = json.load(faf)
+                    # Hanya gunakan jika sudah menggunakan Dual-Engine (memiliki provocation_score)
+                    if raw_flagged and isinstance(raw_flagged, list) and len(raw_flagged) > 0 and "provocation_score" in raw_flagged[0]:
+                        flagged_accounts = raw_flagged
+                        loaded_valid_json = True
             except Exception:
                 pass
-        elif cross_intel and cross_intel.get("flagged_accounts"):
-            flagged_accounts = cross_intel.get("flagged_accounts", [])
-        elif df_final is not None and not df_final.empty:
+
+        if not loaded_valid_json and df_final is not None and not df_final.empty:
             try:
                 from cari_siber.services.intelligence import IntelligenceService
                 flagged_accounts = IntelligenceService.calculate_flagged_accounts(df_final)
+                try:
+                    with open(flagged_json_path, "w", encoding="utf-8") as faf:
+                        json.dump(flagged_accounts, faf, indent=2)
+                except Exception:
+                    pass
             except Exception:
                 pass
+        elif not flagged_accounts and cross_intel and cross_intel.get("flagged_accounts"):
+            flagged_accounts = cross_intel.get("flagged_accounts", [])
 
         # 7. Sampel Komentar untuk Corpus Explorer (hingga 1.000 komentar)
         corpus_comments = []
@@ -239,13 +260,78 @@ class ResultsService:
             except Exception:
                 pass
 
+        # 8. Load or Compute CIB & Polarization Metrics
+        cib_score = 0.0
+        cib_level = "LOW"
+        cib_metrics_dict = {}
+        pol_index = 0.0
+        pol_metrics_dict = {}
+
+        cib_json_path = os.path.join(run_dir, "json", "cib_detection_summary.json")
+        if os.path.exists(cib_json_path):
+            try:
+                with open(cib_json_path, "r", encoding="utf-8") as cjf:
+                    cib_metrics_dict = json.load(cjf)
+                    cib_score = float(cib_metrics_dict.get("cib_threat_score", 0.0))
+                    cib_level = str(cib_metrics_dict.get("cib_threat_level", "LOW"))
+            except Exception:
+                pass
+
+        pol_json_path = os.path.join(run_dir, "json", "polarization_metrics.json")
+        if os.path.exists(pol_json_path):
+            try:
+                with open(pol_json_path, "r", encoding="utf-8") as pjf:
+                    pol_metrics_dict = json.load(pjf)
+                    pol_index = float(pol_metrics_dict.get("polarization_index", 0.0))
+            except Exception:
+                pass
+
+        # Fallback to calculation if JSON not present and df_final available
+        if (cib_score == 0.0 or pol_index == 0.0) and df_final is not None and not df_final.empty:
+            try:
+                from cari_siber.services.intelligence import IntelligenceService
+                if cib_score == 0.0:
+                    c_calc = IntelligenceService.calculate_cib_metrics(df_final)
+                    cib_score = float(c_calc.cib_threat_score)
+                    cib_level = c_calc.cib_threat_level.value
+                    cib_metrics_dict = {
+                        "cib_threat_score": cib_score,
+                        "cib_threat_level": cib_level,
+                        "total_comments_analyzed": c_calc.total_comments_analyzed,
+                        "unique_authors": c_calc.unique_authors,
+                        "author_duplication_rate": c_calc.author_duplication_rate,
+                        "rapid_burst_ratio": c_calc.rapid_burst_ratio,
+                        "high_risk_bot_count": c_calc.high_risk_bot_count,
+                    }
+                if pol_index == 0.0:
+                    p_calc = IntelligenceService.calculate_polarization_metrics(df_final)
+                    pol_index = float(p_calc.polarization_index)
+                    pol_metrics_dict = {
+                        "polarization_index": pol_index,
+                        "sentiment_distribution": p_calc.sentiment_distribution,
+                        "dominant_conflict_topics": p_calc.dominant_conflict_topics,
+                        "silent_majority_consensus": p_calc.silent_majority_consensus,
+                    }
+            except Exception:
+                pass
+
         return {
             "meta": {
                 "video_title": video_title,
                 "channel_name": channel_name,
                 "total_comments": total_comments,
+                "unique_authors_total": unique_authors_total,
+                "cib_score": cib_score,
+                "cib_level": cib_level,
+                "polarization_index": pol_index,
                 "run_dir": run_dir,
             },
+            "cib_score": cib_score,
+            "cib_level": cib_level,
+            "polarization_index": pol_index,
+            "unique_authors_total": unique_authors_total,
+            "cib_metrics": cib_metrics_dict,
+            "polarization_metrics": pol_metrics_dict,
             "topics": topics,
             "charts": charts,
             "narrative_md": narrative_md,

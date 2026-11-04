@@ -192,6 +192,35 @@ class PipelineRunner:
             pol_metrics = IntelligenceService.calculate_polarization_metrics(df_final)
             cross_intel = IntelligenceService.calculate_cross_video_intelligence(df_final, run_dir)
 
+            # Simpan ringkasan CIB & Polarisasi ke berkas JSON run agar mandiri dan persisten
+            json_dir = os.path.join(run_dir, "json")
+            os.makedirs(json_dir, exist_ok=True)
+            try:
+                with open(os.path.join(json_dir, "cib_detection_summary.json"), "w", encoding="utf-8") as cjf:
+                    json.dump({
+                        "cib_threat_score": cib_metrics.cib_threat_score,
+                        "cib_threat_level": cib_metrics.cib_threat_level.value,
+                        "total_comments_analyzed": cib_metrics.total_comments_analyzed,
+                        "unique_authors": cib_metrics.unique_authors,
+                        "author_duplication_rate": cib_metrics.author_duplication_rate,
+                        "rapid_burst_ratio": cib_metrics.rapid_burst_ratio,
+                        "high_risk_bot_count": cib_metrics.high_risk_bot_count,
+                    }, cjf, indent=2)
+
+                with open(os.path.join(json_dir, "polarization_metrics.json"), "w", encoding="utf-8") as pjf:
+                    json.dump({
+                        "polarization_index": pol_metrics.polarization_index,
+                        "sentiment_distribution": pol_metrics.sentiment_distribution,
+                        "dominant_conflict_topics": pol_metrics.dominant_conflict_topics,
+                        "silent_majority_consensus": pol_metrics.silent_majority_consensus,
+                    }, pjf, indent=2)
+
+                flagged_accounts = IntelligenceService.calculate_flagged_accounts(df_final)
+                with open(os.path.join(json_dir, "flagged_accounts.json"), "w", encoding="utf-8") as faf:
+                    json.dump(flagged_accounts, faf, indent=2)
+            except Exception as j_err:
+                print(f"[PIPELINE WARNING] Gagal menyimpan ringkasan metrik JSON: {j_err}")
+
             # Metadata video
             eda_json = os.path.join(run_dir, "json", "youtube_eda_summary.json")
             video_title = "YouTube Video"
