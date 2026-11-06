@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Monitor } from 'lucide-react';
 import { Sidebar } from './components/Sidebar';
 import { NewAnalysisPage } from './pages/NewAnalysisPage';
 import { ProgressPage } from './pages/ProgressPage';
@@ -72,7 +73,16 @@ export const App: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    // Mode Komando / Briefing hanya aktif untuk presentasi dashboard hasil (Puskodal view).
+    // Saat berpindah halaman/tab, otomatis kembalikan ke tampilan normal (sidebar muncul).
+    if (currentTab !== 'result') {
+      setIsBriefingMode(false);
+    }
+  }, [currentTab]);
+
   const handleRunStarted = (runId: string) => {
+    setIsBriefingMode(false);
     setSelectedRunId(runId);
     setProgress({
       status: 'RUNNING',
@@ -88,16 +98,19 @@ export const App: React.FC = () => {
   };
 
   const handleSelectHistoryRun = (runId: string) => {
+    setIsBriefingMode(false);
     setSelectedRunId(runId);
     setCurrentTab('result');
   };
 
   const handleNavigateNew = () => {
+    setIsBriefingMode(false);
     setReuseRunId(undefined);
     setCurrentTab('new');
   };
 
   const handleNavigateNewWithReuse = (runId: string) => {
+    setIsBriefingMode(false);
     setReuseRunId(runId);
     setCurrentTab('new');
   };
@@ -111,6 +124,38 @@ export const App: React.FC = () => {
             onSelectTab={(tab) => setCurrentTab(tab as any)}
             isBusy={isBusy}
           />
+        )}
+
+        {isBriefingMode && (
+          <button
+            onClick={() => setIsBriefingMode(false)}
+            style={{
+              position: 'fixed',
+              top: '12px',
+              right: '24px',
+              zIndex: 9999,
+              background: 'rgba(15, 23, 42, 0.92)',
+              border: '1px solid #10b981',
+              color: '#34d399',
+              padding: '6px 14px',
+              borderRadius: '20px',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px rgba(16, 185, 129, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              backdropFilter: 'blur(8px)',
+              transition: 'all 0.15s ease',
+            }}
+            title="Klik untuk keluar dari Mode Komando / Briefing dan menampilkan kembali Sidebar"
+          >
+            <Monitor size={14} color="#34d399" />
+            <span>Mode Komando Aktif</span>
+            <span style={{ color: '#64748b', fontSize: '0.72rem' }}>|</span>
+            <span style={{ color: '#f8fafc', textDecoration: 'underline' }}>✕ Kembali ke Normal</span>
+          </button>
         )}
 
         <main style={{ flex: 1, padding: isBriefingMode ? '20px 32px' : '24px 28px', overflowY: 'auto', background: '#0b0f19', display: 'flex', flexDirection: 'column', transition: 'padding 0.2s ease' }}>
