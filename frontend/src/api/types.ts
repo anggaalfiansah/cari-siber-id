@@ -229,6 +229,7 @@ export interface CoordinatedBotNetwork {
   accounts: string[];
   coordination_level: 'CRITICAL_MASS' | 'HIGH_COORDINATION' | 'MEDIUM_COORDINATION' | 'ORGANIC_RESONANCE';
   coordination_badge: string;
+  is_hostile?: boolean;
   sample_occurrences?: Array<{
     raw_text: string;
     username: string;
