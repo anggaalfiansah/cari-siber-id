@@ -1,6 +1,7 @@
 import React from 'react';
 
 interface KpiCardProps {
+  isBriefingMode?: boolean;
   label: string;
   value: string | number;
   subValue?: string;
@@ -11,7 +12,7 @@ interface KpiCardProps {
   icon?: React.ReactNode;
 }
 
-export const KpiCard: React.FC<KpiCardProps> = ({ label, value, subValue, badge, icon }) => {
+export const KpiCard: React.FC<KpiCardProps> = ({ label, value, subValue, badge, icon, isBriefingMode }) => {
   const getBadgeClass = (level: string) => {
     switch (level.toLowerCase()) {
       case 'low': return 'badge-low';
@@ -23,16 +24,16 @@ export const KpiCard: React.FC<KpiCardProps> = ({ label, value, subValue, badge,
   };
 
   return (
-    <div className="panel" style={{ padding: '16px 20px', flex: 1, minWidth: '200px' }}>
+    <div className="panel" style={{ padding: isBriefingMode ? '22px 24px' : '16px 20px', flex: 1, minWidth: isBriefingMode ? '240px' : '200px', transition: 'all 0.2s ease', border: isBriefingMode ? '1px solid rgba(56, 189, 248, 0.4)' : undefined, boxShadow: isBriefingMode ? '0 4px 20px rgba(0, 0, 0, 0.5)' : undefined }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <span style={{ fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94a3b8' }}>
+        <span style={{ fontSize: isBriefingMode ? '0.9rem' : '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94a3b8' }}>
           {label}
         </span>
         {icon && <div style={{ color: '#64748b' }}>{icon}</div>}
       </div>
 
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-        <span style={{ fontSize: '1.65rem', fontWeight: '700', color: '#f8fafc' }}>
+        <span style={{ fontSize: isBriefingMode ? '2.1rem' : '1.65rem', fontWeight: '800', color: '#f8fafc' }}>
           {value}
         </span>
         {badge && (
@@ -43,7 +44,7 @@ export const KpiCard: React.FC<KpiCardProps> = ({ label, value, subValue, badge,
       </div>
 
       {subValue && (
-        <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px' }}>
+        <div style={{ fontSize: isBriefingMode ? '0.88rem' : '0.75rem', color: isBriefingMode ? '#94a3b8' : '#64748b', marginTop: '4px' }}>
           {subValue}
         </div>
       )}

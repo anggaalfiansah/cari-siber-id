@@ -32,6 +32,15 @@ try:
 except ImportError:
     HAS_WORDCLOUD = False
 
+# Terapkan Dark Theme SOC pada seluruh chart Matplotlib
+plt.style.use('dark_background')
+plt.rcParams['figure.facecolor'] = '#090d16'
+plt.rcParams['axes.facecolor'] = '#0f172a'
+plt.rcParams['axes.edgecolor'] = '#334155'
+plt.rcParams['text.color'] = '#f8fafc'
+plt.rcParams['axes.labelcolor'] = '#94a3b8'
+plt.rcParams['xtick.color'] = '#94a3b8'
+plt.rcParams['ytick.color'] = '#94a3b8'
 plt.rcParams["font.family"] = "sans-serif"
 plt.rcParams["font.sans-serif"] = ["Segoe UI", "Arial", "Helvetica", "DejaVu Sans"]
 
@@ -44,12 +53,12 @@ COLOR_OFFICIAL = "#0EA5E9"  # Biru Sky
 def _save_chart(fig, images_dir, filename):
     filepath = os.path.join(images_dir, filename)
     fig.tight_layout()
-    fig.savefig(filepath, dpi=150, bbox_inches="tight")
+    fig.savefig(filepath, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor(), edgecolor='none')
     plt.close(fig)
     print(f"  [OK] Tersimpan: {filename}")
 
 
-def _add_bar_labels(ax, bars, fmt="{}", fontsize=10, color="black", padding=4):
+def _add_bar_labels(ax, bars, fmt="{}", fontsize=10, color="#f8fafc", padding=4):
     for bar in bars:
         width = bar.get_width()
         if width > 0:
@@ -408,7 +417,7 @@ def _chart_07_wordcloud(data, images_dir, app_name):
     wc = WordCloud(
         width=1200,
         height=800,
-        background_color="white",
+        background_color="#090d16",
         color_func=combined_color_func,
     ).generate_from_frequencies(freq_all)
 

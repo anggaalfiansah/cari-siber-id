@@ -102,6 +102,8 @@ export interface FlaggedAccountItem {
   sample_comments: string[];
   all_comments: AuthorCommentItem[];
   cib_risk_level: 'SUSPICIOUS' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  disarm_framework?: string[];
+  disarm_codes?: string[];
   threat_tags?: string[];
   inauthenticity_score?: number;
   bot_score?: number;
@@ -137,6 +139,8 @@ export interface CrossVideoBuzzer {
   sample_comments: string[];
   all_comments?: AuthorCommentItem[];
   cib_risk_level: 'SUSPICIOUS' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  disarm_framework?: string[];
+  disarm_codes?: string[];
   threat_tags?: string[];
   inauthenticity_score?: number;
   score_breakdown?: {
@@ -223,7 +227,7 @@ export interface CoordinatedBotNetwork {
   unique_videos_count: number;
   target_video_titles: string[];
   accounts: string[];
-  coordination_level: 'CRITICAL_MASS' | 'HIGH_COORDINATION' | 'MEDIUM_COORDINATION';
+  coordination_level: 'CRITICAL_MASS' | 'HIGH_COORDINATION' | 'MEDIUM_COORDINATION' | 'ORGANIC_RESONANCE';
   coordination_badge: string;
   sample_occurrences?: Array<{
     raw_text: string;

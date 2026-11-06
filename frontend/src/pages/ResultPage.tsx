@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
+  Monitor,
   Download,
   FolderOpen,
   ShieldAlert,
@@ -51,11 +52,13 @@ interface ResultPageProps {
   runId: string | null;
   onNavigateNew: () => void;
   onNavigateNewWithReuse?: (runId: string) => void;
+  isBriefingMode?: boolean;
+  onToggleBriefingMode?: () => void;
 }
 
 type TabType = 'buzzers' | 'cross_videos' | 'topics' | 'comments' | 'charts' | 'narrative';
 
-export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, onNavigateNewWithReuse }) => {
+export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, onNavigateNewWithReuse, isBriefingMode, onToggleBriefingMode }) => {
   const [result, setResult] = useState<RunResult | null>(null);
   const [runInfo, setRunInfo] = useState<RunHistoryItem | null>(null);
   const [loading, setLoading] = useState(false);
@@ -398,7 +401,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
           <div>
             <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span>DASHBOARD INTELIJEN RUANG SIBER</span>
+              <span>PUSAT INTELIJEN KOGNITIF & SITUASI SIBER</span>
               {cross?.is_multi_video ? (
                 <span style={{ background: 'rgba(2, 132, 199, 0.2)', border: '1px solid #0284c7', color: '#38bdf8', padding: '2px 8px', borderRadius: '10px', fontSize: '0.68rem', fontWeight: 700 }}>
                   MULTI-VIDEO CORPUS ({cross.total_videos} VIDEO)
@@ -430,9 +433,31 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
               <span>Buka Folder</span>
             </button>
 
-            <button className="btn btn-secondary" onClick={onNavigateNew} title="Buat sesi analisis baru">
+            <button
+              className="btn"
+              onClick={onToggleBriefingMode}
+              style={{
+                background: isBriefingMode
+                  ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(6, 182, 212, 0.25) 100%)'
+                  : 'rgba(30, 41, 59, 0.6)',
+                border: isBriefingMode ? '1px solid #10b981' : '1px solid #334155',
+                color: isBriefingMode ? '#34d399' : '#f8fafc',
+                boxShadow: isBriefingMode ? '0 0 15px rgba(16, 185, 129, 0.4)' : 'none',
+                fontWeight: 700,
+                fontSize: isBriefingMode ? '0.88rem' : '0.82rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+              title="Beralih ke Tampilan Layar Puskodal Penuh (SOC Full Canvas)"
+            >
+              <Monitor size={16} color={isBriefingMode ? '#34d399' : '#38bdf8'} />
+              <span>{isBriefingMode ? '🖥️ Mode Komando AKTIF' : '🖥️ Mode Komando / Briefing'}</span>
+            </button>
+
+            <button className="btn btn-secondary" onClick={onNavigateNew} title="Inisialisasi Operasi Pemantauan Baru">
               <RotateCcw size={15} />
-              <span>Analisis Baru</span>
+              <span>Inisialisasi Operasi Pemantauan</span>
             </button>
           </div>
         </div>
@@ -446,7 +471,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
       </div>
 
       {/* KPI Cards Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isBriefingMode ? 'repeat(auto-fit, minmax(250px, 1fr))' : 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
         <KpiCard
           label="Total Komentar Diolah"
           value={totalComments.toLocaleString()}
@@ -454,6 +479,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
           icon={<MessageSquare size={18} />}
         />
         <KpiCard
+          isBriefingMode={isBriefingMode}
           label="Skor Ancaman CIB"
           value={cibScoreNum.toFixed(2)}
           badge={{ text: String(rawCibLevel || 'LOW'), level: cibLevel }}
@@ -461,6 +487,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
           icon={<ShieldAlert size={18} />}
         />
         <KpiCard
+          isBriefingMode={isBriefingMode}
           label="Indeks Polarisasi"
           value={polIndex.toFixed(2)}
           badge={{ text: polBadgeText, level: polBadgeLevel }}
@@ -893,6 +920,37 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
                                     </span>
                                   )}
                                 </div>
+                                  {/* Matriks Taktik DISARM Framework */}
+                                  {(() => {
+                                    const disarms = (b.disarm_framework && b.disarm_framework.length > 0)
+                                      ? b.disarm_framework
+                                      : (b.threat_tags || []).filter((t: string) => t.startsWith('DISARM'));
+                                    if (!disarms || disarms.length === 0) return null;
+                                    return (
+                                      <div style={{ display: 'flex', gap: '6px', marginTop: '6px', flexWrap: 'wrap' }}>
+                                        {disarms.map((dc: string, dIdx: number) => {
+                                          const isRed = dc.includes('T0089') || dc.includes('T0088');
+                                          return (
+                                            <span
+                                              key={dIdx}
+                                              className="badge"
+                                              style={{
+                                                background: isRed ? 'rgba(239, 68, 68, 0.2)' : 'rgba(56, 189, 248, 0.15)',
+                                                color: isRed ? '#f87171' : '#38bdf8',
+                                                border: `1px solid ${isRed ? 'rgba(239, 68, 68, 0.4)' : 'rgba(56, 189, 248, 0.3)'}`,
+                                                fontSize: '0.68rem',
+                                                fontWeight: 700,
+                                                padding: '2px 6px',
+                                                borderRadius: '4px',
+                                              }}
+                                            >
+                                              {dc}
+                                            </span>
+                                          );
+                                        })}
+                                      </div>
+                                    );
+                                  })()}
                               </div>
                             </td>
 
@@ -952,6 +1010,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
                                 )}
                                 {(b.threat_tags && b.threat_tags.length > 0 ? b.threat_tags : ['Aktivitas Berulang']).map((rawT, idx) => {
                                   const t = rawT.includes('<0 dtk') ? rawT.replace('<0 dtk', 'Posting Cepat') : rawT;
+                                  const isDisarm = t.startsWith('DISARM');
                                   const isBotnet = t.toLowerCase().includes('bot massal');
                                   const isBurst = t.toLowerCase().includes('burst');
                                   const isCopypasta = t.toLowerCase().includes('copypasta');
@@ -960,14 +1019,18 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
                                       key={idx}
                                       style={{
                                         fontSize: '0.68rem',
-                                        background: isBotnet
+                                        background: isDisarm
+                                          ? 'rgba(225, 29, 72, 0.22)'
+                                          : isBotnet
                                           ? 'rgba(239, 68, 68, 0.2)'
                                           : isBurst
                                           ? 'rgba(245, 158, 11, 0.2)'
                                           : isCopypasta
                                           ? 'rgba(168, 85, 247, 0.2)'
                                           : 'rgba(2, 132, 199, 0.15)',
-                                        color: isBotnet
+                                        color: isDisarm
+                                          ? '#fda4af'
+                                          : isBotnet
                                           ? '#fca5a5'
                                           : isBurst
                                           ? '#fcd34d'
@@ -977,7 +1040,9 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
                                         padding: '2px 7px',
                                         borderRadius: '4px',
                                         border: `1px solid ${
-                                          isBotnet
+                                          isDisarm
+                                            ? '#f43f5e'
+                                            : isBotnet
                                             ? 'rgba(239, 68, 68, 0.4)'
                                             : isBurst
                                             ? 'rgba(245, 158, 11, 0.4)'
@@ -985,7 +1050,8 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
                                             ? 'rgba(168, 85, 247, 0.4)'
                                             : 'rgba(2, 132, 199, 0.3)'
                                         }`,
-                                        fontWeight: isBotnet || isBurst ? 600 : 500,
+                                        fontWeight: isDisarm || isBotnet || isBurst ? 700 : 500,
+                                        letterSpacing: isDisarm ? '0.2px' : 'normal',
                                       }}
                                     >
                                       {t}
@@ -1118,8 +1184,21 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
                   {filteredBotNetworks.map((bn, bIdx) => {
                     const isCritical = bn.coordination_level === 'CRITICAL_MASS';
                     const isHigh = bn.coordination_level === 'HIGH_COORDINATION';
-                    const borderColor = isCritical ? 'rgba(239, 68, 68, 0.45)' : isHigh ? 'rgba(245, 158, 11, 0.45)' : 'rgba(56, 189, 248, 0.35)';
-                    const bgCard = isCritical ? 'rgba(239, 68, 68, 0.06)' : isHigh ? 'rgba(245, 158, 11, 0.05)' : 'rgba(15, 23, 42, 0.5)';
+                    const isOrganic = bn.coordination_level === 'ORGANIC_RESONANCE';
+                    const borderColor = isOrganic
+                      ? 'rgba(16, 185, 129, 0.45)'
+                      : isCritical
+                      ? 'rgba(239, 68, 68, 0.45)'
+                      : isHigh
+                      ? 'rgba(245, 158, 11, 0.45)'
+                      : 'rgba(56, 189, 248, 0.35)';
+                    const bgCard = isOrganic
+                      ? 'rgba(16, 185, 129, 0.06)'
+                      : isCritical
+                      ? 'rgba(239, 68, 68, 0.06)'
+                      : isHigh
+                      ? 'rgba(245, 158, 11, 0.05)'
+                      : 'rgba(15, 23, 42, 0.5)';
                     return (
                       <div
                         key={bIdx}
@@ -1142,9 +1221,9 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
                                 fontWeight: 700,
                                 padding: '3px 8px',
                                 borderRadius: '6px',
-                                background: isCritical ? 'rgba(239, 68, 68, 0.25)' : isHigh ? 'rgba(245, 158, 11, 0.25)' : 'rgba(56, 189, 248, 0.2)',
-                                color: isCritical ? '#fca5a5' : isHigh ? '#fde047' : '#7dd3fc',
-                                border: `1px solid ${isCritical ? '#ef4444' : isHigh ? '#f59e0b' : '#38bdf8'}`,
+                                background: isOrganic ? 'rgba(16, 185, 129, 0.25)' : isCritical ? 'rgba(239, 68, 68, 0.25)' : isHigh ? 'rgba(245, 158, 11, 0.25)' : 'rgba(56, 189, 248, 0.2)',
+                                color: isOrganic ? '#34d399' : isCritical ? '#fca5a5' : isHigh ? '#fde047' : '#7dd3fc',
+                                border: `1px solid ${isOrganic ? '#10b981' : isCritical ? '#ef4444' : isHigh ? '#f59e0b' : '#38bdf8'}`,
                               }}
                             >
                               {bn.coordination_badge}
@@ -1156,9 +1235,9 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
                                 fontWeight: 800,
                                 padding: '3px 9px',
                                 borderRadius: '6px',
-                                background: 'rgba(239, 68, 68, 0.15)',
-                                color: '#f87171',
-                                border: '1px solid rgba(239, 68, 68, 0.3)',
+                                background: isOrganic ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                                color: isOrganic ? '#34d399' : '#f87171',
+                                border: `1px solid ${isOrganic ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
                               }}
                             >
                               👥 {bn.unique_accounts_count} Akun Berbeda
@@ -1424,7 +1503,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
                             cursor: 'pointer',
                           }}
                         >
-                          {sent === 'ALL' ? 'Semua' : sent}
+                          {sent === 'Negatif' ? 'Hasutan / SARA / Delegitimasi' : sent === 'ALL' ? 'Semua' : sent}
                         </button>
                       );
                     })}
@@ -1573,7 +1652,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
                       </button>
                     </div>
                     <div
-                      style={{ background: '#ffffff', padding: '10px', cursor: 'pointer' }}
+                      style={{ background: '#090d16', padding: '10px', cursor: 'pointer' }}
                       onClick={() => setSelectedImage(c)}
                     >
                       <img
@@ -1686,7 +1765,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
                 <X size={16} />
               </button>
             </div>
-            <div style={{ background: '#ffffff', padding: '14px', overflow: 'auto' }}>
+            <div style={{ background: '#090d16', padding: '14px', overflow: 'auto' }}>
               <img
                 src={selectedImage.data_uri}
                 alt={selectedImage.title}

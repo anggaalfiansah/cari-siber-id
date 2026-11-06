@@ -70,10 +70,10 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
 
   // Sample quick suggestion topics
   const sampleTopics = [
-    'kebijakan hilirisasi nikel',
-    'polemik kenaikan ppn 12%',
-    'ruu perampasan aset',
-    'debat kebijakan tapera',
+    'Disinformasi Operasi Pengamanan Perbatasan TNI',
+    'Isu Propaganda Separatisme Ruang Siber Papua',
+    'Operasi Penggiringan Opini Netralitas Militer',
+    'Serangan Siber & Phishing Mengatasnamakan Instansi Pertahanan',
   ];
 
   const loadReusableCorpora = async () => {
@@ -374,7 +374,7 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
           }}
         >
           <Layers size={17} color={activeTab === 'reuse' ? '#ffffff' : '#10b981'} />
-          <span>Gunakan Data Scraping (Reuse)</span>
+          <span>[SIMULASI MILITER] Data Tersimpan</span>
           {reusableCorpora.length > 0 && (
             <span
               style={{
@@ -905,6 +905,60 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
       {/* REUSE SCRAPED CORPUS SECTION */}
       {activeTab === 'reuse' && (
         <div className="panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Prominent Fail-Safe Demo Scenario Banner for Jury Presentation */}
+          <div
+            style={{
+              background: 'linear-gradient(135deg, rgba(2, 132, 199, 0.2) 0%, rgba(15, 23, 42, 0.75) 100%)',
+              border: '1px solid rgba(56, 189, 248, 0.45)',
+              borderRadius: '10px',
+              padding: '16px 18px',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '14px',
+            }}
+          >
+            <div
+              style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '8px',
+                background: 'rgba(2, 132, 199, 0.25)',
+                border: '1px solid rgba(56, 189, 248, 0.5)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#38bdf8',
+                flexShrink: 0,
+              }}
+            >
+              <Layers size={20} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <span
+                  style={{
+                    background: 'rgba(2, 132, 199, 0.3)',
+                    color: '#38bdf8',
+                    border: '1px solid #0284c7',
+                    fontSize: '0.72rem',
+                    fontWeight: 800,
+                    padding: '2px 8px',
+                    borderRadius: '6px',
+                    letterSpacing: '0.5px',
+                  }}
+                >
+                  FAIL-SAFE DEMO
+                </span>
+                <span style={{ fontWeight: 700, color: '#f8fafc', fontSize: '0.98rem' }}>
+                  [MODE SKENARIO SIMULASI MILITER] Audit Korpus Operasi CIB 3.500 Komentar
+                </span>
+              </div>
+              <p style={{ color: '#94a3b8', fontSize: '0.82rem', marginTop: '6px', lineHeight: 1.5 }}>
+                Mode peragaan tanpa ketergantungan koneksi internet: Eksekusi instan seluruh pipeline deep learning (IndoBERT + BERTopic), 4 Agentic AI Hardened Gates, dan pemetaan jaringan bot/buzzer CIB secara deterministik dalam hitungan detik.
+              </p>
+            </div>
+          </div>
+
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <div style={{ fontWeight: 700, color: '#f8fafc', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>

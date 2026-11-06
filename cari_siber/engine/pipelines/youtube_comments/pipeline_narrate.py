@@ -1,10 +1,10 @@
 from cari_siber.engine.core.exceptions import PipelineError
 """
 ==============================================================================
-LANGKAH 7 (OPSIONAL): NARASI INSIGHT KOMENTAR YOUTUBE MENGGUNAKAN LLM
+LANGKAH 7 (OPSIONAL): LAPORAN PERKIRAAN INTELIJEN SIBER (KIRKA SIBER SOSIAL)
 ==============================================================================
-Menghasilkan laporan narasi analitis mendalam (`narrative_insights.md`)
-berdasarkan data statistik `youtube_eda_summary.json`.
+Menghasilkan Laporan Perkiraan Intelijen Siber (Kirka Siber Sosial) (`narrative_insights.md`)
+berdasarkan data telemetri dan statistik `youtube_eda_summary.json`.
 ==============================================================================
 """
 
@@ -79,44 +79,27 @@ def _slim_json(data: dict) -> dict:
     return slimmed
 
 
-def build_prompt(json_data: str, app_name: str) -> str:
-    return f"""Anda adalah analis riset audiens dan media sosial senior yang ahli dalam membedah opini publik di kolom komentar YouTube.
+def build_prompt(json_data: str, target_name: str) -> str:
+    return f"""Anda adalah Perwira Analis Intelijen Kognitif & Pertahanan Ruang Siber PUSSIBERAD TNI AD.
+Tugas Anda adalah menyusun "Laporan Perkiraan Intelijen Siber (Kirka Siber Sosial)" mengenai dinamika opini dan potensi ancaman operasi informasi pada target: "{target_name}".
 
-Berikut adalah data statistik hasil Exploratory Data Analysis (EDA) untuk video YouTube "{app_name}":
-
+Berikut adalah data telemetri dan statistik hasil ekstraksi intelijen:
 {json_data}
 
-Buatkan laporan narasi insight dalam Bahasa Indonesia dengan struktur berikut:
+Susun Laporan Eksekutif dengan struktur doktrin pertahanan berikut:
+1. SITUASI RUANG SIBER & INDEKS POLARISASI (Overview ancaman, sentimen publik, dan deteksi Silent Majority vs Loud Minority)
+2. IDENTIFIKASI OPERASI INFORMASI TERKOORDINASI / CIB (Analisis jaringan bot, copypasta, dan pola waktu burst akun inotentik)
+3. PEMETAAN NARASI ANCAMAN KOGNITIF (Pemetaan isu pemicu friksi berdasar domain: Disinformasi, SARA, Delegitimasi Komando/Negara)
+4. DISARM FRAMEWORK MAPPING (Pemetaan taktik dan teknik ancaman berdasarkan standar DISARM/AMITT)
+5. REKOMENDASI TINDAKAN PENANGKALAN & KONTRA-NARASI (Langkah taktis untuk Satuan Penerangan dan Tim Siber TNI AD)
 
-## 1. Ringkasan Sentimen & Resonansi Penonton (Overview)
-Rangkum performa video (views, likes video, total komentar utama vs balasan), distribusi sentimen (Positif, Negatif, Netral), serta rata-rata "likes" per komentar untuk masing-masing sentimen.
-WAJIB JELASKAN: Sentimen mana yang paling banyak memperoleh likes rata-rata per komentar, dan apa maknanya terhadap opini mayoritas penonton pasif (silent majority).
-
-## 2. Analisis Sentimen Negatif (Kritik, Keluhan & Kontroversi)
-Bedah topik-topik keluhan atau kritik penonton berdasarkan kategori negatif teratas. Gunakan "sample_comments" dan "top_comments" untuk memvalidasi konteks nyata sebelum menyimpulkan.
-
-## 3. Analisis Diskusi & Debat Penonton (Engagement & Spike Waktu)
-Gunakan "engagement_analysis" ("top_engaging_topics") untuk menjelaskan isu apa yang paling memicu diskusi/debat berantai di kolom balasan (engagement score tertinggi).
-Jelaskan juga lonjakan komentar dari "spike_detection": sebutkan tanggal puncak diskusi, jumlah komentar, dan isu pemicunya.
-
-## 4. Analisis Sentimen Positif (Apresiasi & Daya Tarik Konten)
-Identifikasi aspek video/materi yang paling disukai penonton. Sebutkan kategori positif teratas, jumlah komentar, dan dukungan likes yang terkumpul, serta kata kunci positif dominan.
-
-## 5. Kinerja Interaksi Kreator/Channel Resmi (Creator Response & Reply Gap)
-Analisis keterlibatan pemilik channel dari "official_response" (jumlah balasan resmi kreator, pemberian tanda hati/creator hearts, dan rasio respons).
-PENTING: Bahas Kesenjangan Respons (Reply Gap) dari daftar "reply_gap_top_5" yang memiliki banyak komentar penonton namun belum direspons sama sekali oleh kreator (official_comments = 0). Sajikan secara objektif berbasis angka.
-
-ATURAN:
-- Selalu cantumkan angka spesifik dari data (jangan mengada-ada).
-- Gunakan format Markdown rapi (header, bullet point, **bold** untuk metrik penting).
-- Fokus pada 3–5 insight paling tajam; hindari sekadar mengulang isi tabel secara monoton.
-- Gunakan bahasa Indonesia yang profesional, analitis, dan mudah dipahami pengambil keputusan.
+Gunakan terminologi intelijen pertahanan yang formal, tegas, analitis, dan berbasis angka faktual.
 """
 
 
 def run_narrator(config_override=None):
     print("=" * 70)
-    print("LANGKAH 7 (OPSIONAL): NARASI INSIGHT KOMENTAR YOUTUBE MENGGUNAKAN LLM")
+    print("LANGKAH 7 (OPSIONAL): LAPORAN PERKIRAAN INTELIJEN SIBER (KIRKA SIBER SOSIAL)")
     print("=" * 70)
 
     cfg = config_override or {}
@@ -167,7 +150,7 @@ def run_narrator(config_override=None):
 
     prompt = build_prompt(json_payload, app_name)
 
-    print(f"\n[INFO] Menghasilkan narasi insight menggunakan model: {model_name}...")
+    print(f"\n[INFO] Menghasilkan Laporan Perkiraan Intelijen Siber (Kirka) menggunakan model: {model_name}...")
     try:
         report_md = generate_text(
             prompt=prompt,
@@ -198,7 +181,7 @@ def run_narrator(config_override=None):
     with open(latest_path, "w", encoding="utf-8") as f:
         f.write(report_md)
 
-    print(f"\n[SUCCESS] Narasi Insight YouTube berhasil dibuat dan disimpan di:\n  - {output_path}\n  - {latest_path}")
+    print(f"\n[SUCCESS] Laporan Kirka Siber Sosial berhasil dibuat dan disimpan di:\n  - {output_path}\n  - {latest_path}")
     run_report_gate(
         narrative_md_path=latest_path,
         eda_json_path=input_path,

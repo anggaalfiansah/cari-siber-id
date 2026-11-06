@@ -14,6 +14,7 @@ export const App: React.FC = () => {
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
   const [reuseRunId, setReuseRunId] = useState<string | undefined>(undefined);
   const [isBusy, setIsBusy] = useState(false);
+  const [isBriefingMode, setIsBriefingMode] = useState(false);
 
   const [progress, setProgress] = useState({
     status: 'IDLE',
@@ -104,13 +105,15 @@ export const App: React.FC = () => {
   return (
     <ErrorBoundary fallbackMessage="Terjadi kendala visual pada kerangka utama aplikasi.">
       <div style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
-        <Sidebar
-          currentTab={currentTab}
-          onSelectTab={(tab) => setCurrentTab(tab as any)}
-          isBusy={isBusy}
-        />
+        {!isBriefingMode && (
+          <Sidebar
+            currentTab={currentTab}
+            onSelectTab={(tab) => setCurrentTab(tab as any)}
+            isBusy={isBusy}
+          />
+        )}
 
-        <main style={{ flex: 1, padding: '24px 28px', overflowY: 'auto', background: '#0b0f19', display: 'flex', flexDirection: 'column' }}>
+        <main style={{ flex: 1, padding: isBriefingMode ? '20px 32px' : '24px 28px', overflowY: 'auto', background: '#0b0f19', display: 'flex', flexDirection: 'column', transition: 'padding 0.2s ease' }}>
           <ErrorBoundary onReset={handleNavigateNew}>
             {currentTab === 'new' && (
               <NewAnalysisPage
@@ -138,6 +141,8 @@ export const App: React.FC = () => {
                 runId={selectedRunId}
                 onNavigateNew={handleNavigateNew}
                 onNavigateNewWithReuse={handleNavigateNewWithReuse}
+                isBriefingMode={isBriefingMode}
+                onToggleBriefingMode={() => setIsBriefingMode((prev) => !prev)}
               />
             )}
 

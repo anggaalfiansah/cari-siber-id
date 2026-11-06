@@ -276,6 +276,7 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
                   <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                     {account.threat_tags.map((rawTag, idx) => {
                       const tag = rawTag.includes('<0 dtk') ? rawTag.replace('<0 dtk', 'Posting Cepat') : rawTag;
+                      const isDisarm = tag.startsWith('DISARM');
                       const isBotnet = tag.toLowerCase().includes('bot massal');
                       const isBurst = tag.toLowerCase().includes('burst');
                       const isCopypasta = tag.toLowerCase().includes('copypasta');
@@ -284,14 +285,18 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
                           key={idx}
                           style={{
                             fontSize: '0.68rem',
-                            background: isBotnet
+                            background: isDisarm
+                              ? 'rgba(225, 29, 72, 0.22)'
+                              : isBotnet
                               ? 'rgba(239, 68, 68, 0.2)'
                               : isBurst
                               ? 'rgba(245, 158, 11, 0.2)'
                               : isCopypasta
                               ? 'rgba(168, 85, 247, 0.2)'
                               : 'rgba(2, 132, 199, 0.15)',
-                            color: isBotnet
+                            color: isDisarm
+                              ? '#fda4af'
+                              : isBotnet
                               ? '#fca5a5'
                               : isBurst
                               ? '#fcd34d'
@@ -301,7 +306,9 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
                             padding: '1px 7px',
                             borderRadius: '4px',
                             border: `1px solid ${
-                              isBotnet
+                              isDisarm
+                                ? '#f43f5e'
+                                : isBotnet
                                 ? 'rgba(239, 68, 68, 0.4)'
                                 : isBurst
                                 ? 'rgba(245, 158, 11, 0.4)'
@@ -309,7 +316,8 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
                                 ? 'rgba(168, 85, 247, 0.4)'
                                 : 'rgba(2, 132, 199, 0.3)'
                             }`,
-                            fontWeight: isBotnet || isBurst ? 600 : 500,
+                            fontWeight: isDisarm || isBotnet || isBurst ? 700 : 500,
+                            letterSpacing: isDisarm ? '0.2px' : 'normal',
                           }}
                         >
                           {tag}
@@ -475,7 +483,7 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
                     transition: 'all 0.15s ease',
                   }}
                 >
-                  {sent === 'ALL' ? 'Semua Sentimen' : sent}
+                  {sent === 'Negatif' ? 'Hasutan / SARA / Delegitimasi' : sent === 'ALL' ? 'Semua Sentimen' : sent}
                 </button>
               );
             })}

@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   base: './',
   build: {
-    outDir: path.resolve(__dirname, '../cari_siber/ui_dist'),
+    outDir: path.resolve(import.meta.dirname, '../cari_siber/ui_dist'),
     emptyOutDir: true,
   },
   server: {

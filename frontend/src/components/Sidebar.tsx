@@ -9,9 +9,9 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, isBusy }) => {
   const menuItems = [
-    { id: 'new', label: 'Analisis Baru', icon: PlusCircle },
+    { id: 'new', label: 'Inisialisasi Operasi Pemantauan', icon: PlusCircle },
     { id: 'progress', label: 'Progres Operasi', icon: Activity, badge: isBusy ? 'Running' : null },
-    { id: 'result', label: 'Hasil Intelijen', icon: BarChart3 },
+    { id: 'result', label: 'Pusat Intelijen Kognitif & Situasi Siber', icon: BarChart3 },
     { id: 'history', label: 'Riwayat Audit', icon: History },
     { id: 'settings', label: 'Pengaturan API', icon: Settings },
   ];

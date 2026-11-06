@@ -38,27 +38,33 @@ export const TopicTable: React.FC<TopicTableProps> = ({ topics }) => {
           <input
             type="text"
             className="form-input"
-            placeholder="Cari isu, kategori, atau kutipan komentar..."
+            placeholder="Cari isu, domain ancaman, atau kutipan komentar..."
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             style={{ padding: '6px 12px', fontSize: '0.85rem' }}
           />
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          {['ALL', 'POSITIF', 'NETRAL', 'NEGATIF'].map((s) => (
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          {[
+            { id: 'ALL', label: 'SEMUA' },
+            { id: 'POSITIF', label: 'POSITIF' },
+            { id: 'NETRAL', label: 'NETRAL' },
+            { id: 'NEGATIF', label: 'HASUTAN / SARA / DELEGITIMASI' },
+          ].map((s) => (
             <button
-              key={s}
+              key={s.id}
               className="btn btn-secondary"
-              onClick={() => setSelectedSentiment(s)}
+              onClick={() => setSelectedSentiment(s.id)}
               style={{
                 padding: '4px 12px',
                 fontSize: '0.75rem',
-                background: selectedSentiment === s ? '#0284c7' : '#1e293b',
-                color: selectedSentiment === s ? '#ffffff' : '#94a3b8',
-                borderColor: selectedSentiment === s ? '#0284c7' : '#334155',
+                background: selectedSentiment === s.id ? (s.id === 'NEGATIF' ? '#dc2626' : '#0284c7') : '#1e293b',
+                color: selectedSentiment === s.id ? '#ffffff' : '#94a3b8',
+                borderColor: selectedSentiment === s.id ? (s.id === 'NEGATIF' ? '#dc2626' : '#0284c7') : '#334155',
+                fontWeight: selectedSentiment === s.id ? 700 : 500,
               }}
             >
-              {s}
+              {s.label}
             </button>
           ))}
         </div>
@@ -70,7 +76,7 @@ export const TopicTable: React.FC<TopicTableProps> = ({ topics }) => {
             <tr style={{ background: '#090d16', color: '#38bdf8', textAlign: 'left', borderBottom: '2px solid #334155' }}>
               <th style={{ padding: '12px 14px', width: '45px' }}>#</th>
               <th style={{ padding: '12px 16px', width: '280px' }}>Sub-Isu & Pokok Bahasan</th>
-              <th style={{ padding: '12px 14px', width: '140px' }}>Kategori</th>
+              <th style={{ padding: '12px 14px', width: '170px' }}>Domain Ancaman</th>
               <th style={{ padding: '12px 14px', width: '90px' }}>Sentimen</th>
               <th style={{ padding: '12px 14px', width: '85px', textAlign: 'right' }}>Komentar</th>
               <th style={{ padding: '12px 16px' }}>Sampel Opini Nyata</th>

@@ -331,7 +331,7 @@ class IntelligenceService:
         )
 
     @staticmethod
-    def calculate_coordinated_bot_networks(df: pd.DataFrame, min_accounts: int = 2, min_length: int = 12) -> List[Dict[str, Any]]:
+    def calculate_coordinated_bot_networks(df: pd.DataFrame, min_accounts: int = 2, min_length: int = 25) -> List[Dict[str, Any]]:
         """
         Mendeteksi Jaringan Bot Massal Terkoordinasi (Coordinated Bot Networks / Astroturfing)
         dengan melacak komentar kembar (exact / normalized copypasta) yang diposting oleh
@@ -353,11 +353,22 @@ class IntelligenceService:
         from collections import defaultdict
         template_groups = defaultdict(list)
 
-        # Kata-kata pendek umum netizen organik yang diabaikan agar tidak salah tuduh
-        generic_words = {
+        # Frasa yel-yel, apresiasi organik, dan slogan resmi institusi yang WAJIB diabaikan (Whitelist)
+        generic_phrases_and_slogans = {
+            # Apresiasi & Kata Santai Dasar
             "alhamdulillah", "amin", "aamiin", "bismillah", "mantap", "mantap jiwa", "keren", "semangat",
             "lanjutkan", "terima kasih", "terimakasih", "makasih", "siap", "wkwk", "wkwkwk", "haha", "hahaha",
-            "setuju", "sangat setuju", "betul", "benar sekali", "gas", "gaskeun", "mantul", "jos", "mantab"
+            "setuju", "sangat setuju", "betul", "benar sekali", "gas", "gaskeun", "mantul", "jos", "mantab",
+            "hebat", "luar biasa", "semoga lancar", "sukses selalu", "sehat selalu", "doa terbaik",
+
+            # Slogan Patriotik & Apresiasi TNI/POLRI/Institusi Negara
+            "tni bersama rakyat", "tni kuat bersama rakyat", "terimakasih tni", "terima kasih tni",
+            "bravo tni", "hidup tni", "jayalah tni", "tni patriot nkri", "nkri harga mati",
+            "semangat bapak tni", "terima kasih bapak tni", "tni selalu di hati rakyat",
+            "terimakasih bapak tni", "bravo tni polri", "tni polri hebat", "tni hebat",
+            "terimakasih bapak", "terima kasih bapak", "sukses tni", "maju terus tni",
+            "pengabdian tiada henti", "profesional modern tangguh", "tni prima",
+            "bersama rakyat tni kuat", "bela negara", "cinta tanah air"
         }
 
         for r in df.to_dict("records"):
@@ -372,7 +383,11 @@ class IntelligenceService:
             clean_norm = re.sub(r"^@\w+\s*", "", clean).strip().lower()
             clean_norm = re.sub(r"[!?.]{2,}", "", clean_norm).strip()
 
-            if len(clean_norm) < min_length or clean_norm in generic_words:
+            if len(clean_norm) < min_length or clean_norm in generic_phrases_and_slogans:
+                continue
+
+            # Cek apakah teks didominasi oleh frasa/slogan whitelist
+            if any(slogan == clean_norm or slogan in clean_norm for slogan in generic_phrases_and_slogans):
                 continue
 
             template_groups[clean_norm].append({
@@ -403,15 +418,49 @@ class IntelligenceService:
             unique_video_titles = list({it["video_title"] for it in items if it["video_title"]})
             account_names = list(unique_authors_map.keys())
 
-            if unique_count >= 10:
-                coord_level = "CRITICAL_MASS"
-                coord_badge = "🔴 Sangat Kritis"
-            elif unique_count >= 5:
-                coord_level = "HIGH_COORDINATION"
-                coord_badge = "🟠 Koordinasi Tinggi"
+                        # 1. Analisis Provokasi & Unsur Ancaman
+            has_provocation = any(_COMPILED_PROV_REGEX.search(it.get("raw_text", "")) for it in items)
+
+            # 2. Analisis Sentimen Dominan
+            sent_list = [str(it.get("ai_sentiment") or "").strip().lower() for it in items if it.get("ai_sentiment")]
+            is_predominantly_positive = (sent_list.count("positif") / max(1, len(sent_list))) >= 0.6 if sent_list else False
+
+            # 3. Audit Jeda Waktu (Burst Temporal Check)
+            # Jika selisih waktu antar postingan akun berbeda terjadi sangat cepat (< 30 detik) serentak -> Bot Burst Swarming
+            is_rapid_burst = False
+            valid_ts = []
+            for it in items:
+                cat = it.get("created_at")
+                if cat:
+                    try:
+                        dt = pd.to_datetime(cat)
+                        if pd.notna(dt):
+                            valid_ts.append(dt.timestamp())
+                    except Exception:
+                        pass
+            if len(valid_ts) >= 3:
+                valid_ts.sort()
+                diffs = [valid_ts[i+1] - valid_ts[i] for i in range(len(valid_ts)-1) if valid_ts[i+1] - valid_ts[i] >= 0]
+                if diffs:
+                    min_diff = min(diffs)
+                    median_diff = float(pd.Series(diffs).median())
+                    if min_diff < 30.0 or median_diff < 60.0:
+                        is_rapid_burst = True
+
+            # 4. Klasifikasi Level Koordinasi: Bedakan Bot Ancaman vs Resonansi Organik Publik
+            if not has_provocation and (is_predominantly_positive or not is_rapid_burst):
+                coord_level = "ORGANIC_RESONANCE"
+                coord_badge = "🟢 Apresiasi Publik / Resonansi Organik"
             else:
-                coord_level = "MEDIUM_COORDINATION"
-                coord_badge = "🟡 Bot Duplikat"
+                if unique_count >= 10:
+                    coord_level = "CRITICAL_MASS"
+                    coord_badge = "🔴 Sangat Kritis (Operasi Bot Terarah)" if has_provocation else "🟠 Amplifikasi Massal"
+                elif unique_count >= 5:
+                    coord_level = "HIGH_COORDINATION"
+                    coord_badge = "🟠 Koordinasi Tinggi"
+                else:
+                    coord_level = "MEDIUM_COORDINATION"
+                    coord_badge = "🟡 Pola Duplikat" 
 
             bot_networks.append({
                 "template_text": best_raw_text,
@@ -477,11 +526,13 @@ class IntelligenceService:
 
         # Deteksi Jaringan Bot Massal Lintas Akun (Cross-Account Duplicate Comments)
         from collections import defaultdict, Counter
-        bot_networks = IntelligenceService.calculate_coordinated_bot_networks(df_valid, min_accounts=2, min_length=12)
+        bot_networks = IntelligenceService.calculate_coordinated_bot_networks(df_valid, min_accounts=2, min_length=25)
         author_to_botnet = defaultdict(list)
         for bn in bot_networks:
-            for acc in bn["accounts"]:
-                author_to_botnet[acc].append(bn)
+            # PENTING: Hanya anggap botnet ancaman jika BUKAN Resonansi Organik Publik!
+            if bn.get("coordination_level") != "ORGANIC_RESONANCE":
+                for acc in bn["accounts"]:
+                    author_to_botnet[acc].append(bn)
 
         # Konversi sekali ke list of dicts untuk pemrosesan super cepat di Python native (menghilangkan ribuan pandas slicing)
         from collections import defaultdict, Counter
@@ -647,8 +698,18 @@ class IntelligenceService:
             else:
                 risk = "SUSPICIOUS"
 
-            # Tentukan Tag Bukti Forensik
-            threat_tags = []
+            # Tentukan Tag Bukti Forensik & DISARM Framework Mapping
+            disarm_codes = []
+            if matched_botnets:
+                disarm_codes.append("DISARM-T0089 (Coordinated Inauthentic Amplification)")
+            if copypasta_score >= 25:
+                disarm_codes.append("DISARM-T0092 (Astroturfing & Content Repetition)")
+            if prov_score >= 60:
+                disarm_codes.append("DISARM-T0088 (Dehumanization & Polarization Campaign)")
+            if temporal_score >= 15:
+                disarm_codes.append("DISARM-T0083 (Synchronized Swarming Attack)")
+
+            threat_tags = list(disarm_codes)
             if matched_botnets:
                 threat_tags.append(f"Jaringan Bot Massal ({max_peer_count} Akun Kembar)")
 
@@ -769,6 +830,8 @@ class IntelligenceService:
                 "is_coordinated_bot": bool(matched_botnets),
                 "coordinated_peer_count": max_peer_count,
                 "cib_risk_level": risk,
+                "disarm_framework": disarm_codes,
+                "disarm_codes": disarm_codes,
                 "threat_tags": threat_tags,
                 "sentiment_breakdown": sent_counts,
             })
