@@ -44,6 +44,7 @@ def start_app_window(dev_mode: bool = False):
         height=820,
         min_size=(960, 640),
         background_color="#0F172A",
+        maximized=True,
     )
 
     event_emitter.set_window(window)

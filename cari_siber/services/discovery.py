@@ -13,10 +13,78 @@ from cari_siber.settings import AppSettings
 logger = logging.getLogger("cari_siber.services.discovery")
 
 
-def search_youtube_innertube(query: str, max_candidates: int = 25) -> List[Dict[str, Any]]:
+def _extract_continuation_token(obj: Any) -> Optional[str]:
+    """Mengekstrak continuation token pagination dari payload JSON Innertube."""
+    if isinstance(obj, dict):
+        if "continuationCommand" in obj and isinstance(obj["continuationCommand"], dict):
+            token = obj["continuationCommand"].get("token")
+            if token:
+                return str(token)
+        for v in obj.values():
+            tok = _extract_continuation_token(v)
+            if tok:
+                return tok
+    elif isinstance(obj, list):
+        for item in obj:
+            tok = _extract_continuation_token(item)
+            if tok:
+                return tok
+    return None
+
+
+def _extract_video_renderers(obj: Any) -> List[Dict[str, Any]]:
+    res = []
+    if isinstance(obj, dict):
+        if "videoRenderer" in obj:
+            vr = obj["videoRenderer"]
+            vid = vr.get("videoId")
+            title = "".join([t.get("text", "") for t in vr.get("title", {}).get("runs", [])])
+            channel = "".join([t.get("text", "") for t in vr.get("ownerText", {}).get("runs", [])])
+            views = vr.get("viewCountText", {}).get("simpleText", "")
+            if not views and "runs" in vr.get("viewCountText", {}):
+                views = "".join([t.get("text", "") for t in vr.get("viewCountText", {}).get("runs", [])])
+            published = vr.get("publishedTimeText", {}).get("simpleText", "")
+            length = vr.get("lengthText", {}).get("simpleText", "")
+            thumbs = vr.get("thumbnail", {}).get("thumbnails", [])
+            thumb = thumbs[-1].get("url", "") if thumbs else f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg"
+            
+            desc = ""
+            snippets = vr.get("detailedMetadataSnippets")
+            if snippets and len(snippets) > 0:
+                runs = snippets[0].get("snippetText", {}).get("runs", [])
+                desc = "".join([t.get("text", "") for t in runs])
+
+            if vid and title:
+                vid_url = f"https://www.youtube.com/watch?v={vid}"
+                res.append({
+                    "video_id": vid,
+                    "url": vid_url,
+                    "video_url": vid_url,
+                    "title": title.strip(),
+                    "channel": channel.strip(),
+                    "channel_name": channel.strip(),
+                    "views": views.strip() or "0 views",
+                    "views_str": views.strip() or "0 views",
+                    "published": published.strip() or "Baru saja",
+                    "published_str": published.strip() or "Baru saja",
+                    "duration": length.strip() or "--:--",
+                    "duration_str": length.strip() or "--:--",
+                    "thumbnail": thumb,
+                    "thumbnail_url": thumb,
+                    "description": desc.strip()[:200],
+                })
+        for val in obj.values():
+            res.extend(_extract_video_renderers(val))
+    elif isinstance(obj, list):
+        for item in obj:
+            res.extend(_extract_video_renderers(item))
+    return res
+
+
+def search_youtube_innertube(query: str, max_candidates: int = 100) -> List[Dict[str, Any]]:
     """
     Mencari video YouTube berbasis kata kunci menggunakan endpoint Innertube Web
-    secara instan tanpa memerlukan YouTube Data API Key.
+    secara instan dengan pagination otomatis hingga mencapai max_candidates (hingga 100 video).
     """
     url = "https://www.youtube.com/youtubei/v1/search?prettyPrint=false"
     headers = {
@@ -28,136 +96,132 @@ def search_youtube_innertube(query: str, max_candidates: int = 25) -> List[Dict[
         "Content-Type": "application/json",
         "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
     }
-    payload = {
-        "context": {
-            "client": {
-                "clientName": "WEB",
-                "clientVersion": "2.20240101.01.00",
-                "hl": "id",
-                "gl": "ID",
-            }
-        },
-        "query": query.strip(),
-    }
 
-    try:
-        resp = requests.post(url, headers=headers, json=payload, timeout=12)
-        resp.raise_for_status()
-        data = resp.json()
-    except Exception as e:
-        logger.error(f"Gagal menghubungi Innertube search: {e}")
-        return []
-
-    def _extract_video_renderers(obj):
-        res = []
-        if isinstance(obj, dict):
-            if "videoRenderer" in obj:
-                vr = obj["videoRenderer"]
-                vid = vr.get("videoId")
-                title = "".join([t.get("text", "") for t in vr.get("title", {}).get("runs", [])])
-                channel = "".join([t.get("text", "") for t in vr.get("ownerText", {}).get("runs", [])])
-                views = vr.get("viewCountText", {}).get("simpleText", "")
-                if not views and "runs" in vr.get("viewCountText", {}):
-                    views = "".join([t.get("text", "") for t in vr.get("viewCountText", {}).get("runs", [])])
-                published = vr.get("publishedTimeText", {}).get("simpleText", "")
-                length = vr.get("lengthText", {}).get("simpleText", "")
-                thumbs = vr.get("thumbnail", {}).get("thumbnails", [])
-                thumb = thumbs[-1].get("url", "") if thumbs else f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg"
-                
-                desc = ""
-                snippets = vr.get("detailedMetadataSnippets")
-                if snippets and len(snippets) > 0:
-                    runs = snippets[0].get("snippetText", {}).get("runs", [])
-                    desc = "".join([t.get("text", "") for t in runs])
-
-                if vid and title:
-                    vid_url = f"https://www.youtube.com/watch?v={vid}"
-                    res.append({
-                        "video_id": vid,
-                        "url": vid_url,
-                        "video_url": vid_url,
-                        "title": title.strip(),
-                        "channel": channel.strip(),
-                        "channel_name": channel.strip(),
-                        "views": views.strip() or "0 views",
-                        "views_str": views.strip() or "0 views",
-                        "published": published.strip() or "Baru saja",
-                        "published_str": published.strip() or "Baru saja",
-                        "duration": length.strip() or "--:--",
-                        "duration_str": length.strip() or "--:--",
-                        "thumbnail": thumb,
-                        "thumbnail_url": thumb,
-                        "description": desc.strip()[:200],
-                    })
-            for val in obj.values():
-                res.extend(_extract_video_renderers(val))
-        elif isinstance(obj, list):
-            for item in obj:
-                res.extend(_extract_video_renderers(item))
-        return res
-
-    all_found = _extract_video_renderers(data)
-    
-    # Hilangkan duplikat video_id
     seen = set()
     unique_videos = []
-    for v in all_found:
-        if v["video_id"] not in seen:
-            seen.add(v["video_id"])
-            unique_videos.append(v)
-            if len(unique_videos) >= max_candidates:
+    continuation_token = None
+    max_pages = 6  # 5-6 iterasi pagination untuk mengumpulkan hingga 100-120 kandidat video
+
+    for page in range(max_pages):
+        if len(unique_videos) >= max_candidates:
+            break
+
+        if page == 0:
+            payload = {
+                "context": {
+                    "client": {
+                        "clientName": "WEB",
+                        "clientVersion": "2.20240101.01.00",
+                        "hl": "id",
+                        "gl": "ID",
+                    }
+                },
+                "query": query.strip(),
+            }
+        else:
+            if not continuation_token:
                 break
+            payload = {
+                "context": {
+                    "client": {
+                        "clientName": "WEB",
+                        "clientVersion": "2.20240101.01.00",
+                        "hl": "id",
+                        "gl": "ID",
+                    }
+                },
+                "continuation": continuation_token,
+            }
+
+        try:
+            resp = requests.post(url, headers=headers, json=payload, timeout=12)
+            resp.raise_for_status()
+            data = resp.json()
+        except Exception as e:
+            logger.warning(f"Innertube search page {page + 1} warning: {e}")
+            break
+
+        found_batch = _extract_video_renderers(data)
+        if not found_batch:
+            break
+
+        for v in found_batch:
+            if v["video_id"] not in seen:
+                seen.add(v["video_id"])
+                unique_videos.append(v)
+                if len(unique_videos) >= max_candidates:
+                    break
+
+        continuation_token = _extract_continuation_token(data)
+        if not continuation_token:
+            break
 
     return unique_videos
 
 
-def search_youtube_official_api(query: str, api_key: str, max_candidates: int = 15) -> List[Dict[str, Any]]:
+def search_youtube_official_api(query: str, api_key: str, max_candidates: int = 100) -> List[Dict[str, Any]]:
     """
-    Pencarian menggunakan YouTube Data API v3 resmi jika API key disediakan.
+    Pencarian menggunakan YouTube Data API v3 resmi jika API key disediakan
+    dengan dukungan pagination hingga max_candidates (hingga 100 video).
     """
     url = "https://www.googleapis.com/youtube/v3/search"
-    params = {
-        "part": "snippet",
-        "q": query.strip(),
-        "type": "video",
-        "maxResults": min(max_candidates, 25),
-        "relevanceLanguage": "id",
-        "key": api_key.strip(),
-    }
-
-    try:
-        resp = requests.get(url, params=params, timeout=10)
-        resp.raise_for_status()
-        data = resp.json()
-    except Exception as e:
-        logger.warning(f"YouTube Data API v3 search error: {e}, beralih ke Innertube...")
-        return []
-
-    items = data.get("items", [])
     candidates = []
-    for it in items:
-        vid = it.get("id", {}).get("videoId")
-        snip = it.get("snippet", {})
-        if vid and snip:
-            thumbs = snip.get("thumbnails", {})
-            thumb = (thumbs.get("high") or thumbs.get("medium") or thumbs.get("default") or {}).get("url", "")
-            candidates.append({
-                "video_id": vid,
-                "url": f"https://www.youtube.com/watch?v={vid}",
-                "video_url": f"https://www.youtube.com/watch?v={vid}",
-                "title": snip.get("title", ""),
-                "channel": snip.get("channelTitle", ""),
-                "channel_name": snip.get("channelTitle", ""),
-                "views": "Populer",
-                "views_str": "Populer",
-                "published": snip.get("publishedAt", "")[:10],
-                "published_str": snip.get("publishedAt", "")[:10],
-                "duration": "--:--",
-                "duration_str": "--:--",
-                "thumbnail": thumb or f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg",
-                "thumbnail_url": thumb or f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg",
-                "description": snip.get("description", "")[:200],
-            })
+    seen = set()
+    next_page_token = None
+    pages_to_fetch = max(1, (max_candidates + 49) // 50)  # misal 100 / 50 = 2 halaman
+
+    for _ in range(pages_to_fetch):
+        params = {
+            "part": "snippet",
+            "q": query.strip(),
+            "type": "video",
+            "maxResults": min(50, max_candidates - len(candidates)),
+            "relevanceLanguage": "id",
+            "key": api_key.strip(),
+        }
+        if next_page_token:
+            params["pageToken"] = next_page_token
+
+        try:
+            resp = requests.get(url, params=params, timeout=10)
+            resp.raise_for_status()
+            data = resp.json()
+        except Exception as e:
+            logger.warning(f"YouTube Data API v3 search error: {e}, beralih ke Innertube...")
+            break
+
+        items = data.get("items", [])
+        for it in items:
+            vid = it.get("id", {}).get("videoId")
+            snip = it.get("snippet", {})
+            if vid and snip and vid not in seen:
+                seen.add(vid)
+                thumbs = snip.get("thumbnails", {})
+                thumb = (thumbs.get("high") or thumbs.get("medium") or thumbs.get("default") or {}).get("url", "")
+                candidates.append({
+                    "video_id": vid,
+                    "url": f"https://www.youtube.com/watch?v={vid}",
+                    "video_url": f"https://www.youtube.com/watch?v={vid}",
+                    "title": snip.get("title", ""),
+                    "channel": snip.get("channelTitle", ""),
+                    "channel_name": snip.get("channelTitle", ""),
+                    "views": "Populer",
+                    "views_str": "Populer",
+                    "published": snip.get("publishedAt", "")[:10],
+                    "published_str": snip.get("publishedAt", "")[:10],
+                    "duration": "--:--",
+                    "duration_str": "--:--",
+                    "thumbnail": thumb or f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg",
+                    "thumbnail_url": thumb or f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg",
+                    "description": snip.get("description", "")[:200],
+                })
+                if len(candidates) >= max_candidates:
+                    break
+
+        next_page_token = data.get("nextPageToken")
+        if not next_page_token or len(candidates) >= max_candidates:
+            break
+
     return candidates
 
 
@@ -167,7 +231,7 @@ class VideoDiscoveryService:
     """
 
     @classmethod
-    def search_candidates(cls, query: str, max_candidates: int = 15) -> List[Dict[str, Any]]:
+    def search_candidates(cls, query: str, max_candidates: int = 100) -> List[Dict[str, Any]]:
         settings = AppSettings.load()
         api_key = settings.get("youtube_api_key") or getattr(AppConfig, "YOUTUBE_API_KEY", "")
 
@@ -175,8 +239,15 @@ class VideoDiscoveryService:
         if api_key:
             candidates = search_youtube_official_api(query, api_key, max_candidates)
 
-        if not candidates:
-            candidates = search_youtube_innertube(query, max_candidates)
+        if not candidates or len(candidates) < max_candidates:
+            extra = search_youtube_innertube(query, max_candidates)
+            seen_ids = {c["video_id"] for c in candidates}
+            for ex in extra:
+                if ex["video_id"] not in seen_ids:
+                    candidates.append(ex)
+                    seen_ids.add(ex["video_id"])
+                    if len(candidates) >= max_candidates:
+                        break
 
         return candidates
 
@@ -185,17 +256,17 @@ class VideoDiscoveryService:
         cls,
         keyword: str,
         candidates: List[Dict[str, Any]],
-        max_curated: int = 5,
+        max_curated: int = 100,
         settings: Optional[Dict[str, Any]] = None,
     ) -> List[Dict[str, Any]]:
         """
         Menjalankan AI Curation Gate untuk mengevaluasi relevansi, menyaring clickbait,
-        menilai potensi diskusi publik, dan menyusun peringkat video terbaik.
+        menilai potensi diskusi publik, dan menyusun peringkat video terbaik (hingga 100 video).
         """
         if not candidates:
             return []
 
-        # Ringkas data kandidat untuk prompt LLM yang hemat token
+        # Ringkas data kandidat teratas untuk prompt LLM yang hemat token
         prompt_data = [
             {
                 "index": idx + 1,
@@ -205,7 +276,7 @@ class VideoDiscoveryService:
                 "views": c["views_str"],
                 "description": c["description"][:120],
             }
-            for idx, c in enumerate(candidates[:12])
+            for idx, c in enumerate(candidates[:15])
         ]
 
         system_instruction = (
@@ -215,7 +286,7 @@ class VideoDiscoveryService:
 
         prompt = f"""Isu / Kata Kunci Target: "{keyword}"
 
-Berikut adalah daftar kandidat video YouTube yang ditemukan:
+Berikut adalah daftar kandidat video YouTube teratas yang ditemukan:
 {json.dumps(prompt_data, ensure_ascii=False, indent=2)}
 
 Tugas Anda:
@@ -223,7 +294,7 @@ Tugas Anda:
 2. Nilai relevansi konten terhadap isu "{keyword}" (skor 0 - 100).
 3. Nilai potensi perdebatan / diskursus opini di kolom komentar (Tinggi / Sedang / Rendah).
 4. Berikan satu kalimat singkat profesional sebagai alasan kurasi AI (curation_reason).
-5. Pilih {max_curated} video terbaik, diurutkan dari yang paling berkualitas dan representatif.
+5. Pilih video terbaik, diurutkan dari yang paling berkualitas dan representatif.
 
 Format Output WAJIB berupa JSON murni:
 {{
@@ -288,21 +359,34 @@ Format Output WAJIB berupa JSON murni:
                     base["is_recommended"] = bool(item.get("is_recommended", rel_score >= 80))
                     final_curated.append(base)
 
+            # Gabungkan sisa kandidat video hingga mencapai max_curated (100 video)
+            used_vids = {x["video_id"] for x in final_curated}
+            for idx, c in enumerate(candidates):
+                if c["video_id"] not in used_vids and len(final_curated) < max_curated:
+                    extra_item = c.copy()
+                    extra_item["relevance_score"] = max(65, 88 - int(len(final_curated) * 0.2))
+                    extra_item["discussion_viability"] = "Tinggi" if len(final_curated) < 15 else "Sedang"
+                    extra_item["curation_reason"] = f"Video dari kanal {c.get('channel') or c.get('channel_name')} dengan audiens aktif."
+                    extra_item["curation_tag"] = "Kandidat Terpilih"
+                    extra_item["is_recommended"] = len(final_curated) < 5
+                    final_curated.append(extra_item)
+                    used_vids.add(c["video_id"])
+
             if final_curated:
                 return final_curated
 
         except Exception as e:
             logger.warning(f"AI Curation Gate gagal/timeout: {e}. Menggunakan fallback heuristik.")
 
-        # Fallback Heuristik Cerdas jika AI offline / error
+        # Fallback Heuristik Cerdas (mencakup hingga 100 video)
         fallback_curated = []
         for idx, c in enumerate(candidates[:max_curated]):
             item = c.copy()
-            item["relevance_score"] = max(70, 95 - (idx * 5))
-            item["discussion_viability"] = "Tinggi" if idx < 2 else "Sedang"
+            item["relevance_score"] = max(60, 95 - int(idx * 0.35))
+            item["discussion_viability"] = "Tinggi" if idx < 10 else "Sedang"
             item["curation_reason"] = f"Video teratas dari kanal {c.get('channel') or c.get('channel_name')} dengan interaksi penonton aktif."
             item["curation_tag"] = "Paling Populer" if idx == 0 else "Rekomendasi"
-            item["is_recommended"] = True if idx < 3 else False
+            item["is_recommended"] = True if idx < 5 else False
             fallback_curated.append(item)
 
         return fallback_curated
@@ -311,17 +395,17 @@ Format Output WAJIB berupa JSON murni:
     def discover_and_curate(
         cls,
         keyword: str,
-        max_curated: int = 10,
+        max_curated: int = 100,
         settings: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
-        Fungsi orkestrasi lengkap: Pencarian calon video -> Kurasi AI -> Return daftar siap pilih.
+        Fungsi orkestrasi lengkap: Pencarian calon video -> Kurasi AI -> Return daftar siap pilih (hingga 100 video).
         """
         if not keyword or not keyword.strip():
             return {"success": False, "error": "Kata kunci pencarian tidak boleh kosong."}
 
         clean_kw = keyword.strip()
-        candidates = cls.search_candidates(clean_kw, max_candidates=25)
+        candidates = cls.search_candidates(clean_kw, max_candidates=100)
         if not candidates:
             return {
                 "success": False,

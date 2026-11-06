@@ -595,19 +595,24 @@ def generate_structured_json(prompt: str, response_schema, provider: str, model:
         max_retries = 3
         for attempt in range(max_retries):
             try:
+                system_instruction = (
+                    "Anda adalah asisten JSON terstruktur tingkat tinggi. Berikan HANYA format JSON murni sesuai skema. "
+                    "DILARANG KERAS menyertakan tag <think>...</think>, penalaran CoT tersembunyi, teks pembuka, maupun kata penutup. "
+                    "DILARANG menggunakan trailing comma (koma sebelum '}' atau ']'). "
+                    "Pastikan semua tanda kutip dua di dalam nilai teks sudah di-escape (\\\"). "
+                    "Kembalikan HANYA objek JSON valid sesuai skema berikut: "
+                    + (json.dumps(response_schema.model_json_schema(), ensure_ascii=False) if hasattr(response_schema, "model_json_schema") else "JSON object")
+                )
                 kwargs = {
                     "model": model,
                     "messages": [
                         {
                             "role": "system",
-                            "content": (
-                                "Anda adalah asisten JSON terstruktur. Jawab langsung dan ringkas tanpa penalaran bertele-tele. DILARANG menggunakan trailing comma (koma sebelum '}' atau ']'). Pastikan semua tanda kutip dua di dalam teks sudah di-escape (\\\"). Kembalikan HANYA objek JSON valid sesuai skema berikut: "
-                                + (json.dumps(response_schema.model_json_schema(), ensure_ascii=False) if hasattr(response_schema, "model_json_schema") else "JSON object")
-                            ),
+                            "content": system_instruction,
                         },
                         {"role": "user", "content": prompt},
                     ],
-                    "max_tokens": 4096,
+                    "max_tokens": 8192,
                     "temperature": 0.1,
                 }
                 if not is_edgeone and not is_custom:
@@ -633,6 +638,16 @@ def generate_structured_json(prompt: str, response_schema, provider: str, model:
 
                 dur = time.time() - _t0
                 raw_text = response.choices[0].message.content
+                # Fallback ekstra jika model reasoning menaruh teks di atribut reasoning
+                if not raw_text or not raw_text.strip():
+                    reasoning_candidate = (
+                        getattr(response.choices[0].message, "reasoning_content", None)
+                        or getattr(response.choices[0].message, "reasoning", None)
+                        or getattr(response.choices[0].message, "reasoning_text", None)
+                    )
+                    if reasoning_candidate and isinstance(reasoning_candidate, str) and ("{" in reasoning_candidate or "[" in reasoning_candidate):
+                        raw_text = reasoning_candidate
+
                 u = getattr(response, "usage", None)
                 u_dict = {"prompt_tokens": getattr(u, "prompt_tokens", None), "completion_tokens": getattr(u, "completion_tokens", None), "total_tokens": getattr(u, "total_tokens", None)} if u else {}
                 _log_api_traffic(provider, model, "structured_json", f"{base_url}/chat/completions", "200 OK", dur, kwargs, {"raw_text": raw_text, "usage": u_dict})

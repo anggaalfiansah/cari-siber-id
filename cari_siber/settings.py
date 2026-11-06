@@ -71,12 +71,73 @@ class AppSettings:
         settings["custom_api_key"] = AppSettings.get_secret("CUSTOM_API_KEY") or os.environ.get("CUSTOM_API_KEY", "") or settings.get("custom_api_key", "")
         settings["youtube_api_key"] = AppSettings.get_secret("YOUTUBE_API_KEY") or os.environ.get("YOUTUBE_API_KEY", "") or settings.get("youtube_api_key", "")
         settings["custom_base_url"] = settings.get("custom_base_url", "https://api.tokenai.id/v1")
+
+        # Multi-Account AI Profiles Management
+        accounts = settings.get("ai_accounts")
+        if not accounts or not isinstance(accounts, list) or len(accounts) == 0:
+            active_prov = settings.get("ai_provider", "gemini")
+            active_model = settings.get("ai_model", "gemini-2.5-flash")
+            current_key = settings.get(f"{active_prov}_api_key") or settings.get("custom_api_key") or ""
+            current_base = settings.get("custom_base_url") or "https://api.tokenai.id/v1"
+
+            default_acc = {
+                "id": "acc_default_1",
+                "name": f"Profil {active_prov.upper()} Utama",
+                "provider": active_prov,
+                "model": active_model,
+                "base_url": current_base,
+                "api_key": current_key,
+                "is_active": True,
+            }
+            accounts = [default_acc]
+            settings["ai_accounts"] = accounts
+            settings["active_account_id"] = "acc_default_1"
+
+        # Pastikan active_account_id tersinkronisasi
+        active_id = settings.get("active_account_id")
+        active_acc = None
+        for acc in accounts:
+            if acc.get("id") == active_id:
+                active_acc = acc
+                break
+        if not active_acc and accounts:
+            active_acc = accounts[0]
+            settings["active_account_id"] = active_acc.get("id")
+
+        if active_acc:
+            settings["ai_provider"] = active_acc.get("provider", settings.get("ai_provider", "gemini"))
+            settings["ai_model"] = active_acc.get("model", settings.get("ai_model", "gemini-2.5-flash"))
+            if active_acc.get("base_url"):
+                settings["custom_base_url"] = active_acc["base_url"]
+            p_prov = active_acc.get("provider", "gemini")
+            if active_acc.get("api_key"):
+                settings[f"{p_prov}_api_key"] = active_acc["api_key"]
+                if p_prov == "custom":
+                    settings["custom_api_key"] = active_acc["api_key"]
+
         return settings
 
     @staticmethod
     def save(new_settings: Dict[str, Any]) -> None:
         """Saves settings, securely storing API keys in Windows Credential Manager."""
-        # 1. Extract and store secrets
+        # 1. Sinkronisasi akun aktif jika ada list ai_accounts
+        accounts = new_settings.get("ai_accounts", [])
+        active_id = new_settings.get("active_account_id")
+        if accounts and isinstance(accounts, list):
+            active_acc = next((a for a in accounts if a.get("id") == active_id), accounts[0])
+            if active_acc:
+                new_settings["ai_provider"] = active_acc.get("provider", new_settings.get("ai_provider", "gemini"))
+                new_settings["ai_model"] = active_acc.get("model", new_settings.get("ai_model", "gemini-2.5-flash"))
+                if active_acc.get("base_url"):
+                    new_settings["custom_base_url"] = active_acc["base_url"]
+                p_prov = active_acc.get("provider", "gemini")
+                p_key = active_acc.get("api_key", "")
+                if p_key:
+                    new_settings[f"{p_prov}_api_key"] = p_key
+                    if p_prov == "custom":
+                        new_settings["custom_api_key"] = p_key
+
+        # 2. Extract and store secrets
         for key in ["gemini_api_key", "openrouter_api_key", "edgeone_api_key", "custom_api_key", "youtube_api_key"]:
             if key in new_settings:
                 val = new_settings[key]
@@ -85,8 +146,13 @@ class AppSettings:
                 else:
                     AppSettings.delete_secret(key.upper())
 
-        # 2. Write non-secret preferences to JSON
+        # 3. Write preferences (termasuk list akun AI) ke JSON
         to_save = {k: v for k, v in new_settings.items() if not k.endswith("_api_key")}
+        # Tetap simpan ai_accounts utuh termasuk api_key masing-masing akun di settings.json pengguna
+        if "ai_accounts" in new_settings:
+            to_save["ai_accounts"] = new_settings["ai_accounts"]
+        if "active_account_id" in new_settings:
+            to_save["active_account_id"] = new_settings["active_account_id"]
         json_path = get_settings_json_path()
         try:
             with open(json_path, "w", encoding="utf-8") as f:

@@ -1,6 +1,18 @@
+export interface AIAccountProfile {
+  id: string;
+  name: string;
+  provider: string;
+  model: string;
+  base_url?: string;
+  api_key?: string;
+  is_active?: boolean;
+}
+
 export interface Settings {
   ai_provider: string;
   ai_model: string;
+  active_account_id?: string;
+  ai_accounts?: AIAccountProfile[];
   gemini_api_key?: string;
   openrouter_api_key?: string;
   edgeone_api_key?: string;
@@ -43,7 +55,8 @@ export interface TopicItem {
 export interface ChartItem {
   id: string;
   title: string;
-  data_uri: string;
+  file_uri?: string;
+  data_uri?: string;
 }
 
 export interface InteractiveData {
@@ -93,14 +106,17 @@ export interface FlaggedAccountItem {
   inauthenticity_score?: number;
   bot_score?: number;
   provocation_score?: number;
-  actor_type?: 'PROVOCATEUR_HIGH_IMPACT' | 'PROVOCATEUR_AGITATOR' | 'BUZZER_COORDINATED' | 'SPAM_BOT' | 'HYBRID_THREAT';
+  actor_type?: 'PROVOCATEUR_HIGH_IMPACT' | 'PROVOCATEUR_AGITATOR' | 'BUZZER_COORDINATED' | 'SPAM_BOT' | 'HYBRID_THREAT' | 'COORDINATED_BOT_NETWORK';
   actor_label?: string;
   detected_keywords?: string[];
+  is_coordinated_bot?: boolean;
+  coordinated_peer_count?: number;
   score_breakdown?: {
     copypasta?: number;
     cross_video?: number;
     temporal?: number;
     dialogue?: number;
+    network?: number;
     prov_lexicon?: number;
     prov_thread?: number;
     prov_resonance?: number;
@@ -159,6 +175,17 @@ export interface CrossVideoIntelligence {
   video_comparison_matrix: VideoComparisonRow[];
 }
 
+export interface TelemetryInfo {
+  ai_provider: string;
+  ai_model: string;
+  total_duration_sec: number;
+  duration_formatted: string;
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+  llm_calls_count: number;
+}
+
 export interface RunResult {
   meta: {
     video_title: string;
@@ -169,7 +196,9 @@ export interface RunResult {
     cib_level?: string;
     polarization_index?: number;
     run_dir: string;
+    telemetry?: TelemetryInfo;
   };
+  telemetry?: TelemetryInfo;
   cib_score?: number;
   cib_level?: string;
   polarization_index?: number;
@@ -181,8 +210,28 @@ export interface RunResult {
   narrative_md: string;
   interactive_data: InteractiveData;
   flagged_accounts?: FlaggedAccountItem[];
+  coordinated_bot_networks?: CoordinatedBotNetwork[];
   corpus_comments?: AuthorCommentItem[];
   cross_video?: CrossVideoIntelligence;
+}
+
+export interface CoordinatedBotNetwork {
+  template_text: string;
+  normalized_key: string;
+  unique_accounts_count: number;
+  total_occurrences: number;
+  unique_videos_count: number;
+  target_video_titles: string[];
+  accounts: string[];
+  coordination_level: 'CRITICAL_MASS' | 'HIGH_COORDINATION' | 'MEDIUM_COORDINATION';
+  coordination_badge: string;
+  sample_occurrences?: Array<{
+    raw_text: string;
+    username: string;
+    video_title: string;
+    created_at: string;
+    like_count?: number;
+  }>;
 }
 
 export interface ProgressEvent {
@@ -249,4 +298,15 @@ export interface VideoDiscoveryResponse {
   curated_videos?: CuratedVideoItem[];
   error?: string;
 }
+
+export interface ReusableCorpus {
+  run_id: string;
+  created_at: string;
+  comment_count: number;
+  video_count: number;
+  title: string;
+  source_file: string;
+  size_mb: number;
+}
+
 

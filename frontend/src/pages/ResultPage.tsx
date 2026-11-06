@@ -25,6 +25,9 @@ import {
   ThumbsUp,
   Video,
   FileText,
+  User,
+  Bot,
+  Copy,
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -35,6 +38,7 @@ import {
   ChartItem,
   FlaggedAccountItem,
   AuthorCommentItem,
+  CoordinatedBotNetwork,
 } from '../api/types';
 import { api } from '../api/bridge';
 import { KpiCard } from '../components/KpiCard';
@@ -46,11 +50,12 @@ import { AccountCommentsModal } from '../components/AccountCommentsModal';
 interface ResultPageProps {
   runId: string | null;
   onNavigateNew: () => void;
+  onNavigateNewWithReuse?: (runId: string) => void;
 }
 
 type TabType = 'buzzers' | 'cross_videos' | 'topics' | 'comments' | 'charts' | 'narrative';
 
-export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) => {
+export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, onNavigateNewWithReuse }) => {
   const [result, setResult] = useState<RunResult | null>(null);
   const [runInfo, setRunInfo] = useState<RunHistoryItem | null>(null);
   const [loading, setLoading] = useState(false);
@@ -63,7 +68,9 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
   // Modal Akun Terindikasi & Detail Komentarnya
   const [selectedAccount, setSelectedAccount] = useState<FlaggedAccountItem | null>(null);
 
-  // Filter untuk Tab Akun Terindikasi
+  // Filter untuk Tab Akun Terindikasi & Jaringan Bot Massal
+  const [buzzerViewMode, setBuzzerViewMode] = useState<'individual' | 'botnet'>('individual');
+  const [botnetSearch, setBotnetSearch] = useState('');
   const [buzzerSearch, setBuzzerSearch] = useState('');
   const [buzzerRiskFilter, setBuzzerRiskFilter] = useState<'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'SUSPICIOUS'>('ALL');
   const [buzzerActorFilter, setBuzzerActorFilter] = useState<'ALL' | 'PROVOCATEUR' | 'BUZZER' | 'BOT' | 'HYBRID'>('ALL');
@@ -181,6 +188,22 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
       return true;
     });
   }, [flaggedAccounts, buzzerRiskFilter, buzzerActorFilter, buzzerSearch]);
+
+  // Coordinated Bot Networks (Komentar Kembar Lintas Akun)
+  const botNetworks: CoordinatedBotNetwork[] = useMemo(() => {
+    return result?.coordinated_bot_networks || [];
+  }, [result]);
+
+  const filteredBotNetworks = useMemo(() => {
+    return botNetworks.filter((bn) => {
+      if (!botnetSearch.trim()) return true;
+      const q = botnetSearch.toLowerCase();
+      const matchText = (bn.template_text || '').toLowerCase().includes(q);
+      const matchAccounts = (bn.accounts || []).some((acc) => acc.toLowerCase().includes(q));
+      const matchVideos = (bn.target_video_titles || []).some((v) => v.toLowerCase().includes(q));
+      return matchText || matchAccounts || matchVideos;
+    });
+  }, [botNetworks, botnetSearch]);
 
   // Filtered Corpus Comments
   const filteredCorpusComments = useMemo(() => {
@@ -555,6 +578,87 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
           {/* ======================================================== */}
           {activeTab === 'buzzers' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* SUB-VIEW SWITCHER: INDIVIDUAL ACCOUNTS vs COORDINATED BOT NETWORKS */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '12px',
+                  background: 'rgba(15, 23, 42, 0.6)',
+                  padding: '6px',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(51, 65, 85, 0.5)',
+                }}
+              >
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => setBuzzerViewMode('individual')}
+                    style={{
+                      background: buzzerViewMode === 'individual' ? '#0284c7' : 'transparent',
+                      color: buzzerViewMode === 'individual' ? '#ffffff' : '#94a3b8',
+                      border: 'none',
+                      padding: '8px 16px',
+                      borderRadius: '7px',
+                      fontSize: '0.82rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <User size={15} />
+                    <span>Profil Akun Terindikasi ({filteredFlaggedAccounts.length})</span>
+                  </button>
+
+                  <button
+                    onClick={() => setBuzzerViewMode('botnet')}
+                    style={{
+                      background: buzzerViewMode === 'botnet' ? '#0284c7' : 'transparent',
+                      color: buzzerViewMode === 'botnet' ? '#ffffff' : '#94a3b8',
+                      border: 'none',
+                      padding: '8px 16px',
+                      borderRadius: '7px',
+                      fontSize: '0.82rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      transition: 'all 0.15s ease',
+                      position: 'relative',
+                    }}
+                  >
+                    <Bot size={15} />
+                    <span>Jaringan Bot Massal ({botNetworks.length} Klaster Template)</span>
+                    {botNetworks.length > 0 && (
+                      <span
+                        style={{
+                          background: buzzerViewMode === 'botnet' ? 'rgba(255,255,255,0.25)' : 'rgba(239, 68, 68, 0.25)',
+                          color: buzzerViewMode === 'botnet' ? '#ffffff' : '#f87171',
+                          fontSize: '0.68rem',
+                          fontWeight: 700,
+                          padding: '1px 6px',
+                          borderRadius: '10px',
+                        }}
+                      >
+                        DETEKSI MASSAL
+                      </span>
+                    )}
+                  </button>
+                </div>
+
+                <div style={{ fontSize: '0.75rem', color: '#64748b', paddingRight: '8px' }}>
+                  {buzzerViewMode === 'individual'
+                    ? 'Mode Pelacakan Individu (Dual-Engine)'
+                    : 'Mode Deteksi Komentar Kembar Lintas Akun'}
+                </div>
+              </div>
+
+              {buzzerViewMode === 'individual' && (<>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
                 <div>
                   <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
@@ -846,22 +950,48 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
                                     Kata Hasutan: {b.detected_keywords.slice(0, 3).join(', ')}
                                   </span>
                                 )}
-                                {(b.threat_tags && b.threat_tags.length > 0 ? b.threat_tags : ['Aktivitas Berulang']).map((t, idx) => (
-                                  <span
-                                    key={idx}
-                                    style={{
-                                      fontSize: '0.68rem',
-                                      background: 'rgba(2, 132, 199, 0.15)',
-                                      color: '#7dd3fc',
-                                      padding: '2px 7px',
-                                      borderRadius: '4px',
-                                      border: '1px solid rgba(2, 132, 199, 0.3)',
-                                      fontWeight: 500,
-                                    }}
-                                  >
-                                    {t}
-                                  </span>
-                                ))}
+                                {(b.threat_tags && b.threat_tags.length > 0 ? b.threat_tags : ['Aktivitas Berulang']).map((rawT, idx) => {
+                                  const t = rawT.includes('<0 dtk') ? rawT.replace('<0 dtk', 'Posting Cepat') : rawT;
+                                  const isBotnet = t.toLowerCase().includes('bot massal');
+                                  const isBurst = t.toLowerCase().includes('burst');
+                                  const isCopypasta = t.toLowerCase().includes('copypasta');
+                                  return (
+                                    <span
+                                      key={idx}
+                                      style={{
+                                        fontSize: '0.68rem',
+                                        background: isBotnet
+                                          ? 'rgba(239, 68, 68, 0.2)'
+                                          : isBurst
+                                          ? 'rgba(245, 158, 11, 0.2)'
+                                          : isCopypasta
+                                          ? 'rgba(168, 85, 247, 0.2)'
+                                          : 'rgba(2, 132, 199, 0.15)',
+                                        color: isBotnet
+                                          ? '#fca5a5'
+                                          : isBurst
+                                          ? '#fcd34d'
+                                          : isCopypasta
+                                          ? '#d8b4fe'
+                                          : '#7dd3fc',
+                                        padding: '2px 7px',
+                                        borderRadius: '4px',
+                                        border: `1px solid ${
+                                          isBotnet
+                                            ? 'rgba(239, 68, 68, 0.4)'
+                                            : isBurst
+                                            ? 'rgba(245, 158, 11, 0.4)'
+                                            : isCopypasta
+                                            ? 'rgba(168, 85, 247, 0.4)'
+                                            : 'rgba(2, 132, 199, 0.3)'
+                                        }`,
+                                        fontWeight: isBotnet || isBurst ? 600 : 500,
+                                      }}
+                                    >
+                                      {t}
+                                    </span>
+                                  );
+                                })}
                               </div>
                             </td>
 
@@ -932,8 +1062,221 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew }) 
                   </table>
                 </div>
               )}
+            </>
+          )}
+
+          {/* TAMPILAN JARINGAN BOT MASSAL (KOMENTAR KEMBAR LINTAS AKUN) */}
+          {buzzerViewMode === 'botnet' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+                <div>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <Bot size={18} color="#ef4444" />
+                    <span>Deteksi Jaringan Bot Massal (Komentar Kembar Lintas Akun)</span>
+                    <span style={{ fontSize: '0.75rem', background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', border: '1px solid rgba(239, 68, 68, 0.4)', padding: '2px 9px', borderRadius: '10px', fontWeight: 700 }}>
+                      {filteredBotNetworks.length} Klaster Template Kembar
+                    </span>
+                  </h3>
+                  <p style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: '3px', maxWidth: '720px', lineHeight: 1.4 }}>
+                    Sistem melacak pola <strong>Coordinated Inauthentic Behavior (CIB)</strong> di mana banyak akun pengguna yang berbeda memposting template teks yang <strong>sama persis / identik</strong>. Ini merupakan indikator kuat operasi bot farm terorganisir.
+                  </p>
+                </div>
+
+                <div style={{ position: 'relative', width: '260px' }}>
+                  <Search size={14} color="#64748b" style={{ position: 'absolute', left: '10px', top: '8px' }} />
+                  <input
+                    type="text"
+                    placeholder="Cari teks template atau akun..."
+                    value={botnetSearch}
+                    onChange={(e) => setBotnetSearch(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '6px 10px 6px 30px',
+                      background: 'rgba(30, 41, 59, 0.6)',
+                      border: '1px solid rgba(51, 65, 85, 0.6)',
+                      borderRadius: '6px',
+                      color: '#f8fafc',
+                      fontSize: '0.78rem',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {filteredBotNetworks.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px 20px', color: '#94a3b8', background: 'rgba(15, 23, 42, 0.4)', borderRadius: '10px', border: '1px dashed #334155' }}>
+                  <ShieldCheck size={40} color="#10b981" style={{ margin: '0 auto 10px' }} />
+                  <div style={{ fontWeight: 600, color: '#f8fafc', fontSize: '0.95rem' }}>
+                    Tidak Ditemukan Pola Komentar Kembar Lintas Akun
+                  </div>
+                  <div style={{ fontSize: '0.78rem', marginTop: '4px', color: '#64748b' }}>
+                    Seluruh komentar pada sesi ini ditulis dengan variasi bahasa organik tanpa adanya template duplikasi massal.
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  {filteredBotNetworks.map((bn, bIdx) => {
+                    const isCritical = bn.coordination_level === 'CRITICAL_MASS';
+                    const isHigh = bn.coordination_level === 'HIGH_COORDINATION';
+                    const borderColor = isCritical ? 'rgba(239, 68, 68, 0.45)' : isHigh ? 'rgba(245, 158, 11, 0.45)' : 'rgba(56, 189, 248, 0.35)';
+                    const bgCard = isCritical ? 'rgba(239, 68, 68, 0.06)' : isHigh ? 'rgba(245, 158, 11, 0.05)' : 'rgba(15, 23, 42, 0.5)';
+                    return (
+                      <div
+                        key={bIdx}
+                        style={{
+                          background: bgCard,
+                          border: `1px solid ${borderColor}`,
+                          borderRadius: '10px',
+                          padding: '16px 18px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '12px',
+                        }}
+                      >
+                        {/* Card Top: Badges & Stats */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <span
+                              style={{
+                                fontSize: '0.72rem',
+                                fontWeight: 700,
+                                padding: '3px 8px',
+                                borderRadius: '6px',
+                                background: isCritical ? 'rgba(239, 68, 68, 0.25)' : isHigh ? 'rgba(245, 158, 11, 0.25)' : 'rgba(56, 189, 248, 0.2)',
+                                color: isCritical ? '#fca5a5' : isHigh ? '#fde047' : '#7dd3fc',
+                                border: `1px solid ${isCritical ? '#ef4444' : isHigh ? '#f59e0b' : '#38bdf8'}`,
+                              }}
+                            >
+                              {bn.coordination_badge}
+                            </span>
+
+                            <span
+                              style={{
+                                fontSize: '0.72rem',
+                                fontWeight: 800,
+                                padding: '3px 9px',
+                                borderRadius: '6px',
+                                background: 'rgba(239, 68, 68, 0.15)',
+                                color: '#f87171',
+                                border: '1px solid rgba(239, 68, 68, 0.3)',
+                              }}
+                            >
+                              👥 {bn.unique_accounts_count} Akun Berbeda
+                            </span>
+
+                            <span
+                              style={{
+                                fontSize: '0.72rem',
+                                fontWeight: 600,
+                                padding: '3px 8px',
+                                borderRadius: '6px',
+                                background: 'rgba(56, 189, 248, 0.12)',
+                                color: '#38bdf8',
+                                border: '1px solid rgba(56, 189, 248, 0.25)',
+                              }}
+                            >
+                              🎬 {bn.unique_videos_count} Video Sasaran
+                            </span>
+
+                            <span
+                              style={{
+                                fontSize: '0.72rem',
+                                color: '#94a3b8',
+                                background: 'rgba(51, 65, 85, 0.3)',
+                                padding: '3px 8px',
+                                borderRadius: '6px',
+                              }}
+                            >
+                              🔁 {bn.total_occurrences}x Total Diposting
+                            </span>
+                          </div>
+
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(bn.template_text);
+                            }}
+                            style={{
+                              fontSize: '0.72rem',
+                              background: 'rgba(51, 65, 85, 0.4)',
+                              border: '1px solid rgba(100, 116, 139, 0.4)',
+                              color: '#cbd5e1',
+                              padding: '4px 10px',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                            }}
+                          >
+                            <Copy size={12} />
+                            <span>Salin Template</span>
+                          </button>
+                        </div>
+
+                        {/* Template Text Quote */}
+                        <div
+                          style={{
+                            background: '#090d16',
+                            borderLeft: `4px solid ${isCritical ? '#ef4444' : isHigh ? '#f59e0b' : '#0284c7'}`,
+                            borderRadius: '0 8px 8px 0',
+                            padding: '12px 14px',
+                            color: '#f8fafc',
+                            fontSize: '0.85rem',
+                            lineHeight: 1.5,
+                            fontStyle: 'italic',
+                            wordBreak: 'break-word',
+                          }}
+                        >
+                          "{bn.template_text}"
+                        </div>
+
+                        {/* Video Targets & Target Accounts */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.76rem', color: '#94a3b8' }}>
+                          {bn.target_video_titles && bn.target_video_titles.length > 0 && (
+                            <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+                              <span style={{ fontWeight: 600, color: '#64748b', flexShrink: 0 }}>Target Video:</span>
+                              <span style={{ color: '#cbd5e1' }}>
+                                {bn.target_video_titles.slice(0, 3).join(' • ')}
+                                {bn.target_video_titles.length > 3 ? ` (+${bn.target_video_titles.length - 3} video lainnya)` : ''}
+                              </span>
+                            </div>
+                          )}
+
+                          <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                            <span style={{ fontWeight: 600, color: '#64748b', flexShrink: 0 }}>Akun Pelaku:</span>
+                            <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                              {bn.accounts.map((acc, aIdx) => (
+                                <span
+                                  key={aIdx}
+                                  onClick={() => handleInspectAuthor(acc)}
+                                  style={{
+                                    background: 'rgba(2, 132, 199, 0.15)',
+                                    color: '#38bdf8',
+                                    border: '1px solid rgba(2, 132, 199, 0.35)',
+                                    padding: '2px 8px',
+                                    borderRadius: '4px',
+                                    fontSize: '0.72rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                  }}
+                                  title="Klik untuk membuka riwayat komentar akun ini"
+                                >
+                                  {acc}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
+
+        </div>
+      )}
 
           {/* ======================================================== */}
           {/* TAB 2: KOMPARASI MULTI-VIDEO                             */}

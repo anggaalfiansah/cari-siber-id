@@ -12,6 +12,7 @@ import { PyWebViewEvent } from './api/types';
 export const App: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<'new' | 'progress' | 'result' | 'history' | 'settings'>('new');
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
+  const [reuseRunId, setReuseRunId] = useState<string | undefined>(undefined);
   const [isBusy, setIsBusy] = useState(false);
 
   const [progress, setProgress] = useState({
@@ -91,6 +92,12 @@ export const App: React.FC = () => {
   };
 
   const handleNavigateNew = () => {
+    setReuseRunId(undefined);
+    setCurrentTab('new');
+  };
+
+  const handleNavigateNewWithReuse = (runId: string) => {
+    setReuseRunId(runId);
     setCurrentTab('new');
   };
 
@@ -106,7 +113,12 @@ export const App: React.FC = () => {
         <main style={{ flex: 1, padding: '24px 28px', overflowY: 'auto', background: '#0b0f19', display: 'flex', flexDirection: 'column' }}>
           <ErrorBoundary onReset={handleNavigateNew}>
             {currentTab === 'new' && (
-              <NewAnalysisPage onRunStarted={handleRunStarted} isBusy={isBusy} />
+              <NewAnalysisPage
+                onRunStarted={handleRunStarted}
+                isBusy={isBusy}
+                initialReuseRunId={reuseRunId}
+                onClearReuseRunId={() => setReuseRunId(undefined)}
+              />
             )}
 
             {currentTab === 'progress' && (
@@ -125,6 +137,7 @@ export const App: React.FC = () => {
               <ResultPage
                 runId={selectedRunId}
                 onNavigateNew={handleNavigateNew}
+                onNavigateNewWithReuse={handleNavigateNewWithReuse}
               />
             )}
 

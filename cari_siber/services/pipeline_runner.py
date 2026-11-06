@@ -1,5 +1,6 @@
 import os
 import time
+import shutil
 import threading
 import uuid
 from datetime import datetime
@@ -63,6 +64,7 @@ class PipelineRunner:
         sort_by: str = "top",
         include_replies: bool = True,
         skip_scrape: bool = False,
+        source_run_id: Optional[str] = None,
     ) -> str:
         with self._lock:
             if self._is_running:
@@ -77,7 +79,32 @@ class PipelineRunner:
             elif video_url and str(video_url).strip():
                 resolved_urls = [str(video_url).strip()]
 
-            primary_url = resolved_urls[0] if resolved_urls else (video_url or "")
+            # Jika menggunakan korpus dari run sebelumnya (Reuse Corpus)
+            if source_run_id:
+                source_dir = get_run_dir(str(source_run_id).strip())
+                source_scrap = os.path.join(source_dir, "scrap")
+                if os.path.exists(source_scrap):
+                    target_scrap = os.path.join(run_dir, "scrap")
+                    os.makedirs(target_scrap, exist_ok=True)
+                    for item in os.listdir(source_scrap):
+                        s_path = os.path.join(source_scrap, item)
+                        if os.path.isfile(s_path):
+                            shutil.copy2(s_path, os.path.join(target_scrap, item))
+                    skip_scrape = True
+                    print(f"[RUNNER] Berhasil menyalin data korpus scraping dari Run {source_run_id} ke {run_id}.")
+
+                    # Ekstrak info video jika resolved_urls belum ada
+                    if not resolved_urls:
+                        meta_all = os.path.join(target_scrap, "youtube_videos_meta_all.csv")
+                        if os.path.exists(meta_all):
+                            try:
+                                m_df = pd.read_csv(meta_all)
+                                if "video_id" in m_df.columns:
+                                    resolved_urls = [f"https://www.youtube.com/watch?v={vid}" for vid in m_df["video_id"].dropna().unique()]
+                            except Exception:
+                                pass
+
+            primary_url = resolved_urls[0] if resolved_urls else (video_url or "https://www.youtube.com/watch?v=corpus_reused")
 
             # 1. Load settings & configure engine
             settings = AppSettings.load()
@@ -92,7 +119,10 @@ class PipelineRunner:
             )
 
             # 2. Record to SQLite (Store primary url or campaign summary)
-            history_target = primary_url if len(resolved_urls) <= 1 else f"{primary_url} (+{len(resolved_urls)-1} video lainnya)"
+            if source_run_id:
+                history_target = f"[Reuse {source_run_id[:15]}] {primary_url}" if len(resolved_urls) <= 1 else f"[Reuse {source_run_id[:15]}] {len(resolved_urls)} video korpus"
+            else:
+                history_target = primary_url if len(resolved_urls) <= 1 else f"{primary_url} (+{len(resolved_urls)-1} video lainnya)"
             HistoryService.create_run(run_id, history_target, run_dir)
 
             self.active_run_id = run_id
@@ -108,6 +138,14 @@ class PipelineRunner:
             return run_id
 
     def _worker_thread(self, run_id: str, run_dir: str, video_url: str, skip_scrape: bool):
+        t_pipeline_start = time.time()
+        # Reset tracker token di awal run
+        try:
+            from cari_siber.engine.core.ai_client import reset_token_tracker, TOKEN_USAGE_TRACKER
+            reset_token_tracker()
+        except Exception:
+            TOKEN_USAGE_TRACKER = {}
+
         # Lazy imports of pipelines inside background worker
         from cari_siber.engine.pipelines.youtube_comments.pipeline_scrape import run_scraper
         from cari_siber.engine.pipelines.youtube_comments.pipeline_topic import run_topic_modeling
@@ -218,6 +256,36 @@ class PipelineRunner:
                 flagged_accounts = IntelligenceService.calculate_flagged_accounts(df_final)
                 with open(os.path.join(json_dir, "flagged_accounts.json"), "w", encoding="utf-8") as faf:
                     json.dump(flagged_accounts, faf, indent=2)
+
+                bot_networks = IntelligenceService.calculate_coordinated_bot_networks(df_final)
+                with open(os.path.join(json_dir, "coordinated_bot_networks.json"), "w", encoding="utf-8") as bjf:
+                    json.dump(bot_networks, bjf, indent=2)
+
+                # Rekam Telemetri Eksekusi: Waktu Total, Token AI, & Model yang Digunakan
+                t_pipeline_end = time.time()
+                total_duration = max(0.1, round(t_pipeline_end - t_pipeline_start, 2))
+                dur_minutes = int(total_duration // 60)
+                dur_seconds = int(total_duration % 60)
+                duration_formatted = f"{dur_minutes}m {dur_seconds}s" if dur_minutes > 0 else f"{total_duration:.1f}s"
+
+                settings = AppSettings.load()
+                used_provider = getattr(settings, "ai_provider", "custom") or "custom"
+                used_model = getattr(settings, "ai_model", "") or getattr(AppConfig, "AI_MODEL", "") or "default-model"
+
+                telemetry_data = {
+                    "ai_provider": used_provider,
+                    "ai_model": used_model,
+                    "total_duration_sec": total_duration,
+                    "duration_formatted": duration_formatted,
+                    "prompt_tokens": int(TOKEN_USAGE_TRACKER.get("prompt_tokens", 0)),
+                    "completion_tokens": int(TOKEN_USAGE_TRACKER.get("completion_tokens", 0)),
+                    "total_tokens": int(TOKEN_USAGE_TRACKER.get("total_tokens", 0)),
+                    "llm_calls_count": int(TOKEN_USAGE_TRACKER.get("calls", 0)),
+                }
+
+                with open(os.path.join(json_dir, "telemetry_summary.json"), "w", encoding="utf-8") as tf:
+                    json.dump(telemetry_data, tf, indent=2)
+
             except Exception as j_err:
                 print(f"[PIPELINE WARNING] Gagal menyimpan ringkasan metrik JSON: {j_err}")
 

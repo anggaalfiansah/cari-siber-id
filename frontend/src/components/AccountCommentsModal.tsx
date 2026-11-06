@@ -274,21 +274,48 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
 
                 {account.threat_tags && account.threat_tags.length > 0 && (
                   <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                    {account.threat_tags.map((tag, idx) => (
-                      <span
-                        key={idx}
-                        style={{
-                          fontSize: '0.68rem',
-                          background: 'rgba(2, 132, 199, 0.15)',
-                          color: '#7dd3fc',
-                          padding: '1px 7px',
-                          borderRadius: '4px',
-                          border: '1px solid rgba(2, 132, 199, 0.3)',
-                        }}
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                    {account.threat_tags.map((rawTag, idx) => {
+                      const tag = rawTag.includes('<0 dtk') ? rawTag.replace('<0 dtk', 'Posting Cepat') : rawTag;
+                      const isBotnet = tag.toLowerCase().includes('bot massal');
+                      const isBurst = tag.toLowerCase().includes('burst');
+                      const isCopypasta = tag.toLowerCase().includes('copypasta');
+                      return (
+                        <span
+                          key={idx}
+                          style={{
+                            fontSize: '0.68rem',
+                            background: isBotnet
+                              ? 'rgba(239, 68, 68, 0.2)'
+                              : isBurst
+                              ? 'rgba(245, 158, 11, 0.2)'
+                              : isCopypasta
+                              ? 'rgba(168, 85, 247, 0.2)'
+                              : 'rgba(2, 132, 199, 0.15)',
+                            color: isBotnet
+                              ? '#fca5a5'
+                              : isBurst
+                              ? '#fcd34d'
+                              : isCopypasta
+                              ? '#d8b4fe'
+                              : '#7dd3fc',
+                            padding: '1px 7px',
+                            borderRadius: '4px',
+                            border: `1px solid ${
+                              isBotnet
+                                ? 'rgba(239, 68, 68, 0.4)'
+                                : isBurst
+                                ? 'rgba(245, 158, 11, 0.4)'
+                                : isCopypasta
+                                ? 'rgba(168, 85, 247, 0.4)'
+                                : 'rgba(2, 132, 199, 0.3)'
+                            }`,
+                            fontWeight: isBotnet || isBurst ? 600 : 500,
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      );
+                    })}
                   </div>
                 )}
               </div>

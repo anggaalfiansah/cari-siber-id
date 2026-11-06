@@ -90,7 +90,13 @@ def get_logs_dir() -> str:
     return logs_dir
 
 
+def get_runs_dir() -> str:
+    runs_dir = os.path.join(get_user_data_dir(), "runs")
+    os.makedirs(runs_dir, exist_ok=True)
+    return runs_dir
+
+
 def get_run_dir(run_id: str) -> str:
-    runs_dir = os.path.join(get_user_data_dir(), "runs", run_id)
+    runs_dir = os.path.join(get_runs_dir(), run_id)
     os.makedirs(runs_dir, exist_ok=True)
     return runs_dir

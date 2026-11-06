@@ -780,7 +780,9 @@ def _run_llm_topic_sample_check(
     )
     print(f"    -> [Topic Gate - Cek LLM {pass_number}/2] Menguji kesesuaian 10 sampel/topik ({pass_desc})...")
 
-    batch_size = 12
+    # Batch size diperkecil ke 4 agar payload tidak terlalu panjang (~1.200 prompt token),
+    # menghindari token exhaustion pada reasoning model, dan menjaga latensi per panggilan tetap gesit (4-8 detik).
+    batch_size = 4
     total_batches = (len(topic_summaries) + batch_size - 1) // batch_size
     all_incoherent_ids = []
     all_dup_pairs = []

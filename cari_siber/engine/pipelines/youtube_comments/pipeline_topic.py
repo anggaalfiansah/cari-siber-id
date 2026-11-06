@@ -259,7 +259,25 @@ def run_topic_modeling(config_override=None):
     os.makedirs(csv_output_dir, exist_ok=True)
 
     if not os.path.exists(youtube_csv_path):
-        raise PipelineError("Berkas komentar YouTube '{youtube_csv_path}' tidak ditemukan. Harap jalankan Langkah 0 terlebih dahulu.")
+        scrap_dir = os.path.join(output_dir, "scrap")
+        alt_corpus = os.path.join(scrap_dir, "youtube_comments_all_videos.csv")
+        if os.path.exists(alt_corpus):
+            print(f"[INFO] Menggunakan master korpus multi-video: {alt_corpus}")
+            youtube_csv_path = alt_corpus
+        elif os.path.exists(scrap_dir):
+            csv_candidates = [
+                os.path.join(scrap_dir, f)
+                for f in os.listdir(scrap_dir)
+                if f.startswith("youtube_comments_") and f.endswith(".csv") and not f.endswith("_meta.csv") and not f.endswith("_meta_all.csv")
+            ]
+            if csv_candidates:
+                # Pilih file CSV terbesar (master corpus)
+                csv_candidates.sort(key=lambda x: os.path.getsize(x), reverse=True)
+                youtube_csv_path = csv_candidates[0]
+                print(f"[INFO] Menggunakan berkas komentar yang tersedia: {youtube_csv_path}")
+
+    if not os.path.exists(youtube_csv_path):
+        raise PipelineError(f"Berkas komentar YouTube '{youtube_csv_path}' tidak ditemukan. Harap jalankan Langkah 0 terlebih dahulu.")
 
     print(f"[INFO] Membaca file CSV dari {youtube_csv_path}...")
     df = pd.read_csv(youtube_csv_path)

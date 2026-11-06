@@ -49,33 +49,44 @@ INDONESIAN_PROVOCATION_LEXICON = {
 }
 
 
+# Pre-compiled regex dan lookup category untuk performa instan (O(1) pass per teks)
+_KEYWORD_TO_CAT = {}
+_ALL_PROV_PATTERNS = []
+for _cat, _words in INDONESIAN_PROVOCATION_LEXICON.items():
+    for _w in sorted(_words, key=len, reverse=True):
+        _KEYWORD_TO_CAT[_w.lower()] = _cat
+        _ALL_PROV_PATTERNS.append(re.escape(_w.lower()))
+
+_COMPILED_PROV_REGEX = re.compile(r"(?:\b|^)(" + "|".join(_ALL_PROV_PATTERNS) + r")(?:\b|$)", re.IGNORECASE)
+
+
 def _extract_provocation_keywords(text: str) -> List[tuple]:
     if not text:
         return []
     cleaned = str(text).lower()
+    found = _COMPILED_PROV_REGEX.findall(cleaned)
+    if not found:
+        return []
     matches = []
-    for cat, words in INDONESIAN_PROVOCATION_LEXICON.items():
-        for word in words:
-            pattern = r"(?:\b|^)" + re.escape(word) + r"(?:\b|$)"
-            if re.search(pattern, cleaned):
-                matches.append((cat, word))
+    for word in found:
+        w_low = word.lower()
+        cat = _KEYWORD_TO_CAT.get(w_low, "ESCALATION_VIOLENCE")
+        matches.append((cat, w_low))
     return matches
 
 
 def _calculate_provocation_score(
-    a_rows: pd.DataFrame,
-    text_col: str,
+    all_texts: List[str],
+    total_comms: int,
     likes_total: int,
     replies_total: int,
     is_reply_heavy: bool,
     neg_sentiment_count: int,
 ) -> tuple:
-    total_comms = len(a_rows)
-    all_texts = [str(t).strip() for t in a_rows[text_col].dropna().tolist()] if text_col else []
-
     detected_items = []
     for txt in all_texts:
-        detected_items.extend(_extract_provocation_keywords(txt))
+        if txt:
+            detected_items.extend(_extract_provocation_keywords(txt))
 
     if not detected_items:
         return 0, {"lexicon": 0, "thread": 0, "resonance": 0, "sentiment": 0}, []
@@ -320,11 +331,110 @@ class IntelligenceService:
         )
 
     @staticmethod
+    def calculate_coordinated_bot_networks(df: pd.DataFrame, min_accounts: int = 2, min_length: int = 12) -> List[Dict[str, Any]]:
+        """
+        Mendeteksi Jaringan Bot Massal Terkoordinasi (Coordinated Bot Networks / Astroturfing)
+        dengan melacak komentar kembar (exact / normalized copypasta) yang diposting oleh
+        banyak akun berbeda lintas video.
+        """
+        if df is None or df.empty:
+            return []
+
+        text_col = "comment_text" if "comment_text" in df.columns else ("text" if "text" in df.columns else None)
+        author_col = "author_channel_id" if "author_channel_id" in df.columns and df["author_channel_id"].dropna().astype(str).str.strip().ne("").any() else "username"
+        user_col = "username" if "username" in df.columns else author_col
+        video_col = "video_id" if "video_id" in df.columns else None
+        title_col = "video_title" if "video_title" in df.columns else None
+        created_col = "created_at" if "created_at" in df.columns else None
+
+        if not text_col or not author_col:
+            return []
+
+        from collections import defaultdict
+        template_groups = defaultdict(list)
+
+        # Kata-kata pendek umum netizen organik yang diabaikan agar tidak salah tuduh
+        generic_words = {
+            "alhamdulillah", "amin", "aamiin", "bismillah", "mantap", "mantap jiwa", "keren", "semangat",
+            "lanjutkan", "terima kasih", "terimakasih", "makasih", "siap", "wkwk", "wkwkwk", "haha", "hahaha",
+            "setuju", "sangat setuju", "betul", "benar sekali", "gas", "gaskeun", "mantul", "jos", "mantab"
+        }
+
+        for r in df.to_dict("records"):
+            raw_t = str(r.get(text_col) or "").strip()
+            ak = str(r.get(author_col) or "").strip()
+            uname = str(r.get(user_col) or ak).strip()
+            if not raw_t or not ak:
+                continue
+
+            # Normalisasi teks: bersihkan spasi berlebih, newline, tanda baca berulang, lowercase
+            clean = re.sub(r"[\s\r\n]+", " ", raw_t).strip()
+            clean_norm = re.sub(r"^@\w+\s*", "", clean).strip().lower()
+            clean_norm = re.sub(r"[!?.]{2,}", "", clean_norm).strip()
+
+            if len(clean_norm) < min_length or clean_norm in generic_words:
+                continue
+
+            template_groups[clean_norm].append({
+                "raw_text": clean,
+                "author_id": ak,
+                "username": uname,
+                "video_id": str(r.get(video_col) or ""),
+                "video_title": str(r.get(title_col) or ""),
+                "created_at": str(r.get(created_col) or ""),
+                "like_count": int(pd.to_numeric(r.get("like_count", 0), errors="coerce") or 0),
+            })
+
+        bot_networks = []
+        for norm_t, items in template_groups.items():
+            # Hitung akun unik yang memposting teks ini
+            unique_authors_map = {}
+            for it in items:
+                u = it["username"] or it["author_id"]
+                if u not in unique_authors_map:
+                    unique_authors_map[u] = it
+
+            unique_count = len(unique_authors_map)
+            if unique_count < min_accounts:
+                continue
+
+            best_raw_text = max((it["raw_text"] for it in items), key=len)
+            unique_videos = list({it["video_id"] for it in items if it["video_id"]})
+            unique_video_titles = list({it["video_title"] for it in items if it["video_title"]})
+            account_names = list(unique_authors_map.keys())
+
+            if unique_count >= 10:
+                coord_level = "CRITICAL_MASS"
+                coord_badge = "🔴 Sangat Kritis"
+            elif unique_count >= 5:
+                coord_level = "HIGH_COORDINATION"
+                coord_badge = "🟠 Koordinasi Tinggi"
+            else:
+                coord_level = "MEDIUM_COORDINATION"
+                coord_badge = "🟡 Bot Duplikat"
+
+            bot_networks.append({
+                "template_text": best_raw_text,
+                "normalized_key": norm_t,
+                "unique_accounts_count": unique_count,
+                "total_occurrences": len(items),
+                "unique_videos_count": len(unique_videos),
+                "target_video_titles": unique_video_titles[:5],
+                "accounts": account_names,
+                "coordination_level": coord_level,
+                "coordination_badge": coord_badge,
+                "sample_occurrences": items[:5],
+            })
+
+        bot_networks.sort(key=lambda x: (-x["unique_accounts_count"], -x["total_occurrences"], -x["unique_videos_count"]))
+        return bot_networks
+
+    @staticmethod
     def calculate_flagged_accounts(df: pd.DataFrame) -> List[Dict[str, Any]]:
         """
         Mendeteksi seluruh akun mencurigakan (Provokator Berdampak, Agitator Utas, Buzzer Terarah, Spam Bot, & Hybrid)
         menggunakan Dual-Engine Cyber Forensic Architecture:
-        - Engine 1: Bot & Automation Scoring (0 - 100) berbasis 4 pilar (Copypasta, Multi-Video, Burst Speed, Asimetri Broadcast).
+        - Engine 1: Bot & Automation Scoring (0 - 100) berbasis 5 pilar (Copypasta, Multi-Video, Burst Speed, Asimetri Broadcast, & Jaringan Bot Massal).
         - Engine 2: Provocation & Agitation Scoring (0 - 100) berbasis 4 pilar (Leksikon Hasutan/SARA, Thread Hijacking, Toxic Resonance, Agresivitas Monolitik).
         Akun netizen organik atau kritis wajar (kedua skor < 35) dieliminasi otomatis dari daftar ancaman.
         """
@@ -340,6 +450,8 @@ class IntelligenceService:
         author_id_col = "author_channel_id" if "author_channel_id" in df_copy.columns and df_copy["author_channel_id"].dropna().astype(str).str.strip().ne("").any() else "username"
         user_col = "username" if "username" in df_copy.columns else author_id_col
         url_col = "author_channel_url" if "author_channel_url" in df_copy.columns else None
+        text_col = "comment_text" if "comment_text" in df_copy.columns else "text"
+        sent_col = "ai_sentiment" if "ai_sentiment" in df_copy.columns else ("sentiment" if "sentiment" in df_copy.columns else None)
 
         df_valid = df_copy[df_copy[author_id_col].fillna("").astype(str).str.strip() != ""].copy()
         if df_valid.empty:
@@ -347,22 +459,54 @@ class IntelligenceService:
 
         total_corpus_videos = int(df_valid["video_id"].nunique()) if "video_id" in df_valid.columns else 1
 
+        # Pre-compute epoch timestamp detik presisi tanpa terpotong unit mikrodetik
+        if "created_at" in df_valid.columns:
+            parsed_dts = pd.to_datetime(df_valid["created_at"], errors="coerce")
+            valid_mask = parsed_dts.notna()
+            ts_series = pd.Series(0, index=df_valid.index, dtype="int64")
+            if valid_mask.any():
+                try:
+                    ts_series[valid_mask] = parsed_dts[valid_mask].astype("datetime64[s]").astype("int64")
+                except Exception:
+                    unit_str = str(parsed_dts.dtype)
+                    factor = 10**6 if "[us]" in unit_str else (10**9 if "[ns]" in unit_str else 1)
+                    ts_series[valid_mask] = parsed_dts[valid_mask].astype("int64") // factor
+            df_valid["_created_ts"] = ts_series
+        else:
+            df_valid["_created_ts"] = 0
+
+        # Deteksi Jaringan Bot Massal Lintas Akun (Cross-Account Duplicate Comments)
+        from collections import defaultdict, Counter
+        bot_networks = IntelligenceService.calculate_coordinated_bot_networks(df_valid, min_accounts=2, min_length=12)
+        author_to_botnet = defaultdict(list)
+        for bn in bot_networks:
+            for acc in bn["accounts"]:
+                author_to_botnet[acc].append(bn)
+
+        # Konversi sekali ke list of dicts untuk pemrosesan super cepat di Python native (menghilangkan ribuan pandas slicing)
+        from collections import defaultdict, Counter
+        authors_map = defaultdict(list)
+        for r in df_valid.to_dict("records"):
+            ak = r.get(author_id_col)
+            if ak is not None:
+                ak_clean = str(ak).strip()
+                if ak_clean:
+                    authors_map[ak_clean].append(r)
+
         flagged_list = []
-        for a_key, a_rows in df_valid.groupby(author_id_col):
+        for a_key, a_rows in authors_map.items():
             total_comms = len(a_rows)
-            vids = a_rows["video_id"].dropna().unique().tolist()
+            vids = list({str(r["video_id"]) for r in a_rows if r.get("video_id")})
             num_vids = len(vids)
 
             # --- ENGINE 1: BOT & AUTOMATION SCORING (Maks 100) ---
             # Pilar 1: Copypasta / Duplikasi Template Teks (Bobot Maks: 35)
-            text_col = "comment_text" if "comment_text" in a_rows.columns else ""
-            raw_texts = [str(t).strip() for t in a_rows[text_col].dropna().tolist()] if text_col else []
+            raw_texts = [str(r.get(text_col, "")).strip() for r in a_rows if r.get(text_col)]
             norm_texts = [re.sub(r"\s+", " ", t.lower()) for t in raw_texts if len(t) >= 4]
 
             copypasta_score = 0
             exact_dup_max = 0
             if norm_texts:
-                from collections import Counter
                 counts_norm = Counter(norm_texts)
                 most_common = counts_norm.most_common(1)
                 exact_dup_max = most_common[0][1] if most_common else 1
@@ -396,66 +540,64 @@ class IntelligenceService:
             # Pilar 3: Kecepatan Temporal Burst (Bobot Maks: 20)
             temporal_score = 0
             min_diff_sec = 999999.0
-            if "created_at" in a_rows.columns and total_comms >= 2:
-                try:
-                    dts = pd.to_datetime(a_rows["created_at"], errors="coerce").dropna().sort_values()
-                    if len(dts) >= 2 and dts.nunique() >= 2:
-                        diffs = dts.diff().dt.total_seconds().dropna()
-                        pos_diffs = diffs[diffs >= 0]
-                        if not pos_diffs.empty:
-                            min_diff_sec = float(pos_diffs.min())
-                            if min_diff_sec < 30.0:
-                                temporal_score = 20
-                            elif min_diff_sec < 60.0:
-                                temporal_score = 12
-                            elif min_diff_sec < 180.0:
-                                temporal_score = 6
-                except Exception:
-                    pass
+            if total_comms >= 2:
+                valid_ts = sorted([int(r.get("_created_ts") or 0) for r in a_rows if (r.get("_created_ts") or 0) > 0])
+                if len(valid_ts) >= 2 and len(set(valid_ts)) >= 2:
+                    pos_diffs = [valid_ts[i+1] - valid_ts[i] for i in range(len(valid_ts)-1) if valid_ts[i+1] - valid_ts[i] >= 0]
+                    if pos_diffs:
+                        min_diff_sec = float(min(pos_diffs))
+                        if min_diff_sec < 30.0:
+                            temporal_score = 20
+                        elif min_diff_sec < 60.0:
+                            temporal_score = 12
+                        elif min_diff_sec < 180.0:
+                            temporal_score = 6
 
             # Pilar 4: Pola Broadcast Top-Level Searah (Bobot Maks: 20)
             reply_score = 0
-            is_reply_col = "is_reply" in a_rows.columns
-            if is_reply_col:
-                reply_rows = a_rows["is_reply"].astype(str).str.lower().isin(["true", "1"])
-                reply_count = int(reply_rows.sum())
-                top_level_count = total_comms - reply_count
+            reply_count = sum(1 for r in a_rows if str(r.get("is_reply", "")).lower() in ("true", "1"))
+            top_level_count = total_comms - reply_count
 
-                if total_comms >= 3 and top_level_count == total_comms:
-                    reply_score = 12
-                elif reply_count >= (total_comms * 0.5):
-                    reply_score = -10
-            else:
-                top_level_count = total_comms
-                reply_count = 0
+            if total_comms >= 3 and top_level_count == total_comms:
+                reply_score = 12
+            elif reply_count >= (total_comms * 0.5):
+                reply_score = -10
+
+            # Pilar 5: Koordinasi Jaringan Bot Massal (Komentar Kembar Lintas Akun Berbeda)
+            matched_botnets = author_to_botnet.get(str(a_key)) or author_to_botnet.get(str(a_rows[0].get(user_col) or a_key)) or []
+            network_score = 0
+            max_peer_count = 0
+            if matched_botnets:
+                max_peer_count = max(bn["unique_accounts_count"] for bn in matched_botnets)
+                network_score = min(35, 15 + max_peer_count)
 
             # Analisis Sentimen Akun
-            sent_col = "ai_sentiment" if "ai_sentiment" in a_rows.columns else ("sentiment" if "sentiment" in a_rows.columns else None)
             sent_counts = {"Positif": 0, "Netral": 0, "Negatif": 0}
-            if sent_col and sent_col in a_rows.columns:
-                for s_val, s_cnt in a_rows[sent_col].value_counts().items():
-                    s_str = str(s_val).strip().capitalize()
+            if sent_col:
+                for r in a_rows:
+                    s_val = r.get(sent_col)
+                    s_str = str(s_val).strip().capitalize() if s_val is not None else "Netral"
                     if s_str in sent_counts:
-                        sent_counts[s_str] = int(s_cnt)
+                        sent_counts[s_str] += 1
                     else:
-                        sent_counts["Netral"] += int(s_cnt)
+                        sent_counts["Netral"] += 1
 
             neg_cnt = sent_counts["Negatif"]
             pos_cnt = sent_counts["Positif"]
-            total_likes = int(pd.to_numeric(a_rows.get("like_count", 0), errors="coerce").fillna(0).sum())
-            total_replies = int(pd.to_numeric(a_rows.get("reply_count", 0), errors="coerce").fillna(0).sum())
+            total_likes = sum(int(r.get("like_count") or 0) for r in a_rows)
+            total_replies = sum(int(r.get("reply_count") or 0) for r in a_rows)
 
             sentiment_anomaly_score = 0
-            if total_comms >= 3 and (neg_cnt == total_comms or pos_cnt == total_comms) and copypasta_score > 0:
+            if total_comms >= 3 and (neg_cnt == total_comms or pos_cnt == total_comms) and (copypasta_score > 0 or network_score > 0):
                 sentiment_anomaly_score = 8
 
-            bot_score = int(max(0, min(100, copypasta_score + cross_video_score + temporal_score + reply_score + sentiment_anomaly_score)))
+            bot_score = int(max(0, min(100, copypasta_score + cross_video_score + temporal_score + reply_score + sentiment_anomaly_score + network_score)))
 
             # --- ENGINE 2: PROVOCATION & AGITATION SCORING (Maks 100) ---
-            is_reply_heavy = bool(is_reply_col and (reply_count >= max(1, total_comms * 0.5)))
+            is_reply_heavy = bool(reply_count >= max(1, total_comms * 0.5))
             prov_score, prov_breakdown, detected_keywords = _calculate_provocation_score(
-                a_rows=a_rows,
-                text_col=text_col,
+                all_texts=raw_texts,
+                total_comms=total_comms,
                 likes_total=total_likes,
                 replies_total=total_replies,
                 is_reply_heavy=is_reply_heavy,
@@ -470,7 +612,10 @@ class IntelligenceService:
                 continue
 
             # KLASIFIKASI TIPOLOGI AKTOR FORENSIK
-            if bot_score >= 45 and prov_score >= 40:
+            if max_peer_count >= 5 or (max_peer_count >= 2 and bot_score >= 60):
+                actor_type = "COORDINATED_BOT_NETWORK"
+                actor_label = "🤖 Jaringan Bot Massal"
+            elif bot_score >= 45 and prov_score >= 40:
                 actor_type = "HYBRID_THREAT"
                 actor_label = "⚔️ Hybrid Cyber Threat"
             elif prov_score >= 60 and (total_likes >= 30 or prov_score >= 70):
@@ -504,6 +649,9 @@ class IntelligenceService:
 
             # Tentukan Tag Bukti Forensik
             threat_tags = []
+            if matched_botnets:
+                threat_tags.append(f"Jaringan Bot Massal ({max_peer_count} Akun Kembar)")
+
             if detected_keywords:
                 threat_tags.append(f"Hasutan: {', '.join(detected_keywords[:3])}")
             if prov_score >= 60:
@@ -524,7 +672,19 @@ class IntelligenceService:
                 threat_tags.append(f"Aktif di {num_vids} Video")
 
             if temporal_score >= 15:
-                threat_tags.append(f"Burst Speed (<{int(min_diff_sec)} dtk)")
+                if min_diff_sec <= 2:
+                    threat_tags.append("Burst Simultan (<=2 dtk)")
+                elif min_diff_sec < 60:
+                    threat_tags.append(f"Burst Speed ({int(min_diff_sec)} dtk)")
+                elif min_diff_sec < 300:
+                    threat_tags.append(f"Jeda Cepat ({int(min_diff_sec // 60)}m {int(min_diff_sec % 60)}s)")
+                else:
+                    threat_tags.append("Pola Posting Cepat")
+            elif temporal_score >= 6:
+                if min_diff_sec < 60:
+                    threat_tags.append(f"Jeda Singkat ({int(min_diff_sec)} dtk)")
+                elif min_diff_sec < 300:
+                    threat_tags.append(f"Jeda Singkat ({int(min_diff_sec // 60)}m {int(min_diff_sec % 60)}s)")
 
             if reply_score >= 10:
                 threat_tags.append("100% Broadcast (Tanpa Dialog)")
@@ -538,29 +698,30 @@ class IntelligenceService:
                 threat_tags.append(f"Anomali Terdeteksi (Skor {composite_threat_score})")
 
             # Ambil metadata akun
-            u_name = str(a_rows[user_col].iloc[0]) if user_col in a_rows.columns else str(a_key)
+            first_r = a_rows[0]
+            u_name = str(first_r.get(user_col) or a_key)
             u_url = ""
-            if url_col and url_col in a_rows.columns:
-                valid_urls = a_rows[url_col].dropna().tolist()
-                u_url = str(valid_urls[0]) if valid_urls else ""
+            if url_col:
+                for r in a_rows:
+                    if r.get(url_col):
+                        u_url = str(r[url_col])
+                        break
             if not u_url:
                 if str(a_key).startswith("UC"):
                     u_url = f"https://www.youtube.com/channel/{a_key}"
                 elif str(u_name).startswith("@"):
                     u_url = f"https://www.youtube.com/{u_name}"
 
-            v_titles = []
-            if "video_title" in a_rows.columns:
-                v_titles = [str(t) for t in a_rows["video_title"].unique() if str(t).strip()]
+            v_titles = list({str(r["video_title"]) for r in a_rows if r.get("video_title") and str(r["video_title"]).strip()})
 
             # Kumpulkan seluruh komentar akun ini
             all_comms = []
-            for _, crow in a_rows.iterrows():
+            for crow in a_rows:
                 all_comms.append({
                     "comment_id": str(crow.get("comment_id", "")),
                     "comment_text": str(crow.get("comment_text", "")),
-                    "like_count": int(pd.to_numeric(crow.get("like_count", 0), errors="coerce") or 0),
-                    "reply_count": int(pd.to_numeric(crow.get("reply_count", 0), errors="coerce") or 0),
+                    "like_count": int(crow.get("like_count") or 0),
+                    "reply_count": int(crow.get("reply_count") or 0),
                     "ai_sentiment": str(crow.get("ai_sentiment", "Netral")),
                     "topic_name": str(crow.get("topic_name", "")),
                     "business_category": str(crow.get("business_category", "")),
@@ -599,11 +760,14 @@ class IntelligenceService:
                     "cross_video": cross_video_score,
                     "temporal": temporal_score,
                     "dialogue": reply_score,
+                    "network": network_score,
                     "prov_lexicon": prov_breakdown["lexicon"],
                     "prov_thread": prov_breakdown["thread"],
                     "prov_resonance": prov_breakdown["resonance"],
                     "prov_sentiment": prov_breakdown["sentiment"],
                 },
+                "is_coordinated_bot": bool(matched_botnets),
+                "coordinated_peer_count": max_peer_count,
                 "cib_risk_level": risk,
                 "threat_tags": threat_tags,
                 "sentiment_breakdown": sent_counts,

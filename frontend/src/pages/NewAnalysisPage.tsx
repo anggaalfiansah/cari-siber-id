@@ -18,16 +18,30 @@ import {
   Infinity as InfinityIcon,
 } from 'lucide-react';
 import { api } from '../api/bridge';
-import { CuratedVideoItem } from '../api/types';
+import { CuratedVideoItem, ReusableCorpus } from '../api/types';
 
 interface NewAnalysisPageProps {
   onRunStarted: (runId: string) => void;
   isBusy: boolean;
+  initialReuseRunId?: string;
+  onClearReuseRunId?: () => void;
 }
 
-export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, isBusy }) => {
-  // Discovery vs Manual tab
-  const [activeTab, setActiveTab] = useState<'discovery' | 'manual'>('discovery');
+export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
+  onRunStarted,
+  isBusy,
+  initialReuseRunId,
+  onClearReuseRunId,
+}) => {
+  // Discovery vs Manual vs Reuse tab
+  const [activeTab, setActiveTab] = useState<'discovery' | 'manual' | 'reuse'>(
+    initialReuseRunId ? 'reuse' : 'discovery'
+  );
+
+  // Reuse Scraped Corpus state
+  const [reusableCorpora, setReusableCorpora] = useState<ReusableCorpus[]>([]);
+  const [selectedCorpus, setSelectedCorpus] = useState<ReusableCorpus | null>(null);
+  const [isLoadingCorpora, setIsLoadingCorpora] = useState(false);
 
   // Discovery mode state
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -62,6 +76,44 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, 
     'debat kebijakan tapera',
   ];
 
+  const loadReusableCorpora = async () => {
+    setIsLoadingCorpora(true);
+    try {
+      const list = await api.list_reusable_corpora();
+      if (Array.isArray(list)) {
+        setReusableCorpora(list);
+        if (initialReuseRunId) {
+          const match = list.find((c: ReusableCorpus) => c.run_id === initialReuseRunId);
+          if (match) {
+            setSelectedCorpus(match);
+          } else if (list.length > 0) {
+            setSelectedCorpus(list[0]);
+          }
+        } else if (list.length > 0 && !selectedCorpus) {
+          setSelectedCorpus(list[0]);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load reusable corpora:', e);
+    } finally {
+      setIsLoadingCorpora(false);
+    }
+  };
+
+  React.useEffect(() => {
+    loadReusableCorpora();
+  }, []);
+
+  React.useEffect(() => {
+    if (initialReuseRunId) {
+      setActiveTab('reuse');
+      if (reusableCorpora.length > 0) {
+        const match = reusableCorpora.find((c) => c.run_id === initialReuseRunId);
+        if (match) setSelectedCorpus(match);
+      }
+    }
+  }, [initialReuseRunId, reusableCorpora]);
+
   const handleSearchCurate = async (keywordToSearch?: string) => {
     const kw = (keywordToSearch || searchKeyword).trim();
     if (!kw) {
@@ -74,15 +126,15 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, 
     setSelectedVideos([]);
 
     try {
-      // Request 15 curated videos for rich selection (5, 10, or all)
-      const res = await api.search_and_curate_videos({ keyword: kw, max_curated: 15 });
+      // Request hingga 100 curated videos untuk korpus multi-video skala penuh
+      const res = await api.search_and_curate_videos({ keyword: kw, max_curated: 100 });
       if (res.success && res.curated_videos) {
         setCuratedVideos(res.curated_videos);
         setDiscoveryStats({
           totalFound: res.total_candidates_found || res.curated_videos.length,
           keyword: kw,
         });
-        // Auto-select the top 5 recommended videos by default as a solid baseline
+        // Auto-select top 5 video pertama secara default
         const topSlice = res.curated_videos.slice(0, Math.min(5, res.curated_videos.length));
         setSelectedVideos(topSlice);
       } else {
@@ -131,6 +183,35 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, 
 
   const handleStartAnalysis = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (activeTab === 'reuse') {
+      if (!selectedCorpus) {
+        setError('Silakan pilih salah satu korpus scraping yang tersedia di daftar.');
+        return;
+      }
+      setError('');
+      setLoading(true);
+      try {
+        const res = await api.start_run({
+          source_run_id: selectedCorpus.run_id,
+          limit_comments: limit,
+          sort_by: sortBy,
+          include_replies: includeReplies,
+          skip_scrape: true,
+        });
+        if (res.success && res.run_id) {
+          onClearReuseRunId?.();
+          onRunStarted(res.run_id);
+        } else {
+          setError(res.error || 'Gagal memulai analisis dari korpus.');
+        }
+      } catch (err: any) {
+        setError(err?.message || 'Terjadi kesalahan sistem saat memulai pipeline.');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
 
     let targetUrls: string[] = [];
 
@@ -215,8 +296,8 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, 
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '12px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: '10px',
           background: 'rgba(15, 23, 42, 0.6)',
           padding: '6px',
           borderRadius: '12px',
@@ -230,8 +311,8 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, 
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '10px',
-            padding: '12px 16px',
+            gap: '8px',
+            padding: '12px 14px',
             borderRadius: '8px',
             border: 'none',
             cursor: 'pointer',
@@ -239,11 +320,11 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, 
             background: activeTab === 'discovery' ? '#0284c7' : 'transparent',
             color: activeTab === 'discovery' ? '#ffffff' : '#94a3b8',
             fontWeight: 600,
-            fontSize: '0.88rem',
+            fontSize: '0.86rem',
           }}
         >
-          <Sparkles size={18} color={activeTab === 'discovery' ? '#ffffff' : '#38bdf8'} />
-          <span>Temukan Isu & Kurasi Multi-Video AI (Otomatis)</span>
+          <Sparkles size={17} color={activeTab === 'discovery' ? '#ffffff' : '#38bdf8'} />
+          <span>Kurasi Isu AI (Otomatis)</span>
         </button>
 
         <button
@@ -253,8 +334,8 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, 
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '10px',
-            padding: '12px 16px',
+            gap: '8px',
+            padding: '12px 14px',
             borderRadius: '8px',
             border: 'none',
             cursor: 'pointer',
@@ -262,11 +343,52 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, 
             background: activeTab === 'manual' ? '#0284c7' : 'transparent',
             color: activeTab === 'manual' ? '#ffffff' : '#94a3b8',
             fontWeight: 600,
-            fontSize: '0.88rem',
+            fontSize: '0.86rem',
           }}
         >
-          <Youtube size={18} color={activeTab === 'manual' ? '#ffffff' : '#f43f5e'} />
-          <span>Input Daftar URL Video Manual (Multi-URL)</span>
+          <Youtube size={17} color={activeTab === 'manual' ? '#ffffff' : '#f43f5e'} />
+          <span>Input URL Manual (Multi-Video)</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setActiveTab('reuse');
+            loadReusableCorpora();
+          }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            padding: '12px 14px',
+            borderRadius: '8px',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            background: activeTab === 'reuse' ? '#0284c7' : 'transparent',
+            color: activeTab === 'reuse' ? '#ffffff' : '#94a3b8',
+            fontWeight: 600,
+            fontSize: '0.86rem',
+            position: 'relative',
+          }}
+        >
+          <Layers size={17} color={activeTab === 'reuse' ? '#ffffff' : '#10b981'} />
+          <span>Gunakan Data Scraping (Reuse)</span>
+          {reusableCorpora.length > 0 && (
+            <span
+              style={{
+                background: activeTab === 'reuse' ? 'rgba(255, 255, 255, 0.25)' : 'rgba(16, 185, 129, 0.2)',
+                color: activeTab === 'reuse' ? '#ffffff' : '#10b981',
+                fontSize: '0.72rem',
+                padding: '1px 6px',
+                borderRadius: '999px',
+                fontWeight: 700,
+              }}
+            >
+              {reusableCorpora.length}
+            </span>
+          )}
         </button>
       </div>
 
@@ -409,51 +531,90 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, 
                     type="button"
                     onClick={() => selectTopN(5)}
                     style={{
-                      background: 'rgba(2, 132, 199, 0.2)',
+                      background: selectedVideos.length === 5 ? '#0284c7' : 'rgba(2, 132, 199, 0.15)',
                       border: '1px solid #0284c7',
-                      color: '#38bdf8',
-                      padding: '4px 10px',
+                      color: selectedVideos.length === 5 ? '#ffffff' : '#38bdf8',
+                      padding: '5px 12px',
                       borderRadius: '6px',
                       fontSize: '0.75rem',
                       fontWeight: 600,
                       cursor: 'pointer',
+                      transition: 'all 0.15s ease',
                     }}
                   >
-                    ⚡ Pilih Top 5
+                    ⚡ Top 5
                   </button>
 
                   <button
                     type="button"
                     onClick={() => selectTopN(10)}
                     style={{
-                      background: 'rgba(16, 185, 129, 0.2)',
+                      background: selectedVideos.length === 10 ? '#10b981' : 'rgba(16, 185, 129, 0.15)',
                       border: '1px solid #10b981',
-                      color: '#10b981',
-                      padding: '4px 10px',
+                      color: selectedVideos.length === 10 ? '#ffffff' : '#10b981',
+                      padding: '5px 12px',
                       borderRadius: '6px',
                       fontSize: '0.75rem',
                       fontWeight: 600,
                       cursor: 'pointer',
+                      transition: 'all 0.15s ease',
                     }}
                   >
-                    🎯 Pilih Top 10 (Ideal)
+                    🎯 Top 10
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => selectTopN(25)}
+                    style={{
+                      background: selectedVideos.length === 25 ? '#8b5cf6' : 'rgba(139, 92, 246, 0.15)',
+                      border: '1px solid #8b5cf6',
+                      color: selectedVideos.length === 25 ? '#ffffff' : '#a78bfa',
+                      padding: '5px 12px',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    🔥 Top 25
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => selectTopN(50)}
+                    style={{
+                      background: selectedVideos.length === 50 ? '#f59e0b' : 'rgba(245, 158, 11, 0.15)',
+                      border: '1px solid #f59e0b',
+                      color: selectedVideos.length === 50 ? '#ffffff' : '#fbbf24',
+                      padding: '5px 12px',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    ⚡ Top 50
                   </button>
 
                   <button
                     type="button"
                     onClick={selectAll}
                     style={{
-                      background: 'rgba(148, 163, 184, 0.15)',
-                      border: '1px solid #475569',
-                      color: '#cbd5e1',
-                      padding: '4px 10px',
+                      background: selectedVideos.length === curatedVideos.length ? '#0284c7' : 'rgba(148, 163, 184, 0.15)',
+                      border: '1px solid #0284c7',
+                      color: selectedVideos.length === curatedVideos.length ? '#ffffff' : '#38bdf8',
+                      padding: '5px 12px',
                       borderRadius: '6px',
                       fontSize: '0.75rem',
-                      fontWeight: 600,
+                      fontWeight: 700,
                       cursor: 'pointer',
+                      transition: 'all 0.15s ease',
                     }}
                   >
-                    Pilih Semua ({curatedVideos.length})
+                    💯 Pilih Semua ({curatedVideos.length} Video)
                   </button>
 
                   {selectedVideos.length > 0 && (
@@ -464,10 +625,11 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, 
                         background: 'transparent',
                         border: '1px solid rgba(239, 68, 68, 0.4)',
                         color: '#f87171',
-                        padding: '4px 10px',
+                        padding: '5px 12px',
                         borderRadius: '6px',
                         fontSize: '0.75rem',
                         cursor: 'pointer',
+                        transition: 'all 0.15s ease',
                       }}
                     >
                       Batal Pilih
@@ -476,8 +638,12 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, 
                 </div>
               </div>
 
-              {/* Cards List */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {/* Responsive Modern 2-Column Grid */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(370px, 1fr))',
+                gap: '12px',
+              }}>
                 {curatedVideos.map((item, idx) => {
                   const isSelected = selectedVideos.some((v) => v.video_id === item.video_id);
                   const score = item.relevance_score ?? 80;
@@ -488,152 +654,152 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, 
                       key={item.video_id}
                       onClick={() => toggleSelectVideo(item)}
                       style={{
-                        display: 'grid',
-                        gridTemplateColumns: '36px 160px 1fr',
-                        gap: '12px',
-                        background: isSelected ? 'rgba(2, 132, 199, 0.12)' : 'rgba(15, 23, 42, 0.6)',
-                        border: isSelected ? '2px solid #0284c7' : '1px solid rgba(51, 65, 85, 0.5)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        background: isSelected ? 'rgba(2, 132, 199, 0.12)' : 'rgba(15, 23, 42, 0.65)',
+                        border: isSelected ? '2px solid #0284c7' : '1px solid rgba(51, 65, 85, 0.6)',
+                        boxShadow: isSelected ? '0 0 14px rgba(2, 132, 199, 0.25)' : 'none',
                         borderRadius: '10px',
                         padding: '12px',
                         cursor: 'pointer',
-                        transition: 'all 0.15s ease',
-                        alignItems: 'center',
+                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                        position: 'relative',
+                        justifyContent: 'space-between',
                       }}
                     >
-                      {/* Checkbox */}
-                      <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        {isSelected ? (
-                          <CheckSquare size={22} color="#0284c7" />
-                        ) : (
-                          <Square size={22} color="#475569" />
-                        )}
-                      </div>
-
-                      {/* Thumbnail Container */}
-                      <div
-                        style={{
-                          position: 'relative',
-                          width: '100%',
-                          height: '92px',
-                          borderRadius: '6px',
-                          overflow: 'hidden',
-                          background: '#0f172a',
-                        }}
-                      >
-                        {item.thumbnail ? (
-                          <img
-                            src={item.thumbnail}
-                            alt={item.title}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          />
-                        ) : (
-                          <div
-                            style={{
-                              width: '100%',
-                              height: '100%',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                            }}
-                          >
-                            <Youtube size={32} color="#64748b" />
-                          </div>
-                        )}
-                        {item.duration && (
-                          <span
-                            style={{
-                              position: 'absolute',
-                              bottom: '4px',
-                              right: '4px',
-                              background: 'rgba(0,0,0,0.85)',
-                              color: '#ffffff',
-                              fontSize: '0.68rem',
-                              fontWeight: 600,
-                              padding: '2px 5px',
-                              borderRadius: '4px',
-                            }}
-                          >
-                            {item.duration}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Video Info & AI Rationale */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>
-                            #{idx + 1}
-                          </span>
-                          {item.is_recommended && (
-                            <span
-                              style={{
-                                background: 'rgba(16, 185, 129, 0.2)',
-                                border: '1px solid #10b981',
-                                color: '#10b981',
-                                fontSize: '0.68rem',
-                                fontWeight: 700,
-                                padding: '1px 7px',
-                                borderRadius: '10px',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '3px',
-                              }}
-                            >
-                              <Flame size={11} /> REKOMENDASI UTAMA
+                      {/* Top Badges & Selector */}
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                              {isSelected ? (
+                                <CheckSquare size={19} color="#0284c7" />
+                              ) : (
+                                <Square size={19} color="#475569" />
+                              )}
+                            </div>
+                            <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700 }}>
+                              #{idx + 1}
                             </span>
-                          )}
+                            {item.is_recommended && (
+                              <span
+                                style={{
+                                  background: 'rgba(16, 185, 129, 0.18)',
+                                  border: '1px solid rgba(16, 185, 129, 0.5)',
+                                  color: '#34d399',
+                                  fontSize: '0.65rem',
+                                  fontWeight: 700,
+                                  padding: '2px 6px',
+                                  borderRadius: '6px',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '3px',
+                                }}
+                              >
+                                <Flame size={11} /> PRIORITAS
+                              </span>
+                            )}
+                          </div>
+
                           <span
                             style={{
-                              background: 'rgba(30, 41, 59, 0.8)',
+                              background: 'rgba(30, 41, 59, 0.9)',
                               border: `1px solid ${scoreColor}`,
                               color: scoreColor,
                               fontSize: '0.68rem',
                               fontWeight: 700,
-                              padding: '1px 7px',
-                              borderRadius: '10px',
+                              padding: '2px 8px',
+                              borderRadius: '12px',
                             }}
                           >
-                            Skor Relevansi: {score}%
+                            Relevansi {score}%
                           </span>
                         </div>
 
-                        <div
-                          style={{
-                            fontWeight: 600,
-                            fontSize: '0.9rem',
-                            color: '#f8fafc',
-                            lineHeight: 1.3,
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                          }}
-                        >
-                          {item.title}
-                        </div>
-
-                        <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                          <strong style={{ color: '#cbd5e1' }}>{item.channel}</strong>
-                          {item.views && ` • ${item.views}`}
-                          {item.published && ` • ${item.published}`}
-                        </div>
-
-                        {item.curation_reason && (
+                        {/* Thumbnail & Video Header */}
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
                           <div
                             style={{
-                              fontSize: '0.75rem',
-                              color: '#38bdf8',
-                              background: 'rgba(2, 132, 199, 0.08)',
-                              borderLeft: '2px solid #0284c7',
-                              padding: '4px 8px',
-                              borderRadius: '0 4px 4px 0',
-                              marginTop: '2px',
+                              position: 'relative',
+                              width: '120px',
+                              height: '68px',
+                              flexShrink: 0,
+                              borderRadius: '6px',
+                              overflow: 'hidden',
+                              background: '#0f172a',
                             }}
                           >
-                            💡 <em>{item.curation_reason}</em>
+                            {item.thumbnail ? (
+                              <img
+                                src={item.thumbnail}
+                                alt={item.title}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              />
+                            ) : (
+                              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Youtube size={26} color="#64748b" />
+                              </div>
+                            )}
+                            {item.duration && (
+                              <span
+                                style={{
+                                  position: 'absolute',
+                                  bottom: '3px',
+                                  right: '3px',
+                                  background: 'rgba(0,0,0,0.85)',
+                                  color: '#ffffff',
+                                  fontSize: '0.62rem',
+                                  fontWeight: 600,
+                                  padding: '1px 4px',
+                                  borderRadius: '3px',
+                                }}
+                              >
+                                {item.duration}
+                              </span>
+                            )}
                           </div>
-                        )}
+
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div
+                              style={{
+                                fontWeight: 600,
+                                fontSize: '0.84rem',
+                                color: '#f8fafc',
+                                lineHeight: 1.3,
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                              }}
+                              title={item.title}
+                            >
+                              {item.title}
+                            </div>
+                            <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '4px' }}>
+                              <strong style={{ color: '#cbd5e1' }}>{item.channel}</strong>
+                              {item.views && ` • ${item.views}`}
+                            </div>
+                          </div>
+                        </div>
                       </div>
+
+                      {/* Curation Reason */}
+                      {item.curation_reason && (
+                        <div
+                          style={{
+                            fontSize: '0.72rem',
+                            color: '#7dd3fc',
+                            background: 'rgba(2, 132, 199, 0.08)',
+                            borderLeft: '2px solid #0284c7',
+                            padding: '4px 8px',
+                            borderRadius: '0 4px 4px 0',
+                            marginTop: '8px',
+                            lineHeight: 1.35,
+                          }}
+                        >
+                          💡 <em>{item.curation_reason}</em>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -733,6 +899,158 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, 
               Masukkan 1 URL atau banyak URL video sekaligus (minimal 5, ideal 10, hingga tidak terbatas).
             </div>
           </div>
+        </div>
+      )}
+
+      {/* REUSE SCRAPED CORPUS SECTION */}
+      {activeTab === 'reuse' && (
+        <div className="panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontWeight: 700, color: '#f8fafc', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Layers size={18} color="#10b981" />
+                <span>Pilih Dataset Komentar yang Pernah Di-Scrap</span>
+              </div>
+              <p style={{ color: '#94a3b8', fontSize: '0.82rem', marginTop: '3px' }}>
+                Gunakan hasil scraping sebelumnya tanpa perlu mengunduh ulang ribuan komentar dari YouTube.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={loadReusableCorpora}
+              disabled={isLoadingCorpora || isBusy}
+              style={{ fontSize: '0.8rem', padding: '6px 12px' }}
+            >
+              <RefreshCw size={13} className={isLoadingCorpora ? 'spin' : ''} />
+              <span>Segarkan Daftar</span>
+            </button>
+          </div>
+
+          {isLoadingCorpora ? (
+            <div style={{ textAlign: 'center', padding: '30px', color: '#94a3b8', fontSize: '0.85rem' }}>
+              <RefreshCw size={20} className="spin" style={{ margin: '0 auto 8px', color: '#38bdf8' }} />
+              <div>Memindai riwayat berkas scraping komentar...</div>
+            </div>
+          ) : reusableCorpora.length === 0 ? (
+            <div
+              style={{
+                background: 'rgba(51, 65, 85, 0.25)',
+                border: '1px dashed rgba(100, 116, 139, 0.3)',
+                borderRadius: '8px',
+                padding: '24px',
+                textAlign: 'center',
+                color: '#94a3b8',
+                fontSize: '0.85rem',
+              }}
+            >
+              <AlertCircle size={24} color="#94a3b8" style={{ margin: '0 auto 8px' }} />
+              <div>Belum ada korpus komentar yang tersimpan di disk.</div>
+              <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '4px' }}>
+                Jalankan scraping baru terlebih dahulu lewat tab Kurasi Isu atau Input Manual.
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '360px', overflowY: 'auto' }}>
+              {reusableCorpora.map((corpus) => {
+                const isSelected = selectedCorpus?.run_id === corpus.run_id;
+                return (
+                  <div
+                    key={corpus.run_id}
+                    onClick={() => setSelectedCorpus(corpus)}
+                    style={{
+                      border: isSelected ? '1px solid #0284c7' : '1px solid rgba(51, 65, 85, 0.6)',
+                      background: isSelected ? 'rgba(2, 132, 199, 0.12)' : 'rgba(15, 23, 42, 0.5)',
+                      borderRadius: '10px',
+                      padding: '14px 16px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '14px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+                      <div
+                        style={{
+                          width: '20px',
+                          height: '20px',
+                          borderRadius: '50%',
+                          border: isSelected ? '5px solid #38bdf8' : '2px solid #64748b',
+                          background: '#0b0f19',
+                          flexShrink: 0,
+                        }}
+                      />
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontWeight: 600, color: '#f8fafc', fontSize: '0.88rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {corpus.title}
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px', flexWrap: 'wrap' }}>
+                          <span style={{ fontFamily: 'monospace', fontSize: '0.72rem', color: '#94a3b8', background: 'rgba(51, 65, 85, 0.4)', padding: '1px 6px', borderRadius: '4px' }}>
+                            Run ID: {corpus.run_id}
+                          </span>
+                          <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                            {corpus.created_at}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
+                      <span
+                        style={{
+                          background: 'rgba(16, 185, 129, 0.15)',
+                          color: '#34d399',
+                          border: '1px solid rgba(16, 185, 129, 0.3)',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                        }}
+                      >
+                        {corpus.comment_count.toLocaleString()} Komentar
+                      </span>
+                      <span
+                        style={{
+                          background: 'rgba(56, 189, 248, 0.15)',
+                          color: '#38bdf8',
+                          border: '1px solid rgba(56, 189, 248, 0.3)',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                        }}
+                      >
+                        {corpus.video_count} Video
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {selectedCorpus && (
+            <div
+              style={{
+                background: 'rgba(2, 132, 199, 0.1)',
+                border: '1px solid rgba(2, 132, 199, 0.3)',
+                borderRadius: '8px',
+                padding: '12px 14px',
+                fontSize: '0.82rem',
+                color: '#7dd3fc',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}
+            >
+              <Sparkles size={16} color="#38bdf8" />
+              <span>
+                Korpus terpilih: <strong>{selectedCorpus.comment_count.toLocaleString()} komentar</strong> dari <strong>{selectedCorpus.video_count} video</strong> (Run: <code>{selectedCorpus.run_id}</code>). Tahap 1 (Scraping) akan dilewati dan pipeline langsung mengeksekusi Topic Modeling!
+              </span>
+            </div>
+          )}
         </div>
       )}
 
@@ -896,7 +1214,11 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, 
           }}
         >
           <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-            {activeTab === 'discovery'
+            {activeTab === 'reuse'
+              ? selectedCorpus
+                ? `Korpus siap: ${selectedCorpus.comment_count.toLocaleString()} komentar (${selectedCorpus.video_count} video) dari Run ${selectedCorpus.run_id}.`
+                : 'Pilih korpus komentar di atas untuk melanjutkan analisis tanpa scraping.'
+              : activeTab === 'discovery'
               ? totalDiscoverySelected > 0
                 ? `${totalDiscoverySelected} video siap dianalisis secara kolektif.`
                 : 'Pilih minimal 1 video (disarankan 5–10 video) di atas.'
@@ -911,7 +1233,11 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, 
             disabled={
               isBusy ||
               loading ||
-              (activeTab === 'discovery' ? totalDiscoverySelected === 0 : !manualUrlsText.trim())
+              (activeTab === 'reuse'
+                ? !selectedCorpus
+                : activeTab === 'discovery'
+                ? totalDiscoverySelected === 0
+                : !manualUrlsText.trim())
             }
             style={{ padding: '10px 24px', fontSize: '0.95rem' }}
           >
@@ -921,6 +1247,8 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onRunStarted, 
                 ? 'Operasi Lain Sedang Berjalan'
                 : loading
                 ? 'Mempersiapkan Pipeline...'
+                : activeTab === 'reuse'
+                ? `Jalankan Analisis Korpus (${selectedCorpus?.comment_count.toLocaleString() || ''} Komentar)`
                 : activeTab === 'discovery' && totalDiscoverySelected > 1
                 ? `Jalankan Analisis Kolektif (${totalDiscoverySelected} Video)`
                 : 'Jalankan Analisis Kognitif'}

@@ -118,6 +118,17 @@ const mockApi = {
       },
     ],
   }),
+  list_reusable_corpora: async () => [
+    {
+      run_id: '20261106_103448_4004e2',
+      created_at: '2026-11-06 10:34:48',
+      comment_count: 10281,
+      video_count: 100,
+      title: '100 Video YouTube Terkurasi (10,281 Komentar)',
+      source_file: 'youtube_comments_video_GpqlN-SBFqo.csv',
+      size_mb: 4.8,
+    },
+  ],
 };
 
 export const api = new Proxy({} as any, {
