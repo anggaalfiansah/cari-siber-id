@@ -118,6 +118,18 @@ const mockApi = {
       },
     ],
   }),
+    get_ai_threat_calibration: async (payload: { run_id: string }) => ({
+    success: true,
+    whitelist_recommendations: ['TNI Bersama Rakyat', 'Terimakasih tni', 'Bravo TNI', 'NKRI Harga Mati'],
+    hostile_threat_keywords: ['papua merdeka', 'opm', 'kkb', 'pemberontak'],
+    reasoning_summary: 'Sistem merekomendasikan whitelist slogan resmi TNI dan apresiasi masyarakat agar tidak terjadi salah tuduh (False Positive). Frasa separatis dan provokasi ditandai sebagai ancaman.',
+  }),
+  reanalyze_intelligence: async (payload: { run_id: string; whitelist: string[]; threats: string[] }) => ({
+    success: true,
+    message: 'Analisis intelijen siber berhasil diperbarui seketika.',
+    bot_networks_count: 5,
+    flagged_accounts_count: 12,
+  }),
   list_reusable_corpora: async () => [
     {
       run_id: '20261106_103448_4004e2',

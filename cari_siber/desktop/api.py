@@ -1,6 +1,9 @@
 import os
 import subprocess
-from typing import Dict, Any, Optional
+import json
+import pandas as pd
+from typing import Dict, Any, Optional, List
+from pydantic import BaseModel, Field
 
 from cari_siber.settings import AppSettings
 from cari_siber.engine.core.config import AppConfig
@@ -8,7 +11,23 @@ from cari_siber.paths import get_run_dir
 from cari_siber.services.history import HistoryService
 from cari_siber.services.results import ResultsService
 from cari_siber.services.pipeline_runner import PipelineRunner
-from cari_siber.engine.core.ai_client import generate_text
+from cari_siber.engine.core.ai_client import generate_text, generate_structured_json
+from cari_siber.services.intelligence import IntelligenceService
+
+
+class ThreatCalibrationSchema(BaseModel):
+    whitelist_recommendations: List[str] = Field(
+        default_factory=list,
+        description="Daftar slogan resmi negara (TNI/POLRI), yel-yel nasionalisme, atau apresiasi spontan warga yang harus di-whitelist/diabaikan"
+    )
+    hostile_threat_keywords: List[str] = Field(
+        default_factory=list,
+        description="Daftar kata kunci/frasa propaganda separatis, hasutan SARA, atau kampanye disinformasi terkoordinasi musuh"
+    )
+    reasoning_summary: str = Field(
+        default="",
+        description="Penilaian singkat perwira analis intelijen siber mengenai alasan kalibrasi konteks ini"
+    )
 from cari_siber.engine.reporters.youtube_comments import run_exporter
 
 
@@ -338,5 +357,210 @@ class DesktopApi:
                     b64 = base64.b64encode(f.read()).decode("utf-8")
                 return {"success": True, "data_uri": f"data:image/png;base64,{b64}"}
             return {"success": False, "error": "Chart tidak ditemukan."}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+
+    def get_ai_threat_calibration(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Agentic Context Calibrator:
+        Menganalisis klaster komentar kembar (CIB) menggunakan LLM untuk membedakan
+        antara slogan institusi/apresiasi wajar vs operasi ancaman kognitif berbahaya.
+        """
+        run_id = str(payload.get("run_id", "")).strip()
+        if not run_id:
+            return {"success": False, "error": "run_id wajib diisi."}
+
+        try:
+            run_dir = get_run_dir(run_id)
+            botnet_json_path = os.path.join(run_dir, "json", "coordinated_bot_networks.json")
+            botnets = []
+            if os.path.exists(botnet_json_path):
+                try:
+                    with open(botnet_json_path, "r", encoding="utf-8") as f:
+                        botnets = json.load(f)
+                except Exception:
+                    pass
+
+            if not botnets:
+                final_csv = os.path.join(run_dir, "csv", "mapping_review_topic_youtube_final.csv")
+                if not os.path.exists(final_csv):
+                    final_csv = os.path.join(run_dir, "csv", "mapping_review_topic_youtube_raw.csv")
+                if os.path.exists(final_csv):
+                    df = pd.read_csv(final_csv)
+                    botnets = IntelligenceService.calculate_coordinated_bot_networks(df)
+
+            if not botnets:
+                return {
+                    "success": True,
+                    "whitelist_recommendations": [],
+                    "hostile_threat_keywords": [],
+                    "reasoning_summary": "Tidak ditemukan klaster template duplikat lintas akun pada run ini.",
+                }
+
+            # Ambil sampel klaster template teratas (maksimal 25)
+            sample_items = []
+            for idx, bn in enumerate(botnets[:25]):
+                txt = bn.get("template_text", "")
+                acc_cnt = bn.get("unique_accounts_count", 0)
+                tot_cnt = bn.get("total_occurrences", 0)
+                sample_items.append(f"{idx+1}. \"{txt}\" (Diposting oleh {acc_cnt} akun berbeda, total {tot_cnt} kali)")
+
+            prompt_samples = "\n".join(sample_items)
+
+            prompt = f"""Anda adalah Perwira Analis Intelijen Kognitif & Pertahanan Ruang Siber PUSSIBERAD TNI AD.
+Tugas Anda adalah melakukan KALIBRASI KONTEKS & ELIMINASI SALAH TUDUH (False Positive Elimination) terhadap temuan klaster komentar kembar berikut:
+
+DAFTAR KLASTER KOMENTAR KEMBAR:
+{prompt_samples}
+
+INSTRUKSI EVALUASI INTELIJEN MILITER:
+1. 'whitelist_recommendations': Identifikasi frasa yang merupakan SLOGAN RESMI INSTITUSI NEGARA (TNI/POLRI), YEL-YEL PATRIOTIK, atau APRESIASI SPONTAN WARGA (misal 'TNI Bersama Rakyat', 'Terimakasih TNI', 'NKRI Harga Mati'). Frasa ini harus dikecualikan agar tidak salah dituduh sebagai bot farm musuh.
+2. 'hostile_threat_keywords': Identifikasi kata kunci/frasa yang mengandung PROPAGANDA SEPARATIS (OPM/KKB), PROVOKASI DELEGITIMASI, HASUTAN KEKERASAN, atau POLA SERANGAN SIBER KOGNITIF ASIMETRIS yang wajib ditandai sebagai target ancaman (Hostile Threat).
+3. 'reasoning_summary': Buat penjelasan ringkas doktrin intelijen (maksimal 3-4 kalimat) mengenai justifikasi kalibrasi ini untuk Komandan Satuan Siber.
+
+Keluarkan hasil dalam format JSON terstruktur."""
+
+            # Load active AI settings
+            settings = AppSettings.load()
+            provider = str(settings.get("provider") or settings.get("ai_provider") or "gemini").lower().strip()
+            model = str(settings.get("model") or settings.get("ai_model") or "").strip()
+            api_key = str(settings.get("api_key") or settings.get(f"{provider}_api_key") or "").strip()
+            if not api_key:
+                api_key = str(settings.get("custom_api_key") or settings.get("gemini_api_key") or settings.get("openrouter_api_key") or "").strip()
+
+            if provider == "custom":
+                custom_base = str(settings.get("base_url") or settings.get("custom_base_url") or "https://api.tokenai.id/v1").strip()
+                AppConfig.CUSTOM_BASE_URL = custom_base
+                AppConfig.CUSTOM_API_KEY = api_key
+            elif provider == "openrouter":
+                AppConfig.OPENROUTER_API_KEY = api_key
+            elif provider == "gemini":
+                AppConfig.GEMINI_API_KEY = api_key
+
+            try:
+                res = generate_structured_json(
+                    prompt=prompt,
+                    response_schema=ThreatCalibrationSchema,
+                    provider=provider,
+                    model=model,
+                    api_key=api_key,
+                )
+                wl = res.get("whitelist_recommendations", [])
+                th = res.get("hostile_threat_keywords", [])
+                rs = res.get("reasoning_summary", "")
+                return {
+                    "success": True,
+                    "whitelist_recommendations": wl,
+                    "hostile_threat_keywords": th,
+                    "reasoning_summary": rs,
+                }
+            except Exception as ai_err:
+                print(f"[API WARN] LLM calibration call failed: {ai_err}. Menggunakan kalibrasi heuristik otomatis.")
+                fallback_wl = []
+                fallback_th = []
+                for bn in botnets:
+                    t_low = bn.get("template_text", "").lower()
+                    if any(k in t_low for k in ["tni", "polri", "nkri", "terima kasih", "terimakasih", "bravo", "rakyat"]):
+                        fallback_wl.append(bn.get("template_text"))
+                    if any(k in t_low for k in ["papua merdeka", "opm", "kkb", "pemberontak", "makzulkan", "hancurkan tni"]):
+                        fallback_th.append(bn.get("template_text"))
+                return {
+                    "success": True,
+                    "whitelist_recommendations": list(dict.fromkeys(fallback_wl))[:10],
+                    "hostile_threat_keywords": list(dict.fromkeys(fallback_th))[:10],
+                    "reasoning_summary": f"Kalibrasi Cepat PUSSIBERAD: Mengeliminasi false positive pada slogan kebangsaan & mendeteksi potensi kampanye asimetris (Engine: {str(ai_err)[:70]}).",
+                }
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    def reanalyze_intelligence(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Instant Re-Analysis:
+        Melakukan kalkulasi ulang forensik CIB, Jaringan Bot Massal, dan Akun Terduga
+        secara instan (<2 dtk) menggunakan korpus komentar yang sudah ada di run_dir
+        dengan parameter whitelist dan target ancaman yang telah dikalibrasi.
+        """
+        run_id = str(payload.get("run_id", "")).strip()
+        custom_whitelist = payload.get("whitelist", [])
+        custom_threats = payload.get("threats", [])
+
+        if not run_id:
+            return {"success": False, "error": "run_id wajib diisi."}
+
+        try:
+            run_dir = get_run_dir(run_id)
+            final_csv = os.path.join(run_dir, "csv", "mapping_review_topic_youtube_final.csv")
+            if not os.path.exists(final_csv):
+                final_csv = os.path.join(run_dir, "csv", "mapping_review_topic_youtube_raw.csv")
+            if not os.path.exists(final_csv):
+                return {"success": False, "error": "File korpus CSV tidak ditemukan pada run ini."}
+
+            df = pd.read_csv(final_csv)
+            if df.empty:
+                return {"success": False, "error": "Korpus CSV kosong."}
+
+            # 1. Hitung ulang Jaringan Bot Massal
+            botnets = IntelligenceService.calculate_coordinated_bot_networks(
+                df,
+                min_accounts=2,
+                min_length=25,
+                custom_whitelist=custom_whitelist,
+                custom_threats=custom_threats,
+            )
+
+            # 2. Hitung ulang Akun Terduga (Flagged Accounts)
+            flagged = IntelligenceService.calculate_flagged_accounts(
+                df,
+                custom_whitelist=custom_whitelist,
+                custom_threats=custom_threats,
+            )
+
+            # 3. Hitung ulang Metrik CIB
+            cib_metrics = IntelligenceService.calculate_cib_metrics(
+                df,
+                custom_whitelist=custom_whitelist,
+                custom_threats=custom_threats,
+            )
+
+            # 4. Simpan kembali berkas JSON terkalibrasi ke run_dir
+            json_dir = os.path.join(run_dir, "json")
+            os.makedirs(json_dir, exist_ok=True)
+
+            with open(os.path.join(json_dir, "coordinated_bot_networks.json"), "w", encoding="utf-8") as f:
+                json.dump(botnets, f, indent=2, ensure_ascii=False)
+
+            with open(os.path.join(json_dir, "flagged_accounts.json"), "w", encoding="utf-8") as f:
+                json.dump(flagged, f, indent=2, ensure_ascii=False)
+
+            cib_dict = {
+                "cib_threat_score": cib_metrics.cib_threat_score,
+                "cib_threat_level": cib_metrics.cib_threat_level.value,
+                "total_comments_analyzed": cib_metrics.total_comments_analyzed,
+                "unique_authors": cib_metrics.unique_authors,
+                "author_duplication_rate": cib_metrics.author_duplication_rate,
+                "rapid_burst_ratio": cib_metrics.rapid_burst_ratio,
+                "high_risk_bot_count": cib_metrics.high_risk_bot_count,
+            }
+            with open(os.path.join(json_dir, "cib_detection_summary.json"), "w", encoding="utf-8") as f:
+                json.dump(cib_dict, f, indent=2, ensure_ascii=False)
+
+            # 5. Perbarui SQLite History jika run_id terdaftar
+            try:
+                HistoryService.update_cib_metrics(
+                    run_id=run_id,
+                    cib_score=cib_metrics.cib_threat_score,
+                    cib_level=cib_metrics.cib_threat_level.value,
+                )
+            except Exception:
+                pass
+
+            return {
+                "success": True,
+                "cib_summary": cib_dict,
+                "bot_networks_count": len(botnets),
+                "flagged_accounts_count": len(flagged),
+                "message": "Analisis intelijen siber berhasil diperbarui seketika.",
+            }
         except Exception as e:
             return {"success": False, "error": str(e)}

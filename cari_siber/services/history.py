@@ -91,6 +91,17 @@ class HistoryService:
             conn.commit()
 
     @staticmethod
+    def update_cib_metrics(run_id: str, cib_score: float, cib_level: str):
+        with HistoryService._get_connection() as conn:
+            conn.execute("""
+                UPDATE runs
+                SET cib_score = ?,
+                    cib_level = ?
+                WHERE id = ?
+            """, (cib_score, cib_level, run_id))
+            conn.commit()
+
+    @staticmethod
     def list_runs() -> List[Dict[str, Any]]:
         try:
             with HistoryService._get_connection() as conn:

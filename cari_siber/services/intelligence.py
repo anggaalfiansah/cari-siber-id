@@ -59,6 +59,23 @@ for _cat, _words in INDONESIAN_PROVOCATION_LEXICON.items():
 
 _COMPILED_PROV_REGEX = re.compile(r"(?:\b|^)(" + "|".join(_ALL_PROV_PATTERNS) + r")(?:\b|$)", re.IGNORECASE)
 
+DEFAULT_INSTITUTIONAL_ALLOWLIST = {
+    # Apresiasi & Kata Santai Dasar
+    "alhamdulillah", "amin", "aamiin", "bismillah", "mantap", "mantap jiwa", "keren", "semangat",
+    "lanjutkan", "terima kasih", "terimakasih", "makasih", "siap", "wkwk", "wkwkwk", "haha", "hahaha",
+    "setuju", "sangat setuju", "betul", "benar sekali", "gas", "gaskeun", "mantul", "jos", "mantab",
+    "hebat", "luar biasa", "semoga lancar", "sukses selalu", "sehat selalu", "doa terbaik",
+
+    # Yel-Yel & Slogan Pertahanan Resmi
+    "tni bersama rakyat", "tni kuat bersama rakyat", "bersama rakyat tni kuat",
+    "terimakasih tni", "terima kasih tni", "terimakasih bapak tni", "terima kasih bapak tni",
+    "bravo tni", "hidup tni", "jayalah tni", "tni patriot nkri", "nkri harga mati",
+    "semangat tni", "tni polri", "bravo tni polri", "tni selalu di hati", "terbaik tni",
+    "terima kasih tni polri", "terimakasih tni polri", "maju terus tni", "tni polri hebat",
+    "pengabdian tiada henti", "profesional modern tangguh", "tni prima", "bela negara"
+}
+
+
 
 def _extract_provocation_keywords(text: str) -> List[tuple]:
     if not text:
@@ -187,7 +204,11 @@ class NarrativeThreatReport(BaseModel):
 
 class IntelligenceService:
     @staticmethod
-    def calculate_cib_metrics(df: pd.DataFrame) -> CIBDetectionMetrics:
+    def calculate_cib_metrics(
+        df: pd.DataFrame,
+        custom_whitelist: Optional[List[str]] = None,
+        custom_threats: Optional[List[str]] = None,
+    ) -> CIBDetectionMetrics:
         """
         Menganalisis Coordinated Inauthentic Behavior (CIB) & indikator bot dari dataset komentar
         menggunakan 4 pilar forensik (Copypasta, Infiltrasi Lintas Video, Kecepatan Burst, & Asimetri Dialog).
@@ -215,7 +236,11 @@ class IntelligenceService:
             duplication_rate = 0.0
 
         # 2. Deteksi Akun Inotentik Nyata (Buzzer/Bot) berbasis 4 Pilar
-        flagged = IntelligenceService.calculate_flagged_accounts(df)
+        flagged = IntelligenceService.calculate_flagged_accounts(
+            df,
+            custom_whitelist=custom_whitelist,
+            custom_threats=custom_threats,
+        )
         critical_count = sum(1 for a in flagged if a.get("cib_risk_level") == "CRITICAL")
         high_risk_bot_count = sum(1 for a in flagged if a.get("cib_risk_level") in ("CRITICAL", "HIGH"))
 
@@ -229,7 +254,17 @@ class IntelligenceService:
         if text_col and text_col in df.columns and total > 0:
             cleaned_texts = df[text_col].dropna().astype(str).str.strip().str.lower()
             val_counts = cleaned_texts.value_counts()
+
+            # Filter out whitelisted slogans from being counted as inauthentic copypasta
+            active_whitelist = set(DEFAULT_INSTITUTIONAL_ALLOWLIST)
+            if custom_whitelist:
+                for cw in custom_whitelist:
+                    if cw and isinstance(cw, str) and cw.strip():
+                        active_whitelist.add(cw.strip().lower())
+
             repeat_texts = val_counts[val_counts >= 3]
+            if active_whitelist:
+                repeat_texts = repeat_texts[~repeat_texts.index.isin(active_whitelist)]
             copypasta_ratio = round(float(repeat_texts.sum() / max(1, total)), 4)
 
         # 4. Analisis Rapid Burst (Komentar sangat rapat < 20 detik secara simultan)
@@ -331,7 +366,13 @@ class IntelligenceService:
         )
 
     @staticmethod
-    def calculate_coordinated_bot_networks(df: pd.DataFrame, min_accounts: int = 2, min_length: int = 25) -> List[Dict[str, Any]]:
+    def calculate_coordinated_bot_networks(
+        df: pd.DataFrame,
+        min_accounts: int = 2,
+        min_length: int = 25,
+        custom_whitelist: Optional[List[str]] = None,
+        custom_threats: Optional[List[str]] = None,
+    ) -> List[Dict[str, Any]]:
         """
         Mendeteksi Jaringan Bot Massal Terkoordinasi (Coordinated Bot Networks / Astroturfing)
         yang sadar konteks (Threat & Sentiment-Aware):
@@ -356,22 +397,18 @@ class IntelligenceService:
         from collections import defaultdict
         template_groups = defaultdict(list)
 
-        # 1. ALLOWLIST: Slogan Patriotik, Apresiasi TNI/POLRI/Negara, dan Yel-Yel Netizen Organik
-        INSTITUTIONAL_ALLOWLIST = {
-            # Apresiasi & Kata Santai Dasar
-            "alhamdulillah", "amin", "aamiin", "bismillah", "mantap", "mantap jiwa", "keren", "semangat",
-            "lanjutkan", "terima kasih", "terimakasih", "makasih", "siap", "wkwk", "wkwkwk", "haha", "hahaha",
-            "setuju", "sangat setuju", "betul", "benar sekali", "gas", "gaskeun", "mantul", "jos", "mantab",
-            "hebat", "luar biasa", "semoga lancar", "sukses selalu", "sehat selalu", "doa terbaik",
+        # 1. ALLOWLIST & CUSTOM THREAT TARGETS
+        active_allowlist = set(DEFAULT_INSTITUTIONAL_ALLOWLIST)
+        if custom_whitelist:
+            for cw in custom_whitelist:
+                if cw and isinstance(cw, str) and cw.strip():
+                    active_allowlist.add(cw.strip().lower())
 
-            # Yel-Yel & Slogan Pertahanan Resmi
-            "tni bersama rakyat", "tni kuat bersama rakyat", "bersama rakyat tni kuat",
-            "terimakasih tni", "terima kasih tni", "terimakasih bapak tni", "terima kasih bapak tni",
-            "bravo tni", "hidup tni", "jayalah tni", "tni patriot nkri", "nkri harga mati",
-            "semangat tni", "tni polri", "bravo tni polri", "tni selalu di hati", "terbaik tni",
-            "terima kasih tni polri", "terimakasih tni polri", "maju terus tni", "tni polri hebat",
-            "pengabdian tiada henti", "profesional modern tangguh", "tni prima", "bela negara"
-        }
+        threat_targets = set()
+        if custom_threats:
+            for ct in custom_threats:
+                if ct and isinstance(ct, str) and ct.strip():
+                    threat_targets.add(ct.strip().lower())
 
         for r in df.to_dict("records"):
             raw_t = str(r.get(text_col) or "").strip()
@@ -385,15 +422,19 @@ class IntelligenceService:
             clean_norm = re.sub(r"^@\w+\s*", "", clean).strip().lower()
             clean_norm = re.sub(r"[!?.]{2,}", "", clean_norm).strip()
 
-            # Filter panjang minimal dan frasa allowlist presisi
-            if len(clean_norm) < min_length or clean_norm in INSTITUTIONAL_ALLOWLIST:
-                continue
+            # Cek apakah teks mengandung custom threat target
+            matches_custom_threat = any(ct in clean_norm for ct in threat_targets) if threat_targets else False
 
-            # Anti-Camouflage Guardrail: Cek apakah teks mengandung slogan resmi allowlist
-            if any(slogan in clean_norm for slogan in INSTITUTIONAL_ALLOWLIST):
-                # HANYA abaikan jika teks TIDAK mengandung leksikon hasutan/provokasi
-                if not _COMPILED_PROV_REGEX.search(clean):
+            # Jika bukan target ancaman, evaluasi filter allowlist & panjang
+            if not matches_custom_threat:
+                if len(clean_norm) < min_length or clean_norm in active_allowlist:
                     continue
+
+                # Anti-Camouflage Guardrail: Cek apakah teks mengandung slogan resmi allowlist
+                if any(slogan in clean_norm for slogan in active_allowlist):
+                    # HANYA abaikan jika teks TIDAK mengandung leksikon hasutan/provokasi
+                    if not _COMPILED_PROV_REGEX.search(clean):
+                        continue
 
             template_groups[clean_norm].append({
                 "raw_text": clean,
@@ -424,7 +465,8 @@ class IntelligenceService:
             account_names = list(unique_authors_map.keys())
 
             # 2. EVALUASI ANCAMAN (THREAT & SENTIMENT CHECK)
-            has_provocation = bool(_COMPILED_PROV_REGEX.search(best_raw_text)) or any(bool(_COMPILED_PROV_REGEX.search(it.get("raw_text", ""))) for it in items)
+            matches_custom_threat = any(ct in norm_t for ct in threat_targets) or any(any(ct in str(it.get("raw_text", "")).lower() for ct in threat_targets) for it in items) if threat_targets else False
+            has_provocation = matches_custom_threat or bool(_COMPILED_PROV_REGEX.search(best_raw_text)) or any(bool(_COMPILED_PROV_REGEX.search(it.get("raw_text", ""))) for it in items)
             pos_ratio = sum(1 for it in items if str(it.get("sentiment", "")).capitalize() == "Positif") / max(1, len(items))
 
             # 3. AUDIT JEDA WAKTU (BURST TEMPORAL CHECK)
@@ -448,21 +490,27 @@ class IntelligenceService:
                     if min_diff < 30.0 or median_diff < 60.0:
                         is_rapid_burst = True
 
-            # Jika murni positif dan tidak ada leksikon hasutan, tandai sebagai Resonansi Organik
-            if not has_provocation and (pos_ratio >= 0.70 or not is_rapid_burst):
+            # Klasifikasi Level & Status Hostile
+            if matches_custom_threat:
+                coord_level = "CRITICAL_MASS" if unique_count >= 5 else "HIGH_COORDINATION"
+                coord_badge = "🔴 Target Operasi Terarah"
+                is_hostile = True
+            elif not has_provocation and (pos_ratio >= 0.70 or not is_rapid_burst):
                 coord_level = "ORGANIC_RESONANCE"
                 coord_badge = "🟢 Apresiasi Publik / Gema Organik"
+                is_hostile = False
             elif unique_count >= 10:
                 coord_level = "CRITICAL_MASS"
                 coord_badge = "🔴 Sangat Kritis"
+                is_hostile = True
             elif unique_count >= 5:
                 coord_level = "HIGH_COORDINATION"
                 coord_badge = "🟠 Koordinasi Tinggi"
+                is_hostile = True
             else:
                 coord_level = "MEDIUM_COORDINATION"
                 coord_badge = "🟡 Bot Duplikat"
-
-            is_hostile = has_provocation or (coord_level in ("CRITICAL_MASS", "HIGH_COORDINATION") and pos_ratio < 0.5)
+                is_hostile = has_provocation or (pos_ratio < 0.5)
 
             bot_networks.append({
                 "template_text": best_raw_text,
@@ -487,7 +535,11 @@ class IntelligenceService:
         return bot_networks
 
     @staticmethod
-    def calculate_flagged_accounts(df: pd.DataFrame) -> List[Dict[str, Any]]:
+    def calculate_flagged_accounts(
+        df: pd.DataFrame,
+        custom_whitelist: Optional[List[str]] = None,
+        custom_threats: Optional[List[str]] = None,
+    ) -> List[Dict[str, Any]]:
         """
         Mendeteksi seluruh akun mencurigakan (Provokator Berdampak, Agitator Utas, Buzzer Terarah, Spam Bot, & Hybrid)
         menggunakan Dual-Engine Cyber Forensic Architecture:
@@ -534,7 +586,25 @@ class IntelligenceService:
 
         # Deteksi Jaringan Bot Massal Lintas Akun (Cross-Account Duplicate Comments)
         from collections import defaultdict, Counter
-        bot_networks = IntelligenceService.calculate_coordinated_bot_networks(df_valid, min_accounts=2, min_length=25)
+        active_allowlist = set(DEFAULT_INSTITUTIONAL_ALLOWLIST)
+        if custom_whitelist:
+            for cw in custom_whitelist:
+                if cw and isinstance(cw, str) and cw.strip():
+                    active_allowlist.add(cw.strip().lower())
+
+        threat_targets = set()
+        if custom_threats:
+            for ct in custom_threats:
+                if ct and isinstance(ct, str) and ct.strip():
+                    threat_targets.add(ct.strip().lower())
+
+        bot_networks = IntelligenceService.calculate_coordinated_bot_networks(
+            df_valid,
+            min_accounts=2,
+            min_length=25,
+            custom_whitelist=custom_whitelist,
+            custom_threats=custom_threats,
+        )
         author_to_botnet = defaultdict(list)
         for bn in bot_networks:
             # PENTING: Hanya anggap botnet ancaman jika BUKAN Resonansi Organik Publik dan berpotensi hostile!
@@ -570,21 +640,31 @@ class IntelligenceService:
                 most_common = counts_norm.most_common(1)
                 exact_dup_max = most_common[0][1] if most_common else 1
 
-                if exact_dup_max >= 3:
-                    copypasta_score = 35  # Severe copypasta template bot
-                elif exact_dup_max == 2:
-                    copypasta_score = 25 if total_comms >= 3 else 15
-                elif len(norm_texts) >= 2:
-                    max_sim = 0.0
-                    for i in range(min(5, len(norm_texts))):
-                        for j in range(i + 1, min(5, len(norm_texts))):
-                            sim = _token_jaccard_similarity(norm_texts[i], norm_texts[j])
-                            if sim > max_sim:
-                                max_sim = sim
-                    if max_sim >= 0.80:
-                        copypasta_score = 25
-                    elif max_sim >= 0.65:
-                        copypasta_score = 15
+                # Abaikan copypasta jika seluruh teks duplikat adalah slogan/apresiasi allowlist dan tidak mengandung ancaman
+                is_whitelisted_slogan = any(
+                    (txt in active_allowlist or any(slogan in txt for slogan in active_allowlist))
+                    for txt, c in counts_norm.items() if c >= 2
+                )
+                has_custom_threat_in_texts = any(any(ct in t for ct in threat_targets) for t in norm_texts) if threat_targets else False
+
+                if is_whitelisted_slogan and not has_custom_threat_in_texts and not any(_COMPILED_PROV_REGEX.search(t) for t in norm_texts):
+                    copypasta_score = 0
+                else:
+                    if exact_dup_max >= 3:
+                        copypasta_score = 35  # Severe copypasta template bot
+                    elif exact_dup_max == 2:
+                        copypasta_score = 25 if total_comms >= 3 else 15
+                    elif len(norm_texts) >= 2:
+                        max_sim = 0.0
+                        for i in range(min(5, len(norm_texts))):
+                            for j in range(i + 1, min(5, len(norm_texts))):
+                                sim = _token_jaccard_similarity(norm_texts[i], norm_texts[j])
+                                if sim > max_sim:
+                                    max_sim = sim
+                        if max_sim >= 0.80:
+                            copypasta_score = 25
+                        elif max_sim >= 0.65:
+                            copypasta_score = 15
 
             # Pilar 2: Penetrasi Multi-Video Terarah (Bobot Maks: 25)
             cross_video_score = 0
@@ -663,6 +743,17 @@ class IntelligenceService:
                 neg_sentiment_count=neg_cnt,
             )
 
+            matched_custom_threats = []
+            if threat_targets:
+                for t in raw_texts:
+                    t_low = t.lower()
+                    for ct in threat_targets:
+                        if ct in t_low and ct not in matched_custom_threats:
+                            matched_custom_threats.append(ct)
+            if matched_custom_threats:
+                prov_score = min(100, prov_score + 40)
+                detected_keywords.extend(matched_custom_threats)
+
             # SKOR KOMPOSIT ANCAMAN SIBER (0 - 100)
             composite_threat_score = max(bot_score, prov_score)
 
@@ -718,6 +809,8 @@ class IntelligenceService:
                 disarm_codes.append("DISARM-T0083 (Synchronized Swarming Attack)")
 
             threat_tags = list(disarm_codes)
+            if matched_custom_threats:
+                threat_tags.append(f"🎯 Target Operasi: {', '.join(matched_custom_threats[:2])}")
             if matched_botnets:
                 threat_tags.append(f"Jaringan Bot Massal ({max_peer_count} Akun Kembar)")
 

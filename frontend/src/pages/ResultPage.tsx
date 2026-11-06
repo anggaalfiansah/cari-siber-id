@@ -29,6 +29,9 @@ import {
   User,
   Bot,
   Copy,
+  Sparkles,
+  Zap,
+  Plus,
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -78,6 +81,16 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
   const [buzzerRiskFilter, setBuzzerRiskFilter] = useState<'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'SUSPICIOUS'>('ALL');
   const [buzzerActorFilter, setBuzzerActorFilter] = useState<'ALL' | 'PROVOCATEUR' | 'BUZZER' | 'BOT' | 'HYBRID'>('ALL');
 
+  // State Agentic Context Calibrator & Instant Re-Analysis
+  const [isCalibrating, setIsCalibrating] = useState(false);
+  const [isReanalyzing, setIsReanalyzing] = useState(false);
+  const [calibrationReasoning, setCalibrationReasoning] = useState<string>('');
+  const [customWhitelist, setCustomWhitelist] = useState<string[]>([]);
+  const [customThreats, setCustomThreats] = useState<string[]>([]);
+  const [newWhitelistTag, setNewWhitelistTag] = useState('');
+  const [newThreatTag, setNewThreatTag] = useState('');
+  const [calibrationNotice, setCalibrationNotice] = useState<string>('');
+
   // Filter untuk Tab Eksplorasi Seluruh Komentar
   const [commentSearch, setCommentSearch] = useState('');
   const [commentSentimentFilter, setCommentSentimentFilter] = useState<'ALL' | 'Positif' | 'Netral' | 'Negatif'>('ALL');
@@ -88,8 +101,8 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
     }
   }, [runId]);
 
-  const loadData = async (id: string) => {
-    setLoading(true);
+  const loadData = async (id: string, preserveTab: boolean = false) => {
+    if (!preserveTab) setLoading(true);
     setError('');
     try {
       const [info, res] = await Promise.all([
@@ -99,18 +112,90 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
       setRunInfo(info || null);
       setResult(res || null);
 
-      if (res?.cross_video?.is_multi_video) {
-        setActiveTab('cross_videos');
-      } else if (res?.flagged_accounts && res.flagged_accounts.length > 0) {
-        setActiveTab('buzzers');
-      } else {
-        setActiveTab('topics');
+      if (!preserveTab) {
+        if (res?.cross_video?.is_multi_video) {
+          setActiveTab('cross_videos');
+        } else if (res?.flagged_accounts && res.flagged_accounts.length > 0) {
+          setActiveTab('buzzers');
+        } else {
+          setActiveTab('topics');
+        }
       }
     } catch (err: any) {
       setError(err?.message || 'Gagal memuat data hasil.');
     } finally {
-      setLoading(false);
+      if (!preserveTab) setLoading(false);
     }
+  };
+
+  const handleRequestAICalibration = async () => {
+    if (!runId) return;
+    setIsCalibrating(true);
+    setCalibrationNotice('');
+    try {
+      const res = await api.get_ai_threat_calibration({ run_id: runId });
+      if (res && res.success) {
+        setCalibrationReasoning(res.reasoning_summary || '');
+        const newWl = res.whitelist_recommendations || [];
+        const newTh = res.hostile_threat_keywords || [];
+        setCustomWhitelist((prev) => Array.from(new Set([...prev, ...newWl])));
+        setCustomThreats((prev) => Array.from(new Set([...prev, ...newTh])));
+        setCalibrationNotice(`✓ Rekomendasi AI berhasil didapatkan: ${newWl.length} usulan whitelist dan ${newTh.length} target ancaman.`);
+      } else {
+        setCalibrationNotice(res?.error || 'Gagal memanggil kalibrasi AI.');
+      }
+    } catch (e: any) {
+      setCalibrationNotice(e?.message || 'Terjadi kesalahan saat memanggil kalibrasi AI.');
+    } finally {
+      setIsCalibrating(false);
+    }
+  };
+
+  const handleReanalyze = async () => {
+    if (!runId) return;
+    setIsReanalyzing(true);
+    setCalibrationNotice('');
+    try {
+      const res = await api.reanalyze_intelligence({
+        run_id: runId,
+        whitelist: customWhitelist,
+        threats: customThreats,
+      });
+      if (res && res.success) {
+        await loadData(runId, true);
+        setCalibrationNotice(`⚡ Berhasil! Intelijen diperbarui seketika: ${res.bot_networks_count ?? 0} klaster bot, ${res.flagged_accounts_count ?? 0} akun teridentifikasi.`);
+      } else {
+        setCalibrationNotice(res?.error || 'Gagal melakukan analisa ulang.');
+      }
+    } catch (e: any) {
+      setCalibrationNotice(e?.message || 'Terjadi kesalahan saat analisa ulang.');
+    } finally {
+      setIsReanalyzing(false);
+    }
+  };
+
+  const addWhitelistTag = () => {
+    const val = newWhitelistTag.trim();
+    if (val && !customWhitelist.includes(val)) {
+      setCustomWhitelist([...customWhitelist, val]);
+      setNewWhitelistTag('');
+    }
+  };
+
+  const removeWhitelistTag = (tag: string) => {
+    setCustomWhitelist(customWhitelist.filter((t) => t !== tag));
+  };
+
+  const addThreatTag = () => {
+    const val = newThreatTag.trim();
+    if (val && !customThreats.includes(val)) {
+      setCustomThreats([...customThreats, val]);
+      setNewThreatTag('');
+    }
+  };
+
+  const removeThreatTag = (tag: string) => {
+    setCustomThreats(customThreats.filter((t) => t !== tag));
   };
 
   const handleExportXlsx = async () => {
@@ -1169,6 +1254,281 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
                 </div>
               </div>
 
+              {/* PANEL ASISTEN INTELIJEN KOGNITIF: KALIBRASI KONTEKS & HUMAN-IN-THE-LOOP */}
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(16, 185, 129, 0.08) 50%, rgba(15, 23, 42, 0.95) 100%)',
+                  border: '1px solid rgba(16, 185, 129, 0.35)',
+                  borderRadius: '12px',
+                  padding: '16px 20px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '14px',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.35)',
+                }}
+              >
+                {/* Header Row */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div
+                      style={{
+                        background: 'rgba(16, 185, 129, 0.2)',
+                        padding: '8px',
+                        borderRadius: '9px',
+                        border: '1px solid rgba(16, 185, 129, 0.4)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Sparkles size={20} color="#10b981" />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <span>Asisten Agentic AI: Kalibrasi Konteks & Eliminasi Salah Tuduh</span>
+                        <span style={{ fontSize: '0.68rem', background: 'rgba(16, 185, 129, 0.2)', color: '#6ee7b7', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '2px 8px', borderRadius: '12px', fontWeight: 700 }}>
+                          HUMAN-IN-THE-LOOP DEFENSE
+                        </span>
+                      </div>
+                      <p style={{ fontSize: '0.76rem', color: '#94a3b8', margin: '3px 0 0', maxWidth: '680px', lineHeight: 1.4 }}>
+                        Gunakan AI untuk membedakan yel-yel kedaulatan / apresiasi warga ("TNI Bersama Rakyat") dari kampanye disinformasi musuh, lalu terapkan analisa ulang instan (&lt;2 dtk).
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <button
+                      onClick={handleRequestAICalibration}
+                      disabled={isCalibrating || isReanalyzing}
+                      style={{
+                        background: isCalibrating ? '#334155' : 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+                        color: '#ffffff',
+                        border: 'none',
+                        padding: '8px 14px',
+                        borderRadius: '7px',
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        cursor: isCalibrating ? 'not-allowed' : 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '7px',
+                        boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <Sparkles size={14} />
+                      {isCalibrating ? 'Memindai Konteks...' : '🤖 Minta Rekomendasi AI'}
+                    </button>
+
+                    {(customWhitelist.length > 0 || customThreats.length > 0) && (
+                      <button
+                        onClick={handleReanalyze}
+                        disabled={isReanalyzing || isCalibrating}
+                        style={{
+                          background: isReanalyzing ? '#334155' : 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
+                          color: '#ffffff',
+                          border: 'none',
+                          padding: '8px 14px',
+                          borderRadius: '7px',
+                          fontSize: '0.8rem',
+                          fontWeight: 700,
+                          cursor: isReanalyzing ? 'not-allowed' : 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '7px',
+                          boxShadow: '0 2px 8px rgba(2, 132, 199, 0.3)',
+                          transition: 'all 0.15s ease',
+                        }}
+                      >
+                        <Zap size={14} />
+                        {isReanalyzing ? 'Menganalisis Ulang...' : '⚡ Terapkan & Analisa Ulang'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Status Notice */}
+                {calibrationNotice && (
+                  <div
+                    style={{
+                      background: calibrationNotice.startsWith('✓') || calibrationNotice.startsWith('⚡') ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                      border: `1px solid ${calibrationNotice.startsWith('✓') || calibrationNotice.startsWith('⚡') ? 'rgba(16, 185, 129, 0.35)' : 'rgba(239, 68, 68, 0.35)'}`,
+                      borderRadius: '6px',
+                      padding: '7px 12px',
+                      fontSize: '0.78rem',
+                      color: calibrationNotice.startsWith('✓') || calibrationNotice.startsWith('⚡') ? '#6ee7b7' : '#fca5a5',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                    }}
+                  >
+                    <CheckCircle size={14} />
+                    <span>{calibrationNotice}</span>
+                  </div>
+                )}
+
+                {/* Reasoning Summary if available */}
+                {calibrationReasoning && (
+                  <div
+                    style={{
+                      background: 'rgba(2, 132, 199, 0.08)',
+                      borderLeft: '3px solid #38bdf8',
+                      padding: '8px 12px',
+                      borderRadius: '0 6px 6px 0',
+                      fontSize: '0.78rem',
+                      color: '#e2e8f0',
+                      lineHeight: 1.45,
+                    }}
+                  >
+                    <strong style={{ color: '#38bdf8' }}>Catatan Perwira Analis PUSSIBERAD: </strong>
+                    {calibrationReasoning}
+                  </div>
+                )}
+
+                {/* Tag / Pill Clouds */}
+                {(customWhitelist.length > 0 || customThreats.length > 0 || calibrationReasoning) && (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px', marginTop: '4px' }}>
+                    {/* Whitelist Panel */}
+                    <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(16, 185, 129, 0.25)', borderRadius: '8px', padding: '12px' }}>
+                      <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#6ee7b7', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span>🟢 Pengecualian / Whitelist Slogan ({customWhitelist.length})</span>
+                        <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 400 }}>Diabaikan dari tuduhan bot</span>
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px', minHeight: '26px' }}>
+                        {customWhitelist.map((item, idx) => (
+                          <span
+                            key={idx}
+                            style={{
+                              background: 'rgba(16, 185, 129, 0.15)',
+                              border: '1px solid rgba(16, 185, 129, 0.4)',
+                              color: '#6ee7b7',
+                              fontSize: '0.73rem',
+                              padding: '3px 8px',
+                              borderRadius: '6px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                            }}
+                          >
+                            "{item}"
+                            <button
+                              onClick={() => removeWhitelistTag(item)}
+                              style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}
+                              title="Hapus dari whitelist"
+                            >
+                              <X size={12} />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <input
+                          type="text"
+                          placeholder="+ Tambah slogan wajar..."
+                          value={newWhitelistTag}
+                          onChange={(e) => setNewWhitelistTag(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') addWhitelistTag(); }}
+                          style={{
+                            flex: 1,
+                            padding: '5px 8px',
+                            background: 'rgba(30, 41, 59, 0.7)',
+                            border: '1px solid rgba(51, 65, 85, 0.7)',
+                            borderRadius: '5px',
+                            color: '#f8fafc',
+                            fontSize: '0.75rem',
+                            outline: 'none',
+                          }}
+                        />
+                        <button
+                          onClick={addWhitelistTag}
+                          style={{
+                            background: '#059669',
+                            border: 'none',
+                            borderRadius: '5px',
+                            color: '#ffffff',
+                            padding: '0 10px',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Tambah
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Threats Panel */}
+                    <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(239, 68, 68, 0.25)', borderRadius: '8px', padding: '12px' }}>
+                      <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#fca5a5', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span>🔴 Target Ancaman Khusus ({customThreats.length})</span>
+                        <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 400 }}>Ditandai hostile siber</span>
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px', minHeight: '26px' }}>
+                        {customThreats.map((item, idx) => (
+                          <span
+                            key={idx}
+                            style={{
+                              background: 'rgba(239, 68, 68, 0.15)',
+                              border: '1px solid rgba(239, 68, 68, 0.4)',
+                              color: '#fca5a5',
+                              fontSize: '0.73rem',
+                              padding: '3px 8px',
+                              borderRadius: '6px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                            }}
+                          >
+                            "{item}"
+                            <button
+                              onClick={() => removeThreatTag(item)}
+                              style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}
+                              title="Hapus dari target ancaman"
+                            >
+                              <X size={12} />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <input
+                          type="text"
+                          placeholder="+ Tambah kata kunci ancaman..."
+                          value={newThreatTag}
+                          onChange={(e) => setNewThreatTag(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') addThreatTag(); }}
+                          style={{
+                            flex: 1,
+                            padding: '5px 8px',
+                            background: 'rgba(30, 41, 59, 0.7)',
+                            border: '1px solid rgba(51, 65, 85, 0.7)',
+                            borderRadius: '5px',
+                            color: '#f8fafc',
+                            fontSize: '0.75rem',
+                            outline: 'none',
+                          }}
+                        />
+                        <button
+                          onClick={addThreatTag}
+                          style={{
+                            background: '#dc2626',
+                            border: 'none',
+                            borderRadius: '5px',
+                            color: '#ffffff',
+                            padding: '0 10px',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Tambah
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {filteredBotNetworks.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '40px 20px', color: '#94a3b8', background: 'rgba(15, 23, 42, 0.4)', borderRadius: '10px', border: '1px dashed #334155' }}>
                   <ShieldCheck size={40} color="#10b981" style={{ margin: '0 auto 10px' }} />
@@ -1270,26 +1630,59 @@ export const ResultPage: React.FC<ResultPageProps> = ({ runId, onNavigateNew, on
                             </span>
                           </div>
 
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(bn.template_text);
-                            }}
-                            style={{
-                              fontSize: '0.72rem',
-                              background: 'rgba(51, 65, 85, 0.4)',
-                              border: '1px solid rgba(100, 116, 139, 0.4)',
-                              color: '#cbd5e1',
-                              padding: '4px 10px',
-                              borderRadius: '6px',
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '5px',
-                            }}
-                          >
-                            <Copy size={12} />
-                            <span>Salin Template</span>
-                          </button>
+                          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                            <button
+                              onClick={() => {
+                                const val = bn.template_text.trim();
+                                if (val && !customWhitelist.includes(val)) {
+                                  const nextWl = [...customWhitelist, val];
+                                  setCustomWhitelist(nextWl);
+                                  if (runId) {
+                                    api.reanalyze_intelligence({ run_id: runId, whitelist: nextWl, threats: customThreats })
+                                      .then(() => loadData(runId, true));
+                                  }
+                                }
+                              }}
+                              style={{
+                                fontSize: '0.72rem',
+                                background: 'rgba(16, 185, 129, 0.15)',
+                                border: '1px solid rgba(16, 185, 129, 0.4)',
+                                color: '#6ee7b7',
+                                padding: '4px 9px',
+                                borderRadius: '6px',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                fontWeight: 600,
+                              }}
+                              title="Tandai sebagai slogan wajar / apresiasi publik dan analisa ulang seketika"
+                            >
+                              <ShieldCheck size={12} />
+                              <span>+ Whitelist</span>
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(bn.template_text);
+                              }}
+                              style={{
+                                fontSize: '0.72rem',
+                                background: 'rgba(51, 65, 85, 0.4)',
+                                border: '1px solid rgba(100, 116, 139, 0.4)',
+                                color: '#cbd5e1',
+                                padding: '4px 10px',
+                                borderRadius: '6px',
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '5px',
+                              }}
+                            >
+                              <Copy size={12} />
+                              <span>Salin Template</span>
+                            </button>
+                          </div>
                         </div>
 
                         {/* Template Text Quote */}

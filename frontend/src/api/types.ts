@@ -315,3 +315,21 @@ export interface ReusableCorpus {
 }
 
 
+
+
+export interface ThreatCalibrationResult {
+  success: boolean;
+  whitelist_recommendations: string[];
+  hostile_threat_keywords: string[];
+  reasoning_summary: string;
+  error?: string;
+}
+
+export interface ReanalyzeResponse {
+  success: boolean;
+  cib_summary?: any;
+  bot_networks_count?: number;
+  flagged_accounts_count?: number;
+  message?: string;
+  error?: string;
+}
