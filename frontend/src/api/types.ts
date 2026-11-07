@@ -210,6 +210,7 @@ export interface RunResult {
   meta: {
     video_title: string;
     channel_name: string;
+    search_keyword?: string;
     total_comments: number;
     unique_authors_total?: number;
     cib_score?: number;
@@ -309,6 +310,9 @@ export interface CuratedVideoItem {
   channel: string;
   duration?: string;
   views?: string;
+  views_count?: number;
+  comment_count?: number;
+  comments_str?: string;
   published?: string;
   thumbnail?: string;
   relevance_score?: number;
@@ -319,7 +323,9 @@ export interface CuratedVideoItem {
 export interface VideoDiscoveryResponse {
   success: boolean;
   keyword?: string;
+  target_requested?: number;
   total_candidates_found?: number;
+  total_estimated_comments?: number;
   curated_videos?: CuratedVideoItem[];
   error?: string;
 }

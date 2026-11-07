@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Save,
   CheckCircle,
@@ -9,7 +10,6 @@ import {
   Eye,
   EyeOff,
   Info,
-  Sparkles,
   Plus,
   Trash2,
   Edit2,
@@ -17,20 +17,9 @@ import {
   Server,
   Layers,
   X,
-  WifiOff,
-  Cloud,
-  Globe,
 } from 'lucide-react';
 import { Settings, AIAccountProfile } from '../api/types';
 import { api, waitForPyWebView } from '../api/bridge';
-
-const MODEL_PRESETS = [
-  { label: 'Ollama Qwen 2.5 7B (Air-Gapped Lokal)', value: 'qwen2.5:7b', provider: 'custom', base_url: 'http://127.0.0.1:11434/v1' },
-  { label: 'Ollama Llama 3.1 8B (Air-Gapped Lokal)', value: 'llama3.1:8b', provider: 'custom', base_url: 'http://127.0.0.1:11434/v1' },
-  { label: 'Gemini 2.5 Flash Direct (Resmi)', value: 'gemini-2.5-flash', provider: 'gemini', base_url: '' },
-  { label: 'OpenRouter Gemini 2.0 Flash', value: 'google/gemini-2.0-flash-001', provider: 'openrouter', base_url: 'https://openrouter.ai/api/v1' },
-  { label: 'OpenRouter Qwen 2.5 72B Instruct', value: 'qwen/qwen-2.5-72b-instruct', provider: 'openrouter', base_url: 'https://openrouter.ai/api/v1' },
-];
 
 export const SettingsPage: React.FC = () => {
   const [settings, setSettings] = useState<Settings>({
@@ -73,6 +62,10 @@ export const SettingsPage: React.FC = () => {
   const [accountTestStatus, setAccountTestStatus] = useState<
     Record<string, { testing: boolean; result?: { success: boolean; message: string } }>
   >({});
+  const [modalTestStatus, setModalTestStatus] = useState<{
+    testing: boolean;
+    result?: { success: boolean; message: string };
+  }>({ testing: false });
 
   const toggleKeyVisibility = (field: string) => {
     setShowKeys((prev) => ({ ...prev, [field]: !prev[field] }));
@@ -89,73 +82,6 @@ export const SettingsPage: React.FC = () => {
       setSettings(data);
     } catch (e) {
       console.error(e);
-    }
-  };
-
-  const applyOperationalReadinessProfile = async (profileType: 'airgap' | 'gemini' | 'openrouter') => {
-    let profileAcc: AIAccountProfile;
-    const existingList = [...(settings.ai_accounts || [])];
-
-    if (profileType === 'airgap') {
-      const found = existingList.find((a) => a.provider === 'custom' && (a.base_url || '').includes('127.0.0.1'));
-      profileAcc = found || {
-        id: 'acc_airgap_local',
-        name: 'Intranet Militer Air-Gapped (Local Ollama / vLLM)',
-        provider: 'custom',
-        model: 'qwen2.5:7b',
-        base_url: 'http://127.0.0.1:11434/v1',
-        api_key: 'local-airgap',
-        is_active: true,
-      };
-    } else if (profileType === 'gemini') {
-      const found = existingList.find((a) => a.provider === 'gemini');
-      profileAcc = found || {
-        id: 'acc_gemini_official',
-        name: 'Google Gemini Official (Cloud Cepat)',
-        provider: 'gemini',
-        model: 'gemini-2.5-flash',
-        base_url: '',
-        api_key: settings.gemini_api_key || '',
-        is_active: true,
-      };
-    } else {
-      const found = existingList.find((a) => a.provider === 'openrouter');
-      profileAcc = found || {
-        id: 'acc_openrouter_gw',
-        name: 'OpenRouter Multi-Model Gateway',
-        provider: 'openrouter',
-        model: 'google/gemini-2.0-flash-001',
-        base_url: 'https://openrouter.ai/api/v1',
-        api_key: settings.openrouter_api_key || '',
-        is_active: true,
-      };
-    }
-
-    const existsInList = existingList.some((a) => a.id === profileAcc.id);
-    const nextAccounts = (existsInList ? existingList : [profileAcc, ...existingList]).map((a) => ({
-      ...a,
-      is_active: a.id === profileAcc.id,
-    }));
-
-    const updatedSettings: Settings = {
-      ...settings,
-      active_account_id: profileAcc.id,
-      ai_accounts: nextAccounts,
-      ai_provider: profileAcc.provider,
-      ai_model: profileAcc.model,
-      custom_base_url: profileAcc.base_url || 'http://127.0.0.1:11434/v1',
-      custom_api_key: profileAcc.provider === 'custom' ? (profileAcc.api_key || 'local-airgap') : settings.custom_api_key,
-    };
-
-    setSettings(updatedSettings);
-    try {
-      await waitForPyWebView();
-      await api.save_settings(updatedSettings);
-      setSaveMessage(`Profil Kesiapan "${profileAcc.name}" diaktifkan!`);
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
-    } catch (err: any) {
-      alert('Gagal menerapkan profil: ' + err?.message);
     }
   };
 
@@ -191,6 +117,7 @@ export const SettingsPage: React.FC = () => {
 
   const openAddForm = () => {
     setEditingId(null);
+    setModalTestStatus({ testing: false });
     setAccountForm({
       name: `Profil AI #${(settings.ai_accounts?.length || 0) + 1}`,
       provider: 'custom',
@@ -203,6 +130,7 @@ export const SettingsPage: React.FC = () => {
 
   const openEditForm = (acc: AIAccountProfile) => {
     setEditingId(acc.id);
+    setModalTestStatus({ testing: false });
     setAccountForm({
       name: acc.name,
       provider: acc.provider === 'edgeone' ? 'custom' : acc.provider,
@@ -211,6 +139,37 @@ export const SettingsPage: React.FC = () => {
       api_key: acc.api_key || '',
     });
     setIsFormOpen(true);
+  };
+
+  const handleTestModalConnection = async () => {
+    if (!accountForm.model.trim()) {
+      setModalTestStatus({
+        testing: false,
+        result: { success: false, message: 'Model Identifier tidak boleh kosong.' },
+      });
+      return;
+    }
+
+    setModalTestStatus({ testing: true });
+    try {
+      await waitForPyWebView();
+      const res = await api.test_ai_connection({
+        provider: accountForm.provider,
+        model: accountForm.model.trim(),
+        base_url: accountForm.base_url.trim(),
+        api_key: accountForm.api_key.trim(),
+      });
+      setModalTestStatus({ testing: false, result: res });
+      if (editingId) {
+        setAccountTestStatus((prev) => ({
+          ...prev,
+          [editingId]: { testing: false, result: res },
+        }));
+      }
+    } catch (err: any) {
+      const failRes = { success: false, message: err?.message || 'Uji koneksi gagal.' };
+      setModalTestStatus({ testing: false, result: failRes });
+    }
   };
 
   const handleSaveAccountForm = async (e: React.FormEvent) => {
@@ -362,116 +321,19 @@ export const SettingsPage: React.FC = () => {
     }
   };
 
-  const isLocalAirGapActive =
-    settings.ai_provider === 'custom' &&
-    ((settings.custom_base_url || '').includes('127.0.0.1') || (settings.custom_base_url || '').includes('localhost'));
-
   return (
-    <div style={{ maxWidth: '880px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ width: '100%', maxWidth: '880px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {/* Page Header */}
-      <div>
-        <h1 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#f8fafc', letterSpacing: '-0.01em' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <h1 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#f8fafc', letterSpacing: '-0.01em', margin: 0 }}>
           5. Konfigurasi Sistem & Profil Kesiapan AI
         </h1>
-        <p style={{ fontSize: '0.84rem', color: '#94a3b8', marginTop: '2px' }}>
-          Dukungan penuh operasi Intranet Militer Air-Gapped (Ollama / vLLM Lokal tanpa internet) maupun Cloud API Kecepatan Tinggi.
-        </p>
-      </div>
-
-      {/* ========================================================= */}
-      {/* PROFIL KESIAPAN OPERASI (1-CLICK READINESS PROFILES)      */}
-      {/* ========================================================= */}
-      <div className="panel panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <ShieldCheck size={18} color="#10b981" />
-          <span>Preset Cepat Profil Kesiapan Operasi (1-Klik Aktivasi)</span>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-          {/* Card 1: Intranet Air-Gapped */}
-          <button
-            type="button"
-            onClick={() => applyOperationalReadinessProfile('airgap')}
-            style={{
-              textAlign: 'left',
-              padding: '14px',
-              borderRadius: '10px',
-              background: isLocalAirGapActive ? 'rgba(16, 185, 129, 0.14)' : 'rgba(15, 23, 42, 0.7)',
-              border: isLocalAirGapActive ? '2px solid #10b981' : '1px solid rgba(51, 65, 85, 0.6)',
-              cursor: 'pointer',
-              color: '#f8fafc',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '6px',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 700, color: '#34d399' }}>
-                <WifiOff size={15} /> 1. Mode Intranet / Air-Gapped
-              </span>
-              {isLocalAirGapActive && <span style={{ fontSize: '0.65rem', background: '#10b981', color: '#052e16', fontWeight: 800, padding: '2px 6px', borderRadius: '8px' }}>AKTIF</span>}
-            </div>
-            <div style={{ fontSize: '0.75rem', color: '#cbd5e1', lineHeight: 1.4 }}>
-              Endpoint lokal <code>http://127.0.0.1:11434/v1</code> (Ollama / vLLM). 100% kedaulatan data di jaringan tertutup tanpa API key eksternal.
-            </div>
-          </button>
-
-          {/* Card 2: Google Gemini Official */}
-          <button
-            type="button"
-            onClick={() => applyOperationalReadinessProfile('gemini')}
-            style={{
-              textAlign: 'left',
-              padding: '14px',
-              borderRadius: '10px',
-              background: settings.ai_provider === 'gemini' ? 'rgba(2, 132, 199, 0.14)' : 'rgba(15, 23, 42, 0.7)',
-              border: settings.ai_provider === 'gemini' ? '2px solid #0284c7' : '1px solid rgba(51, 65, 85, 0.6)',
-              cursor: 'pointer',
-              color: '#f8fafc',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '6px',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 700, color: '#38bdf8' }}>
-                <Cloud size={15} /> 2. Google Gemini Official
-              </span>
-              {settings.ai_provider === 'gemini' && <span style={{ fontSize: '0.65rem', background: '#0284c7', color: '#fff', fontWeight: 800, padding: '2px 6px', borderRadius: '8px' }}>AKTIF</span>}
-            </div>
-            <div style={{ fontSize: '0.75rem', color: '#cbd5e1', lineHeight: 1.4 }}>
-              Model <code>gemini-2.5-flash</code> resmi kecepatan tinggi untuk pemrosesan korpus OSINT publik skala besar.
-            </div>
-          </button>
-
-          {/* Card 3: OpenRouter Gateway */}
-          <button
-            type="button"
-            onClick={() => applyOperationalReadinessProfile('openrouter')}
-            style={{
-              textAlign: 'left',
-              padding: '14px',
-              borderRadius: '10px',
-              background: settings.ai_provider === 'openrouter' ? 'rgba(168, 85, 247, 0.14)' : 'rgba(15, 23, 42, 0.7)',
-              border: settings.ai_provider === 'openrouter' ? '2px solid #a855f7' : '1px solid rgba(51, 65, 85, 0.6)',
-              cursor: 'pointer',
-              color: '#f8fafc',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '6px',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 700, color: '#c084fc' }}>
-                <Globe size={15} /> 3. OpenRouter Multi-Model
-              </span>
-              {settings.ai_provider === 'openrouter' && <span style={{ fontSize: '0.65rem', background: '#a855f7', color: '#fff', fontWeight: 800, padding: '2px 6px', borderRadius: '8px' }}>AKTIF</span>}
-            </div>
-            <div style={{ fontSize: '0.75rem', color: '#cbd5e1', lineHeight: 1.4 }}>
-              Gateway fleksibel untuk memilih Qwen 2.5 72B, Llama 3.3 70B, atau Gemini Flash melalui satu API key.
-            </div>
-          </button>
-        </div>
+        <span
+          title="Dukungan penuh operasi Intranet Air-Gapped (Ollama / vLLM Lokal tanpa internet) maupun Cloud API Kecepatan Tinggi."
+          style={{ color: '#64748b', cursor: 'help', display: 'inline-flex', alignItems: 'center' }}
+        >
+          <Info size={16} />
+        </span>
       </div>
 
       {saveSuccess && (
@@ -501,12 +363,12 @@ export const SettingsPage: React.FC = () => {
             style={{ fontSize: '0.8rem', padding: '6px 14px', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
             <Plus size={15} />
-            <span>+ Tambah Profil Endpoint AI</span>
+            <span>Tambah Profil Endpoint AI</span>
           </button>
         </div>
 
         {/* List of Account Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '12px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '12px' }}>
           {(settings.ai_accounts || []).map((acc, idx) => {
             const isActive = acc.id === settings.active_account_id;
             const testStatus = accountTestStatus[acc.id];
@@ -707,191 +569,263 @@ export const SettingsPage: React.FC = () => {
             );
           })}
         </div>
+      </div>
 
-        {/* Modal / Expander Form for Add or Edit Account */}
-        {isFormOpen && (
-          <div style={{
-            background: 'rgba(15, 23, 42, 0.95)',
-            border: '1px solid #0284c7',
-            borderRadius: '10px',
-            padding: '18px',
-            marginTop: '8px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '14px',
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Key size={16} color="#38bdf8" />
-                <span>{editingId ? 'Edit Profil Endpoint AI' : 'Tambah Profil Endpoint AI Baru'}</span>
+      {/* Modal Dialog for Add or Edit Account (Rendered via Portal to document.body) */}
+      {isFormOpen &&
+        createPortal(
+          <div
+            onClick={() => setIsFormOpen(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 9999,
+              background: 'rgba(2, 6, 23, 0.82)',
+              backdropFilter: 'blur(6px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '24px',
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: '100%',
+                maxWidth: '580px',
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                background: '#0f172a',
+                border: '1px solid rgba(56, 189, 248, 0.45)',
+                borderRadius: '12px',
+                padding: '20px 22px',
+                boxShadow: '0 24px 48px rgba(0, 0, 0, 0.75), 0 0 24px rgba(2, 132, 199, 0.25)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(51, 65, 85, 0.5)', paddingBottom: '12px' }}>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Key size={16} color="#38bdf8" />
+                  <span>{editingId ? 'Edit Profil Endpoint AI' : 'Tambah Profil Endpoint AI Baru'}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsFormOpen(false)}
+                  style={{
+                    background: 'rgba(51, 65, 85, 0.35)',
+                    border: '1px solid rgba(71, 85, 105, 0.5)',
+                    color: '#94a3b8',
+                    borderRadius: '6px',
+                    width: '28px',
+                    height: '28px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <X size={16} />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setIsFormOpen(false)}
-                style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
-              >
-                <X size={18} />
-              </button>
-            </div>
 
-            <form onSubmit={handleSaveAccountForm} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+              <form onSubmit={handleSaveAccountForm} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Nama / Label Profil *</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={accountForm.name}
+                      onChange={(e) => setAccountForm({ ...accountForm, name: e.target.value })}
+                      placeholder="misal: Server Intranet Lokal (Ollama)"
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Arsitektur Provider AI</label>
+                    <select
+                      className="form-select"
+                      value={accountForm.provider}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        let defaultModel = accountForm.model;
+                        let defaultUrl = accountForm.base_url;
+                        if (val === 'openrouter') {
+                          defaultModel = 'google/gemini-2.0-flash-001';
+                          defaultUrl = 'https://openrouter.ai/api/v1';
+                        } else if (val === 'gemini') {
+                          defaultModel = 'gemini-2.5-flash';
+                          defaultUrl = '';
+                        } else if (val === 'custom') {
+                          defaultModel = 'qwen2.5:7b';
+                          defaultUrl = 'http://127.0.0.1:11434/v1';
+                        }
+                        setAccountForm({
+                          ...accountForm,
+                          provider: val,
+                          model: defaultModel,
+                          base_url: defaultUrl,
+                        });
+                      }}
+                    >
+                      <option value="custom">Intranet Lokal Air-Gapped / OpenAI-Compatible (Ollama, vLLM, LM Studio)</option>
+                      <option value="gemini">Google Gemini Direct (Resmi)</option>
+                      <option value="openrouter">OpenRouter Multi-Model Gateway</option>
+                    </select>
+                  </div>
+                </div>
+
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label">Nama / Label Profil *</label>
+                  <label className="form-label">Model Identifier *</label>
                   <input
                     type="text"
-                    className="form-input"
-                    value={accountForm.name}
-                    onChange={(e) => setAccountForm({ ...accountForm, name: e.target.value })}
-                    placeholder="misal: Server Intranet Puskodal (Ollama)"
+                    className="form-input mono-font"
+                    value={accountForm.model}
+                    onChange={(e) => setAccountForm({ ...accountForm, model: e.target.value })}
+                    placeholder="misal: qwen2.5:7b atau gemini-2.5-flash"
                     required
                   />
                 </div>
 
+                {/* Custom Base URL jika custom */}
+                {accountForm.provider === 'custom' && (
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <span>Endpoint Base URL (Intranet / Local Server)</span>
+                      <span
+                        title="Standar Air-Gapped: http://127.0.0.1:11434/v1 (Ollama) atau http://localhost:8000/v1 (vLLM)."
+                        style={{ color: '#64748b', cursor: 'help', display: 'inline-flex', alignItems: 'center' }}
+                      >
+                        <Info size={13} />
+                      </span>
+                    </label>
+                    <input
+                      type="text"
+                      className="form-input mono-font"
+                      value={accountForm.base_url}
+                      onChange={(e) => setAccountForm({ ...accountForm, base_url: e.target.value })}
+                      placeholder="http://127.0.0.1:11434/v1"
+                    />
+                  </div>
+                )}
+
+                {/* API Key */}
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label">Arsitektur Provider AI</label>
-                  <select
-                    className="form-select"
-                    value={accountForm.provider}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      let defaultModel = accountForm.model;
-                      let defaultUrl = accountForm.base_url;
-                      if (val === 'openrouter') {
-                        defaultModel = 'google/gemini-2.0-flash-001';
-                        defaultUrl = 'https://openrouter.ai/api/v1';
-                      } else if (val === 'gemini') {
-                        defaultModel = 'gemini-2.5-flash';
-                        defaultUrl = '';
-                      } else if (val === 'custom') {
-                        defaultModel = 'qwen2.5:7b';
-                        defaultUrl = 'http://127.0.0.1:11434/v1';
-                      }
-                      setAccountForm({
-                        ...accountForm,
-                        provider: val,
-                        model: defaultModel,
-                        base_url: defaultUrl,
-                      });
+                  <label className="form-label">API Key (Opsional untuk Server Lokal Intranet)</label>
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type={showKeys['form_key'] ? 'text' : 'password'}
+                      className="form-input mono-font"
+                      placeholder="Kosongkan jika menggunakan Ollama/vLLM lokal..."
+                      value={accountForm.api_key}
+                      onChange={(e) => setAccountForm({ ...accountForm, api_key: e.target.value })}
+                      style={{ paddingRight: '40px' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => toggleKeyVisibility('form_key')}
+                      style={{ position: 'absolute', right: '10px', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
+                    >
+                      {showKeys['form_key'] ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Hasil Uji Koneksi di dalam Modal */}
+                {modalTestStatus.result && (
+                  <div
+                    style={{
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      fontSize: '0.76rem',
+                      background: modalTestStatus.result.success
+                        ? 'rgba(16, 185, 129, 0.15)'
+                        : 'rgba(239, 68, 68, 0.15)',
+                      border: `1px solid ${
+                        modalTestStatus.result.success
+                          ? 'rgba(16, 185, 129, 0.35)'
+                          : 'rgba(239, 68, 68, 0.35)'
+                      }`,
+                      color: modalTestStatus.result.success ? '#34d399' : '#f87171',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
                     }}
                   >
-                    <option value="custom">Intranet Lokal Air-Gapped / OpenAI-Compatible (Ollama, vLLM, LM Studio)</option>
-                    <option value="gemini">Google Gemini Direct (Resmi)</option>
-                    <option value="openrouter">OpenRouter Multi-Model Gateway</option>
-                  </select>
-                </div>
-              </div>
+                    {modalTestStatus.result.success ? (
+                      <CheckCircle size={15} style={{ flexShrink: 0 }} />
+                    ) : (
+                      <AlertCircle size={15} style={{ flexShrink: 0 }} />
+                    )}
+                    <span style={{ lineHeight: 1.35 }}>{modalTestStatus.result.message}</span>
+                  </div>
+                )}
 
-              <div className="form-group" style={{ margin: 0 }}>
-                <label className="form-label">Model Identifier *</label>
-                <input
-                  type="text"
-                  className="form-input mono-font"
-                  value={accountForm.model}
-                  onChange={(e) => setAccountForm({ ...accountForm, model: e.target.value })}
-                  placeholder="misal: qwen2.5:7b atau gemini-2.5-flash"
-                  required
-                />
-              </div>
-
-              {/* Quick Preset Chips inside Form */}
-              <div>
-                <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <Sparkles size={12} color="#f59e0b" />
-                  <span>Preset Rekomendasi:</span>
-                </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                  {MODEL_PRESETS.map((p) => (
-                    <button
-                      key={p.value}
-                      type="button"
-                      onClick={() => setAccountForm({
-                        ...accountForm,
-                        provider: p.provider,
-                        model: p.value,
-                        base_url: p.base_url,
-                      })}
-                      style={{
-                        background: accountForm.model === p.value ? 'rgba(56, 189, 248, 0.2)' : 'rgba(30, 41, 59, 0.8)',
-                        border: `1px solid ${accountForm.model === p.value ? '#38bdf8' : 'rgba(71, 85, 105, 0.5)'}`,
-                        color: accountForm.model === p.value ? '#38bdf8' : '#cbd5e1',
-                        borderRadius: '6px',
-                        padding: '3px 8px',
-                        fontSize: '0.72rem',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {p.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Custom Base URL jika custom */}
-              {accountForm.provider === 'custom' && (
-                <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label">Endpoint Base URL (Intranet / Local Server)</label>
-                  <input
-                    type="text"
-                    className="form-input mono-font"
-                    value={accountForm.base_url}
-                    onChange={(e) => setAccountForm({ ...accountForm, base_url: e.target.value })}
-                    placeholder="http://127.0.0.1:11434/v1"
-                  />
-                  <span style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '3px', display: 'block' }}>
-                    Standar Air-Gapped: <code>http://127.0.0.1:11434/v1</code> (Ollama) atau <code>http://localhost:8000/v1</code> (vLLM).
-                  </span>
-                </div>
-              )}
-
-              {/* API Key */}
-              <div className="form-group" style={{ margin: 0 }}>
-                <label className="form-label">API Key (Opsional untuk Server Lokal Intranet)</label>
-                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                  <input
-                    type={showKeys['form_key'] ? 'text' : 'password'}
-                    className="form-input mono-font"
-                    placeholder="Kosongkan jika menggunakan Ollama/vLLM lokal..."
-                    value={accountForm.api_key}
-                    onChange={(e) => setAccountForm({ ...accountForm, api_key: e.target.value })}
-                    style={{ paddingRight: '40px' }}
-                  />
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '10px',
+                    marginTop: '6px',
+                    borderTop: '1px solid rgba(51, 65, 85, 0.5)',
+                    paddingTop: '14px',
+                  }}
+                >
                   <button
                     type="button"
-                    onClick={() => toggleKeyVisibility('form_key')}
-                    style={{ position: 'absolute', right: '10px', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
+                    onClick={handleTestModalConnection}
+                    disabled={modalTestStatus.testing}
+                    style={{
+                      background: 'rgba(2, 132, 199, 0.12)',
+                      border: '1px solid rgba(56, 189, 248, 0.45)',
+                      color: '#38bdf8',
+                      fontSize: '0.78rem',
+                      fontWeight: 600,
+                      padding: '7px 12px',
+                      borderRadius: '8px',
+                      cursor: modalTestStatus.testing ? 'wait' : 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                    }}
                   >
-                    {showKeys['form_key'] ? <EyeOff size={16} /> : <Eye size={16} />}
+                    <Zap size={14} />
+                    <span>{modalTestStatus.testing ? 'Menguji Koneksi...' : 'Uji Koneksi & Latensi'}</span>
                   </button>
-                </div>
-              </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '6px' }}>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setIsFormOpen(false)}
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-                >
-                  <Save size={15} />
-                  <span>{editingId ? 'Simpan Perubahan' : 'Tambahkan Profil'}</span>
-                </button>
-              </div>
-            </form>
-          </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setIsFormOpen(false)}
+                    >
+                      Batal
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <Save size={15} />
+                      <span>{editingId ? 'Simpan Perubahan' : 'Tambahkan Profil'}</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>,
+          document.body
         )}
-      </div>
 
       {/* ========================================================= */}
       {/* SECTION 2: PENGATURAN UMUM LAINNYA (YOUTUBE & GATES)      */}
       {/* ========================================================= */}
-      <form onSubmit={handleSaveGlobal} className="panel panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+      <form onSubmit={handleSaveGlobal} className="panel panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
         <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f1f5f9', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Layers size={16} color="#fbbf24" />
           <span>Parameter Akuisisi & Verifikasi Otonom</span>
@@ -899,7 +833,15 @@ export const SettingsPage: React.FC = () => {
 
         {/* YouTube API Key */}
         <div className="form-group" style={{ margin: 0 }}>
-          <label className="form-label">YouTube Data API v3 Key (Opsional)</label>
+          <label className="form-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <span>YouTube Data API v3 Key (Opsional)</span>
+            <span
+              title="Jika dibiarkan kosong, sistem otomatis menggunakan ekstraktor tanpa kuota atau mode korpus lokal offline."
+              style={{ color: '#64748b', cursor: 'help', display: 'inline-flex', alignItems: 'center' }}
+            >
+              <Info size={13} />
+            </span>
+          </label>
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
             <input
               type={showKeys['youtube'] ? 'text' : 'password'}
@@ -917,34 +859,28 @@ export const SettingsPage: React.FC = () => {
               {showKeys['youtube'] ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
-          <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px', display: 'block' }}>
-            Jika dibiarkan kosong, sistem otomatis menggunakan ekstraktor tanpa kuota atau mode korpus lokal offline.
-          </span>
         </div>
 
         {/* Hardened Gates */}
-        <div style={{ borderTop: '1px solid rgba(51, 65, 85, 0.4)', paddingTop: '14px' }}>
-          <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#f1f5f9', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <ShieldCheck size={16} color="#10b981" />
-            <span>4 Agentic AI Hardened Verification Gates</span>
-          </div>
-          <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '10px' }}>
-            Menjalankan audit silang otonom & self-healing bebas halusinasi (Gate 1: Quality Gate, Gate 2: Topic Gate, Gate 3: Verification Gate, Gate 4: Report Gate).
-          </p>
-
-          <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '0.85rem', color: '#cbd5e1' }}>
+        <div style={{ borderTop: '1px solid rgba(51, 65, 85, 0.4)', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.84rem', fontWeight: 600, color: '#f1f5f9' }}>
             <input
               type="checkbox"
               checked={settings.agentic_gates_enabled}
               onChange={(e) => setSettings({ ...settings, agentic_gates_enabled: e.target.checked })}
             />
-            Aktifkan 4 Agentic Verification Gates Selama Operasi (Standar Forensik PUSSIBERAD)
+            <ShieldCheck size={16} color="#10b981" />
+            <span>Aktifkan 4 Agentic AI Hardened Verification Gates</span>
+            <span
+              title="Menjalankan audit silang otonom & self-healing bebas halusinasi (Gate 1: Quality Gate, Gate 2: Topic Gate, Gate 3: Verification Gate, Gate 4: Report Gate)."
+              style={{ color: '#64748b', cursor: 'help', display: 'inline-flex', alignItems: 'center' }}
+            >
+              <Info size={14} />
+            </span>
           </label>
-        </div>
 
-        <div style={{ borderTop: '1px solid rgba(51, 65, 85, 0.4)', paddingTop: '14px', display: 'flex', justifyContent: 'flex-end' }}>
-          <button type="submit" className="btn btn-primary" style={{ padding: '9px 24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Save size={16} />
+          <button type="submit" className="btn btn-primary" style={{ padding: '8px 20px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem' }}>
+            <Save size={15} />
             <span>Simpan Konfigurasi Sistem</span>
           </button>
         </div>

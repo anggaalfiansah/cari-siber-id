@@ -1,4 +1,5 @@
 import os
+import json
 import time
 import shutil
 import threading
@@ -65,6 +66,7 @@ class PipelineRunner:
         include_replies: bool = True,
         skip_scrape: bool = False,
         source_run_id: Optional[str] = None,
+        search_keyword: str = "",
     ) -> str:
         with self._lock:
             if self._is_running:
@@ -72,6 +74,7 @@ class PipelineRunner:
 
             run_id = datetime.now().strftime("%Y%m%d_%H%M%S_") + str(uuid.uuid4())[:6]
             run_dir = get_run_dir(run_id)
+            clean_keyword = str(search_keyword or "").strip()
 
             resolved_urls = []
             if video_urls and isinstance(video_urls, list):
@@ -84,6 +87,11 @@ class PipelineRunner:
                 src_id_str = str(source_run_id).strip()
                 if src_id_str.startswith("demo:"):
                     demo_filename = os.path.basename(src_id_str.split("demo:", 1)[1])
+                    if not clean_keyword:
+                        if "tni" in demo_filename.lower():
+                            clean_keyword = "Operasi Pengamanan Perbatasan & Bakti Sosial"
+                        elif "siber" in demo_filename.lower():
+                            clean_keyword = "Pertahanan Siber & Mitigasi Hoaks Infrastruktur Kritis"
                     demo_csv_path = os.path.join(get_resources_dir(), demo_filename)
                     if os.path.exists(demo_csv_path):
                         target_scrap = os.path.join(run_dir, "scrap")
@@ -117,6 +125,14 @@ class PipelineRunner:
                 else:
                     source_dir = get_run_dir(src_id_str)
                     source_scrap = os.path.join(source_dir, "scrap")
+                    if not clean_keyword:
+                        src_ctx = os.path.join(source_dir, "json", "run_context.json")
+                        if os.path.exists(src_ctx):
+                            try:
+                                with open(src_ctx, "r", encoding="utf-8") as scf:
+                                    clean_keyword = str(json.load(scf).get("search_keyword", "")).strip()
+                            except Exception:
+                                pass
                     if os.path.exists(source_scrap):
                         target_scrap = os.path.join(run_dir, "scrap")
                         os.makedirs(target_scrap, exist_ok=True)
@@ -140,6 +156,24 @@ class PipelineRunner:
 
             primary_url = resolved_urls[0] if resolved_urls else (video_url or "https://www.youtube.com/watch?v=corpus_reused")
 
+            # Simpan run_context.json agar kata kunci pencarian tersimpan permanen
+            try:
+                json_init_dir = os.path.join(run_dir, "json")
+                os.makedirs(json_init_dir, exist_ok=True)
+                with open(os.path.join(json_init_dir, "run_context.json"), "w", encoding="utf-8") as rcf:
+                    json.dump(
+                        {
+                            "search_keyword": clean_keyword,
+                            "video_count": len(resolved_urls) or 1,
+                            "source_run_id": source_run_id or "",
+                        },
+                        rcf,
+                        ensure_ascii=False,
+                        indent=2,
+                    )
+            except Exception:
+                pass
+
             # 1. Load settings & configure engine
             settings = AppSettings.load()
             AppConfig.configure_run(
@@ -150,10 +184,13 @@ class PipelineRunner:
                 limit_comments=limit_comments,
                 sort_by=sort_by,
                 include_replies=include_replies,
+                search_keyword=clean_keyword,
             )
 
             # 2. Record to SQLite (Store primary url or campaign summary)
-            if source_run_id:
+            if clean_keyword and len(resolved_urls) > 1:
+                history_target = f"Kata Kunci: \"{clean_keyword}\" ({len(resolved_urls)} Video)"
+            elif source_run_id:
                 history_target = f"[Reuse {source_run_id[:15]}] {primary_url}" if len(resolved_urls) <= 1 else f"[Reuse {source_run_id[:15]}] {len(resolved_urls)} video korpus"
             else:
                 history_target = primary_url if len(resolved_urls) <= 1 else f"{primary_url} (+{len(resolved_urls)-1} video lainnya)"

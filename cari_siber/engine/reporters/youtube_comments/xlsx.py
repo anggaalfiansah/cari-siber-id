@@ -53,7 +53,7 @@ def export_xlsx(eda_data: dict, output_path: str, csv_dir: str):
     ws_dash = wb.create_sheet(title="Ringkasan Eksekutif")
     ws_dash.views.sheetView[0].showGridLines = True
 
-    ws_dash["A1"] = "LAPORAN EKSEKUTIF INTELIJEN KOGNITIF & SITUASI SIBER (PUSSIBERAD)"
+    ws_dash["A1"] = "LAPORAN EKSEKUTIF INTELIJEN KOGNITIF & SITUASI RUANG SIBER"
     ws_dash["A1"].font = font_title
 
     overview = eda_data.get("overview", {})

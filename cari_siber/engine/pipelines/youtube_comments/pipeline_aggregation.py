@@ -93,6 +93,23 @@ def run_aggregation(config_override=None):
     csv_output_dir = os.path.join(output_dir, "csv")
 
     raw_csv_path = os.path.join(output_dir, "scrap", f"youtube_comments_video_{video_id}.csv")
+    if not os.path.exists(raw_csv_path):
+        scrap_dir = os.path.join(output_dir, "scrap")
+        alt_corpus = os.path.join(scrap_dir, "youtube_comments_all_videos.csv")
+        if os.path.exists(alt_corpus):
+            print(f"[INFO] Menggunakan master korpus multi-video/impor: {alt_corpus}")
+            raw_csv_path = alt_corpus
+        elif os.path.exists(scrap_dir):
+            csv_candidates = [
+                os.path.join(scrap_dir, f)
+                for f in os.listdir(scrap_dir)
+                if f.startswith("youtube_comments_") and f.endswith(".csv") and not f.endswith("_meta.csv") and not f.endswith("_meta_all.csv")
+            ]
+            if csv_candidates:
+                csv_candidates.sort(key=lambda x: os.path.getsize(x), reverse=True)
+                raw_csv_path = csv_candidates[0]
+                print(f"[INFO] Menggunakan berkas komentar cadangan: {raw_csv_path}")
+
     mapping_file = os.path.join(csv_output_dir, "mapping_review_topic_youtube_reduced.csv")
     agg_file = os.path.join(csv_output_dir, "master_topic_youtube_agregasi.csv")
 

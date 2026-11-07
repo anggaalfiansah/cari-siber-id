@@ -26,6 +26,12 @@ def extract_youtube_video_id(url_or_id: str) -> str:
         match = re.search(pat, text)
         if match:
             return match.group(1)
+    # Fallback untuk ID korpus simulasi/impor (mis. watch?v=TNI_PATROLI_01 atau SIBER_PERTAHANAN_01)
+    sim_match = re.search(r'[?&]v=([A-Za-z0-9_-]{3,40})', text)
+    if sim_match:
+        return sim_match.group(1)
+    if re.fullmatch(r'[A-Za-z0-9_-]{3,40}', text) and not text.startswith(("http", "www", "demo")):
+        return text
     return ""
 
 
@@ -50,6 +56,7 @@ class AppConfig:
     YOUTUBE_VIDEO_URL = ""
     YOUTUBE_VIDEO_URLS = []
     YOUTUBE_VIDEO_ID = ""
+    SEARCH_KEYWORD = ""
     YOUTUBE_APP_NAME = "YouTube Video"
     YOUTUBE_APP_DESC = "Komentar video YouTube"
     YOUTUBE_LIMIT_COMMENTS = 1000
@@ -99,6 +106,7 @@ class AppConfig:
         limit_comments: int = 1000,
         sort_by: str = "top",
         include_replies: bool = True,
+        search_keyword: str = "",
     ):
         """Mengonfigurasi state engine untuk satu sesi pengerjaan analisis terisolasi."""
         os.makedirs(run_dir, exist_ok=True)
@@ -117,12 +125,17 @@ class AppConfig:
         primary_url = resolved_urls[0] if resolved_urls else (video_url or "")
         cls.TARGET_URL = primary_url
         cls.TARGET_PLATFORM = "youtube"
+        cls.SEARCH_KEYWORD = str(search_keyword or "").strip()
 
         cls.YOUTUBE_VIDEO_URL = primary_url
         cls.YOUTUBE_VIDEO_ID = extract_youtube_video_id(primary_url)
         if len(resolved_urls) > 1:
-            cls.YOUTUBE_APP_NAME = f"YouTube Corpus ({len(resolved_urls)} Video)"
-            cls.YOUTUBE_APP_DESC = f"Koleksi {len(resolved_urls)} video YouTube"
+            if cls.SEARCH_KEYWORD:
+                cls.YOUTUBE_APP_NAME = f"Isu Pencarian: {cls.SEARCH_KEYWORD} ({len(resolved_urls)} Video)"
+                cls.YOUTUBE_APP_DESC = f"Koleksi {len(resolved_urls)} video YouTube untuk kata kunci '{cls.SEARCH_KEYWORD}'"
+            else:
+                cls.YOUTUBE_APP_NAME = f"Korpus Multi-Video ({len(resolved_urls)} Video)"
+                cls.YOUTUBE_APP_DESC = f"Koleksi {len(resolved_urls)} video YouTube"
         else:
             cls.YOUTUBE_APP_NAME = f"YouTube - {cls.YOUTUBE_VIDEO_ID}" if cls.YOUTUBE_VIDEO_ID else "YouTube Video"
             cls.YOUTUBE_APP_DESC = "Komentar video YouTube"

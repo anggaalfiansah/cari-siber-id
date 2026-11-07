@@ -17,6 +17,7 @@ import {
   Radar,
   ShieldAlert,
   Lock,
+  Info,
 } from 'lucide-react';
 import { api } from '../api/bridge';
 import { CuratedVideoItem, ReusableCorpus } from '../api/types';
@@ -43,10 +44,12 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
 
   // Unified Omnibox input (bisa berisi kata kunci isu ATAU daftar URL YouTube per baris)
   const [unifiedInput, setUnifiedInput] = useState('');
+  const [targetVideoCount, setTargetVideoCount] = useState<number>(20);
+  const [videoSortMode, setVideoSortMode] = useState<'relevance' | 'comments' | 'views'>('relevance');
   const [isSearching, setIsSearching] = useState(false);
   const [curatedVideos, setCuratedVideos] = useState<CuratedVideoItem[]>([]);
   const [selectedVideos, setSelectedVideos] = useState<CuratedVideoItem[]>([]);
-  const [discoveryStats, setDiscoveryStats] = useState<{ totalFound: number; keyword: string } | null>(null);
+  const [discoveryStats, setDiscoveryStats] = useState<{ totalFound: number; totalComments: number; keyword: string } | null>(null);
 
   // Offline / Reusable Corpus state
   const [reusableCorpora, setReusableCorpora] = useState<ReusableCorpus[]>([]);
@@ -66,10 +69,10 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
   const [loading, setLoading] = useState(false);
 
   const sampleTopics = [
-    'Disinformasi Operasi Pengamanan Perbatasan TNI',
-    'Isu Propaganda Separatisme Ruang Siber Papua',
-    'Operasi Penggiringan Opini Netralitas Militer',
-    'Serangan Siber & Phishing Mengatasnamakan Instansi Pertahanan',
+    'Disinformasi Operasi Pengamanan Perbatasan',
+    'Isu Propaganda Separatisme Ruang Siber',
+    'Operasi Penggiringan Opini Publik & Polarisasi',
+    'Serangan Siber & Phishing Infrastruktur Publik',
   ];
 
   // Auto-detect apakah isi omnibox adalah daftar URL atau kata kunci topik
@@ -138,26 +141,29 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
     }
   };
 
-  const handleSearchCurate = async (keywordOverride?: string) => {
+  const handleSearchCurate = async (keywordOverride?: string, countOverride?: number) => {
     const kw = (keywordOverride ?? unifiedInput).trim();
     if (!kw) {
       setError('Masukkan kata kunci isu ancaman atau tempelkan URL video target.');
       return;
     }
+    const maxTarget = Math.max(1, Math.min(100, countOverride ?? targetVideoCount ?? 20));
     setError('');
     setIsSearching(true);
     setCuratedVideos([]);
     setSelectedVideos([]);
 
     try {
-      const res = await api.search_and_curate_videos({ keyword: kw, max_curated: 50 });
+      const res = await api.search_and_curate_videos({ keyword: kw, max_curated: maxTarget });
       if (res.success && res.curated_videos) {
         setCuratedVideos(res.curated_videos);
+        const totalComm = res.total_estimated_comments ?? res.curated_videos.reduce((acc, v) => acc + (v.comment_count || 0), 0);
         setDiscoveryStats({
           totalFound: res.total_candidates_found || res.curated_videos.length,
+          totalComments: totalComm,
           keyword: kw,
         });
-        const topSlice = res.curated_videos.slice(0, Math.min(5, res.curated_videos.length));
+        const topSlice = res.curated_videos.slice(0, Math.min(maxTarget, res.curated_videos.length));
         setSelectedVideos(topSlice);
       } else {
         setError(res.error || 'Tidak ditemukan video yang relevan untuk kata kunci ini.');
@@ -168,6 +174,22 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
       setIsSearching(false);
     }
   };
+
+  const sortedCuratedVideos = React.useMemo(() => {
+    const copy = [...curatedVideos];
+    if (videoSortMode === 'comments') {
+      copy.sort((a, b) => (b.comment_count || 0) - (a.comment_count || 0));
+    } else if (videoSortMode === 'views') {
+      copy.sort((a, b) => (b.views_count || 0) - (a.views_count || 0));
+    } else {
+      copy.sort((a, b) => (b.relevance_score || 0) - (a.relevance_score || 0));
+    }
+    return copy;
+  }, [curatedVideos, videoSortMode]);
+
+  const selectedTotalComments = React.useMemo(() => {
+    return selectedVideos.reduce((acc, v) => acc + (v.comment_count || 0), 0);
+  }, [selectedVideos]);
 
   const toggleSelectVideo = (video: CuratedVideoItem) => {
     const exists = selectedVideos.some((v) => v.video_id === video.video_id);
@@ -269,9 +291,13 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
     setLoading(true);
 
     try {
+      const activeSearchKeyword = isUrlDetected
+        ? ''
+        : (discoveryStats?.keyword || unifiedInput.trim());
       const res = await api.start_run({
         video_url: targetUrls[0],
         video_urls: targetUrls,
+        search_keyword: activeSearchKeyword,
         limit_comments: limit,
         sort_by: sortBy,
         include_replies: includeReplies,
@@ -291,30 +317,37 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
   };
 
   return (
-    <div style={{ maxWidth: '940px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ maxWidth: '940px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {/* Page Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
-        <div>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#f8fafc', letterSpacing: '-0.02em' }}>
-            1. Inisialisasi Operasi Intelijen Kognitif (PUSSIBERAD)
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h1 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#f8fafc', letterSpacing: '-0.02em', margin: 0 }}>
+            1. Inisialisasi Operasi Intelijen Kognitif
           </h1>
-          <p style={{ fontSize: '0.84rem', color: '#94a3b8', marginTop: '3px' }}>
-            Akuisisi target ruang siber terpadu: deteksi otomatis Kata Kunci vs Multi-URL, atau ingesti bukti digital offline bersegel SHA-256.
-          </p>
+          <span
+            title="Akuisisi target ruang siber terpadu: deteksi otomatis Kata Kunci vs Multi-URL, atau ingesti bukti digital offline bersegel SHA-256."
+            style={{ color: '#64748b', cursor: 'help', display: 'inline-flex', alignItems: 'center' }}
+          >
+            <Info size={16} />
+          </span>
         </div>
 
-        <div style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '6px',
-          padding: '6px 12px',
-          borderRadius: '8px',
-          background: 'rgba(16, 185, 129, 0.12)',
-          border: '1px solid rgba(16, 185, 129, 0.35)',
-          color: '#34d399',
-          fontSize: '0.75rem',
-          fontWeight: 700,
-        }}>
+        <div
+          title="Pipeline Otomatis: IndoBERT Topic Modeling → 4 Agentic Verification Gates → Dual-Engine CIB → Segel SHA-256"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '5px 11px',
+            borderRadius: '8px',
+            background: 'rgba(16, 185, 129, 0.12)',
+            border: '1px solid rgba(16, 185, 129, 0.35)',
+            color: '#34d399',
+            fontSize: '0.73rem',
+            fontWeight: 700,
+            cursor: 'help',
+          }}
+        >
           <Lock size={13} />
           <span>4 AGENTIC GATES & SHA-256 SEAL READY</span>
         </div>
@@ -341,11 +374,11 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
       {/* ===================================================================== */}
       {/* LANGKAH 1: PILIH SUMBER TARGET (OMNIBOX ONLINE VS KORPUS OFFLINE)     */}
       {/* ===================================================================== */}
-      <div className="panel panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div className="panel panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-          <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Crosshair size={18} color="#38bdf8" />
-            <span>LANGKAH 1: Tentukan Sumber Akuisisi Target Operasi</span>
+          <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Crosshair size={17} color="#38bdf8" />
+            <span>LANGKAH 1: Sumber Akuisisi Target</span>
           </div>
 
           {/* 2-Way Clean Switcher */}
@@ -360,12 +393,13 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
             <button
               type="button"
               onClick={() => setSourceMode('unified')}
+              title="Deteksi otomatis Kata Kunci Isu (Pencarian & Kurasi AI) atau Daftar URL YouTube"
               style={{
-                padding: '7px 14px',
+                padding: '6px 12px',
                 borderRadius: '6px',
                 border: 'none',
                 cursor: 'pointer',
-                fontSize: '0.78rem',
+                fontSize: '0.76rem',
                 fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
@@ -375,18 +409,19 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
               }}
             >
               <Sparkles size={14} />
-              <span>Kotak Komando Terpadu (Isu AI / Multi-URL)</span>
+              <span>Kotak Komando (Isu AI / Multi-URL)</span>
             </button>
 
             <button
               type="button"
               onClick={() => setSourceMode('offline')}
+              title="Gunakan Dataset Simulasi bawaan atau impor file log komentar (.CSV / .JSON / .XLSX) secara offline"
               style={{
-                padding: '7px 14px',
+                padding: '6px 12px',
                 borderRadius: '6px',
                 border: 'none',
                 cursor: 'pointer',
-                fontSize: '0.78rem',
+                fontSize: '0.76rem',
                 fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
@@ -396,31 +431,41 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
               }}
             >
               <Database size={14} />
-              <span>Simulasi Militer & Impor Bukti Offline ({reusableCorpora.length})</span>
+              <span>Bukti Offline & Simulasi ({reusableCorpora.length})</span>
             </button>
           </div>
         </div>
 
         {sourceMode === 'unified' ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {/* Unified Omnibox Textarea */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <label className="form-label" style={{ margin: 0 }}>
-                  Masukkan Kata Kunci Isu Ancaman ATAU Tempelkan Daftar URL YouTube (1 URL per baris)
+                <label className="form-label" style={{ margin: 0, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <span>Kata Kunci Isu Ancaman atau Daftar URL YouTube</span>
+                  <span
+                    title="Ketik kata kunci topik untuk mencari & mengkurasi video otomatis dengan AI, atau tempelkan satu/beberapa URL YouTube (1 URL per baris)."
+                    style={{ color: '#64748b', cursor: 'help', display: 'inline-flex', alignItems: 'center' }}
+                  >
+                    <Info size={13} />
+                  </span>
                 </label>
-                <span style={{
-                  fontSize: '0.72rem',
-                  fontWeight: 700,
-                  padding: '2px 8px',
-                  borderRadius: '10px',
-                  background: isUrlDetected ? 'rgba(244, 63, 94, 0.15)' : 'rgba(56, 189, 248, 0.15)',
-                  color: isUrlDetected ? '#fb7185' : '#38bdf8',
-                  border: `1px solid ${isUrlDetected ? 'rgba(244, 63, 94, 0.35)' : 'rgba(56, 189, 248, 0.35)'}`,
-                }}>
+                <span
+                  title="Sistem mendeteksi secara otomatis apakah input berupa Kata Kunci Pencarian atau Tautan URL YouTube"
+                  style={{
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    padding: '2px 8px',
+                    borderRadius: '10px',
+                    background: isUrlDetected ? 'rgba(244, 63, 94, 0.15)' : 'rgba(56, 189, 248, 0.15)',
+                    color: isUrlDetected ? '#fb7185' : '#38bdf8',
+                    border: `1px solid ${isUrlDetected ? 'rgba(244, 63, 94, 0.35)' : 'rgba(56, 189, 248, 0.35)'}`,
+                    cursor: 'help',
+                  }}
+                >
                   {isUrlDetected
-                    ? `MODE DETEKSI OTOMATIS: ${extractedUrls.length} URL Video Target Langsung`
-                    : 'MODE DETEKSI OTOMATIS: Pencarian & Kurasi Isu AI'}
+                    ? `${extractedUrls.length} URL Target Langsung`
+                    : 'Mode Pencarian & Kurasi AI'}
                 </span>
               </div>
 
@@ -430,29 +475,69 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
                   rows={isUrlDetected ? 3 : 2}
                   value={unifiedInput}
                   onChange={(e) => setUnifiedInput(e.target.value)}
-                  placeholder="Ketik topik (misal: 'Disinformasi Operasi Perbatasan TNI') ATAU tempel satu/beberapa URL YouTube (https://www.youtube.com/watch?v=...)..."
+                  placeholder="Ketik isu (misal: 'Disinformasi Operasi Pengamanan Perbatasan') atau tempel URL YouTube..."
                   style={{ flex: 1, resize: 'vertical', fontFamily: isUrlDetected ? 'JetBrains Mono, monospace' : 'inherit', fontSize: '0.85rem' }}
                 />
                 {!isUrlDetected && (
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={() => handleSearchCurate()}
-                    disabled={isSearching || isBusy}
-                    style={{ padding: '0 20px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700 }}
-                  >
-                    {isSearching ? (
-                      <>
-                        <RefreshCw size={16} style={{ animation: 'spin 1s linear infinite' }} />
-                        <span>Mengkurasi...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Search size={16} />
-                        <span>Kurasi Target AI</span>
-                      </>
-                    )}
-                  </button>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: '175px' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        background: 'rgba(15, 23, 42, 0.85)',
+                        border: '1px solid rgba(56, 189, 248, 0.35)',
+                        borderRadius: '7px',
+                        padding: '4px 8px',
+                        gap: '6px',
+                      }}
+                      title="Jumlah target video yang ingin dicari dan dikurasi (1 - 100 video)"
+                    >
+                      <span style={{ fontSize: '0.71rem', color: '#94a3b8', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                        Target Video:
+                      </span>
+                      <input
+                        type="number"
+                        min={1}
+                        max={100}
+                        value={targetVideoCount}
+                        onChange={(e) => {
+                          const v = parseInt(e.target.value, 10);
+                          setTargetVideoCount(Number.isNaN(v) ? 1 : Math.max(1, Math.min(100, v)));
+                        }}
+                        style={{
+                          width: '54px',
+                          background: '#090d16',
+                          border: '1px solid rgba(71, 85, 105, 0.6)',
+                          borderRadius: '5px',
+                          color: '#38bdf8',
+                          fontSize: '0.78rem',
+                          fontWeight: 700,
+                          textAlign: 'center',
+                          padding: '2px 4px',
+                        }}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={() => handleSearchCurate()}
+                      disabled={isSearching || isBusy}
+                      style={{ flex: 1, padding: '8px 16px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontWeight: 700 }}
+                    >
+                      {isSearching ? (
+                        <>
+                          <RefreshCw size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                          <span>Mengkurasi ({targetVideoCount})...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Search size={16} />
+                          <span>Kurasi {targetVideoCount} Target AI</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -460,22 +545,23 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
             {/* Quick Sample Topic Chips */}
             {!isUrlDetected && (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.73rem', color: '#64748b', fontWeight: 600 }}>Contoh Isu Prioritas:</span>
+                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Contoh Isu:</span>
                 {sampleTopics.map((topic) => (
                   <button
                     key={topic}
                     type="button"
                     onClick={() => {
                       setUnifiedInput(topic);
-                      handleSearchCurate(topic);
+                      handleSearchCurate(topic, targetVideoCount);
                     }}
+                    title={`Klik untuk langsung mengkurasi ${targetVideoCount} video terkait "${topic}"`}
                     style={{
-                      background: 'rgba(30, 41, 59, 0.7)',
-                      border: '1px solid rgba(71, 85, 105, 0.5)',
+                      background: 'rgba(30, 41, 59, 0.65)',
+                      border: '1px solid rgba(71, 85, 105, 0.45)',
                       color: '#cbd5e1',
                       borderRadius: '6px',
-                      padding: '4px 10px',
-                      fontSize: '0.73rem',
+                      padding: '3px 9px',
+                      fontSize: '0.72rem',
                       cursor: 'pointer',
                     }}
                   >
@@ -497,15 +583,58 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
                 gap: '10px',
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#f1f5f9' }}>
-                    Hasil Kurasi AI ({selectedVideos.length} dari {curatedVideos.length} video dipilih untuk analisis lintas-video)
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#f1f5f9', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      <span>Hasil Kurasi AI ({selectedVideos.length} dari {curatedVideos.length} video dipilih)</span>
+                      <span style={{
+                        fontSize: '0.73rem',
+                        padding: '2px 8px',
+                        borderRadius: '6px',
+                        background: 'rgba(245, 158, 11, 0.16)',
+                        border: '1px solid rgba(245, 158, 11, 0.4)',
+                        color: '#fbbf24',
+                        fontWeight: 700,
+                      }}>
+                        💬 Total Komentar Target Terpilih: {selectedTotalComments.toLocaleString('id-ID')} komentar
+                      </span>
+                    </div>
+                    {discoveryStats && (
+                      <div style={{ fontSize: '0.71rem', color: '#94a3b8' }}>
+                        Ditemukan {discoveryStats.totalFound} kandidat • Total populasi komentar dari {curatedVideos.length} video terkurasi: {(discoveryStats.totalComments || 0).toLocaleString('id-ID')} komentar
+                      </div>
+                    )}
                   </div>
-                  <div style={{ display: 'flex', gap: '6px' }}>
-                    {[3, 5, 10].map((n) => (
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <div style={{ display: 'inline-flex', background: '#090d16', padding: '2px', borderRadius: '6px', border: '1px solid rgba(51, 65, 85, 0.6)', marginRight: '4px' }}>
+                      {([
+                        { id: 'relevance', label: 'Relevansi' },
+                        { id: 'comments', label: '💬 Komentar Terbanyak' },
+                        { id: 'views', label: 'Views' },
+                      ] as const).map((sm) => (
+                        <button
+                          key={sm.id}
+                          type="button"
+                          onClick={() => setVideoSortMode(sm.id)}
+                          style={{
+                            padding: '3px 7px',
+                            fontSize: '0.69rem',
+                            borderRadius: '4px',
+                            border: 'none',
+                            background: videoSortMode === sm.id ? '#0284c7' : 'transparent',
+                            color: videoSortMode === sm.id ? '#fff' : '#94a3b8',
+                            cursor: 'pointer',
+                            fontWeight: 600,
+                          }}
+                        >
+                          {sm.label}
+                        </button>
+                      ))}
+                    </div>
+                    {[5, 10, 20].map((n) => (
                       <button
                         key={n}
                         type="button"
-                        onClick={() => setSelectedVideos(curatedVideos.slice(0, Math.min(n, curatedVideos.length)))}
+                        onClick={() => setSelectedVideos(sortedCuratedVideos.slice(0, Math.min(n, sortedCuratedVideos.length)))}
                         style={{
                           padding: '3px 9px',
                           fontSize: '0.72rem',
@@ -522,7 +651,7 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
                     ))}
                     <button
                       type="button"
-                      onClick={() => setSelectedVideos([...curatedVideos])}
+                      onClick={() => setSelectedVideos([...sortedCuratedVideos])}
                       style={{
                         padding: '3px 9px',
                         fontSize: '0.72rem',
@@ -533,7 +662,7 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
                         cursor: 'pointer',
                       }}
                     >
-                      Pilih Semua
+                      Pilih Semua ({curatedVideos.length})
                     </button>
                     <button
                       type="button"
@@ -553,9 +682,14 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
                   </div>
                 </div>
 
-                <div style={{ maxHeight: '260px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {curatedVideos.map((v) => {
+                <div style={{ maxHeight: '280px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {sortedCuratedVideos.map((v, idx) => {
                     const isSel = selectedVideos.some((s) => s.video_id === v.video_id);
+                    const commLabel =
+                      v.comments_str ||
+                      (typeof v.comment_count === 'number'
+                        ? `${v.comment_count.toLocaleString('id-ID')} komentar`
+                        : 'Komentar aktif');
                     return (
                       <div
                         key={v.video_id}
@@ -576,26 +710,39 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
                           {isSel ? <CheckSquare size={16} color="#38bdf8" /> : <Square size={16} color="#64748b" />}
                           <div style={{ minWidth: 0 }}>
                             <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#f8fafc', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              <span style={{ color: '#64748b', marginRight: '6px', fontSize: '0.74rem' }}>#{idx + 1}</span>
                               {v.title}
                             </div>
                             <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
-                              {v.channel} • {v.views || '-'} • {v.published || '-'}
+                              {v.channel} • {v.views || '-'} • <span style={{ color: '#fbbf24', fontWeight: 600 }}>💬 {commLabel}</span> • {v.published || '-'}
                             </div>
                           </div>
                         </div>
-                        {v.relevance_score && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
                           <span style={{
                             fontSize: '0.7rem',
                             fontWeight: 700,
-                            padding: '2px 7px',
+                            padding: '2px 8px',
                             borderRadius: '10px',
-                            background: 'rgba(16, 185, 129, 0.15)',
-                            color: '#34d399',
-                            flexShrink: 0,
+                            background: 'rgba(245, 158, 11, 0.14)',
+                            border: '1px solid rgba(245, 158, 11, 0.35)',
+                            color: '#fbbf24',
                           }}>
-                            Skor {v.relevance_score}
+                            💬 {commLabel}
                           </span>
-                        )}
+                          {v.relevance_score && (
+                            <span style={{
+                              fontSize: '0.7rem',
+                              fontWeight: 700,
+                              padding: '2px 7px',
+                              borderRadius: '10px',
+                              background: 'rgba(16, 185, 129, 0.15)',
+                              color: '#34d399',
+                            }}>
+                              Skor {v.relevance_score}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     );
                   })}
@@ -605,27 +752,28 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
           </div>
         ) : (
           /* MODE OFFLINE: DATASET SIMULASI MILITER & IMPOR BERKAS EKSTERNAL (.CSV / .JSON / .XLSX) */
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {/* Top Bar: Upload External File */}
             <div style={{
               background: 'rgba(16, 185, 129, 0.08)',
               border: '1px solid rgba(16, 185, 129, 0.3)',
               borderRadius: '10px',
-              padding: '12px 16px',
+              padding: '10px 14px',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
               flexWrap: 'wrap',
               gap: '12px',
             }}>
-              <div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <FileSpreadsheet size={16} />
-                  <span>Ingesti Bukti Digital Multi-Platform (Mode Offline / Air-Gapped)</span>
-                </div>
-                <div style={{ fontSize: '0.76rem', color: '#cbd5e1', marginTop: '2px' }}>
-                  Impor log komentar dari YouTube, X/Twitter, TikTok, atau Telegram (<code>.CSV</code>, <code>.JSON</code>, <code>.XLSX</code>) atau gunakan Dataset Simulasi Militer PUSSIBERAD di bawah.
-                </div>
+              <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#34d399', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <FileSpreadsheet size={16} />
+                <span>Ingesti Bukti Digital Multi-Platform (Mode Offline / Air-Gapped)</span>
+                <span
+                  title="Impor log komentar dari YouTube, X/Twitter, TikTok, atau Telegram (.CSV, .JSON, .XLSX) atau pilih Dataset Simulasi di bawah."
+                  style={{ color: '#64748b', cursor: 'help', display: 'inline-flex', alignItems: 'center' }}
+                >
+                  <Info size={14} />
+                </span>
               </div>
 
               <div>
@@ -644,7 +792,7 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
                   style={{
                     borderColor: '#10b981',
                     color: '#34d399',
-                    fontSize: '0.78rem',
+                    fontSize: '0.76rem',
                     fontWeight: 700,
                     display: 'flex',
                     alignItems: 'center',
@@ -692,7 +840,7 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
                       key={corp.run_id}
                       onClick={() => setSelectedCorpus(corp)}
                       style={{
-                        padding: '12px 14px',
+                        padding: '10px 14px',
                         borderRadius: '8px',
                         background: isSelected ? 'rgba(16, 185, 129, 0.14)' : 'rgba(15, 23, 42, 0.65)',
                         border: isSelected ? '2px solid #10b981' : '1px solid rgba(51, 65, 85, 0.5)',
@@ -715,14 +863,14 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
                               padding: '2px 7px',
                               borderRadius: '6px',
                             }}>
-                              PRELOADED SIMULASI TNI AD
+                              DATASET SIMULASI BAWAAN
                             </span>
                           )}
-                          <span style={{ fontSize: '0.86rem', fontWeight: 700, color: '#f8fafc' }}>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc' }}>
                             {corp.title}
                           </span>
                         </div>
-                        <div style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: '4px', display: 'flex', gap: '12px', flexWrap: 'wrap', fontFamily: 'monospace' }}>
+                        <div style={{ fontSize: '0.73rem', color: '#94a3b8', marginTop: '3px', display: 'flex', gap: '12px', flexWrap: 'wrap', fontFamily: 'monospace' }}>
                           <span>{corp.comment_count.toLocaleString()} Komentar</span>
                           <span>• {corp.video_count} Sumber/Video</span>
                           <span>• {corp.size_mb} MB</span>
@@ -762,97 +910,16 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
       {/* ===================================================================== */}
       {/* LANGKAH 2: PRESET KEDALAMAN OPERASI (MISSION PROFILE SELECTOR)        */}
       {/* ===================================================================== */}
-      <form onSubmit={handleStartAnalysis} className="panel panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Radar size={18} color="#f59e0b" />
-          <span>LANGKAH 2: Pilih Profil Kedalaman Operasi (Mission Profile)</span>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-          {/* Profile 1: Patroli Cepat */}
-          <div
-            onClick={() => handleSelectMissionProfile('tactical')}
-            style={{
-              padding: '14px',
-              borderRadius: '10px',
-              background: missionProfile === 'tactical' ? 'rgba(56, 189, 248, 0.14)' : 'rgba(15, 23, 42, 0.65)',
-              border: missionProfile === 'tactical' ? '2px solid #38bdf8' : '1px solid rgba(51, 65, 85, 0.5)',
-              cursor: 'pointer',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '6px',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#38bdf8' }}>1. Patroli Cepat (Taktis)</span>
-              <span style={{ fontSize: '0.7rem', fontFamily: 'monospace', color: '#94a3b8' }}>300 Komentar</span>
-            </div>
-            <div style={{ fontSize: '0.74rem', color: '#cbd5e1', lineHeight: 1.4 }}>
-              Deteksi dini cepat pada komentar terpopuler (Top Comments) tanpa sub-balasan untuk penilaian situasi kilat.
-            </div>
-          </div>
-
-          {/* Profile 2: Audit Standar */}
-          <div
-            onClick={() => handleSelectMissionProfile('operational')}
-            style={{
-              padding: '14px',
-              borderRadius: '10px',
-              background: missionProfile === 'operational' ? 'rgba(16, 185, 129, 0.14)' : 'rgba(15, 23, 42, 0.65)',
-              border: missionProfile === 'operational' ? '2px solid #10b981' : '1px solid rgba(51, 65, 85, 0.5)',
-              cursor: 'pointer',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '6px',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#34d399' }}>2. Audit Standar (Operasional)</span>
-              <span style={{ fontSize: '0.7rem', fontFamily: 'monospace', color: '#34d399', fontWeight: 700 }}>1.000 + Balasan</span>
-            </div>
-            <div style={{ fontSize: '0.74rem', color: '#cbd5e1', lineHeight: 1.4 }}>
-              Standar operasi Puskodal: mencakup sub-thread balasan untuk memetakan rasio Agitator vs Bot (CIB) & laporan KIRKA.
-            </div>
-          </div>
-
-          {/* Profile 3: Investigasi Forensik Penuh */}
-          <div
-            onClick={() => handleSelectMissionProfile('strategic')}
-            style={{
-              padding: '14px',
-              borderRadius: '10px',
-              background: missionProfile === 'strategic' ? 'rgba(245, 158, 11, 0.14)' : 'rgba(15, 23, 42, 0.65)',
-              border: missionProfile === 'strategic' ? '2px solid #f59e0b' : '1px solid rgba(51, 65, 85, 0.5)',
-              cursor: 'pointer',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '6px',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#fbbf24' }}>3. Investigasi Forensik Penuh</span>
-              <span style={{ fontSize: '0.7rem', fontFamily: 'monospace', color: '#fbbf24', fontWeight: 700 }}>UNLIMITED</span>
-            </div>
-            <div style={{ fontSize: '0.74rem', color: '#cbd5e1', lineHeight: 1.4 }}>
-              Akuisisi komprehensif seluruh komentar & urutan kronologis terbaru untuk pembuktian forensik mendalam.
-            </div>
-          </div>
-        </div>
-
-        {/* Submit Action Bar */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          borderTop: '1px solid rgba(51, 65, 85, 0.4)',
-          paddingTop: '14px',
-          flexWrap: 'wrap',
-          gap: '12px',
-        }}>
-          <div style={{ fontSize: '0.78rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Shield size={15} color="#38bdf8" />
-            <span>
-              Pipeline: <strong>IndoBERT Topic Modeling</strong> → <strong>4 Agentic Verification Gates</strong> → <strong>Dual-Engine CIB</strong> → <strong>Segel SHA-256</strong>
+      <form onSubmit={handleStartAnalysis} className="panel panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+          <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Radar size={17} color="#f59e0b" />
+            <span>LANGKAH 2: Profil Kedalaman Operasi</span>
+            <span
+              title="Pilih kedalaman akuisisi komentar: Patroli Cepat (300 komentar terpopuler), Audit Standar (1.000 komentar + balasan), atau Investigasi Forensik Penuh (seluruh komentar)."
+              style={{ color: '#64748b', cursor: 'help', display: 'inline-flex', alignItems: 'center' }}
+            >
+              <Info size={14} />
             </span>
           </div>
 
@@ -860,9 +927,10 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
             type="submit"
             className="btn btn-primary"
             disabled={loading || isBusy}
+            title="Jalankan Pipeline: IndoBERT Topic Modeling → 4 Agentic Verification Gates → Dual-Engine CIB → Segel SHA-256"
             style={{
-              padding: '11px 26px',
-              fontSize: '0.9rem',
+              padding: '9px 22px',
+              fontSize: '0.86rem',
               fontWeight: 700,
               display: 'flex',
               alignItems: 'center',
@@ -870,7 +938,7 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
               background: sourceMode === 'offline' ? 'linear-gradient(135deg, #059669, #10b981)' : undefined,
             }}
           >
-            <Play size={17} />
+            <Play size={16} />
             <span>
               {loading
                 ? 'Menginisialisasi Operasi...'
@@ -879,6 +947,83 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
                   : 'Luncurkan Operasi Analisis Ruang Siber'}
             </span>
           </button>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+          {/* Profile 1: Patroli Cepat */}
+          <div
+            onClick={() => handleSelectMissionProfile('tactical')}
+            title="Deteksi dini cepat pada komentar terpopuler (Top Comments) tanpa sub-balasan untuk penilaian situasi kilat."
+            style={{
+              padding: '10px 14px',
+              borderRadius: '9px',
+              background: missionProfile === 'tactical' ? 'rgba(56, 189, 248, 0.14)' : 'rgba(15, 23, 42, 0.65)',
+              border: missionProfile === 'tactical' ? '2px solid #38bdf8' : '1px solid rgba(51, 65, 85, 0.5)',
+              cursor: 'pointer',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#38bdf8', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <span>1. Patroli Cepat</span>
+              <Info size={13} color="#64748b" />
+            </span>
+            <span style={{ fontSize: '0.7rem', fontFamily: 'monospace', color: '#94a3b8', background: 'rgba(15, 23, 42, 0.8)', padding: '2px 7px', borderRadius: '5px' }}>
+              300 Komentar
+            </span>
+          </div>
+
+          {/* Profile 2: Audit Standar */}
+          <div
+            onClick={() => handleSelectMissionProfile('operational')}
+            title="Standar operasional: mencakup sub-thread balasan untuk memetakan rasio Agitator vs Bot (CIB) & laporan KIRKA."
+            style={{
+              padding: '10px 14px',
+              borderRadius: '9px',
+              background: missionProfile === 'operational' ? 'rgba(16, 185, 129, 0.14)' : 'rgba(15, 23, 42, 0.65)',
+              border: missionProfile === 'operational' ? '2px solid #10b981' : '1px solid rgba(51, 65, 85, 0.5)',
+              cursor: 'pointer',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#34d399', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <span>2. Audit Standar</span>
+              <Info size={13} color="#64748b" />
+            </span>
+            <span style={{ fontSize: '0.7rem', fontFamily: 'monospace', color: '#34d399', fontWeight: 700, background: 'rgba(16, 185, 129, 0.12)', padding: '2px 7px', borderRadius: '5px' }}>
+              1.000 + Balasan
+            </span>
+          </div>
+
+          {/* Profile 3: Investigasi Forensik Penuh */}
+          <div
+            onClick={() => handleSelectMissionProfile('strategic')}
+            title="Akuisisi komprehensif seluruh komentar & urutan kronologis terbaru untuk pembuktian forensik mendalam."
+            style={{
+              padding: '10px 14px',
+              borderRadius: '9px',
+              background: missionProfile === 'strategic' ? 'rgba(245, 158, 11, 0.14)' : 'rgba(15, 23, 42, 0.65)',
+              border: missionProfile === 'strategic' ? '2px solid #f59e0b' : '1px solid rgba(51, 65, 85, 0.5)',
+              cursor: 'pointer',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#fbbf24', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <span>3. Investigasi Forensik</span>
+              <Info size={13} color="#64748b" />
+            </span>
+            <span style={{ fontSize: '0.7rem', fontFamily: 'monospace', color: '#fbbf24', fontWeight: 700, background: 'rgba(245, 158, 11, 0.12)', padding: '2px 7px', borderRadius: '5px' }}>
+              UNLIMITED
+            </span>
+          </div>
         </div>
       </form>
     </div>

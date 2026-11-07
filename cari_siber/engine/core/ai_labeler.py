@@ -134,28 +134,28 @@ def label_csv_file(file_path: str, provider: str, model: str, overwrite: bool,
             
         if provider == "gemini":
             prompt = (
-                f"Anda adalah Perwira Analis Intelijen Kognitif & Siber Sosial PUSSIBERAD TNI AD untuk target '{title_name}' ({title_desc}).\n"
+                f"Anda adalah Analis Intelijen Kognitif & Siber Sosial untuk target '{title_name}' ({title_desc}).\n"
                 "Tugas Anda adalah mengklasifikasikan beberapa klaster topik narasi warganet secara sekaligus (batch) di bawah ini.\n\n"
                 f"{batch_text}\n"
                 "PENTING: Anda HARUS menghasilkan `threat_domain` dan `sub_issue` dalam Bahasa Indonesia yang baku, taktis, dan ringkas.\n"
                 "Aturan ketat:\n"
-                "1. `threat_domain` HARUS dalam Bahasa Indonesia (maksimal 4-5 kata). Contoh: 'Disinformasi Pertahanan', 'Provokasi SARA & Separatisme', 'Delegitimasi Institusi Negara', 'Apresiasi & Dukungan Publik', 'Debat Kebijakan Strategis'.\n"
+                "1. `threat_domain` HARUS dalam Bahasa Indonesia (maksimal 4-5 kata). Contoh: 'Disinformasi Keamanan', 'Provokasi SARA & Separatisme', 'Delegitimasi Institusi', 'Apresiasi & Dukungan Publik', 'Debat Kebijakan Strategis'.\n"
                 "2. `sub_issue` HARUS menjelaskan pokok narasi/opini secara spesifik dalam Bahasa Indonesia (maksimal 10 kata).\n"
-                "3. `merge_group` HARUS berupa kode UPPERCASE pendek untuk pengelompokan taksonomi (contoh: 'DISINFO_MILITER', 'PROVOKASI_SARA', 'APRESIASI_TNI').\n\n"
+                "3. `merge_group` HARUS berupa kode UPPERCASE pendek untuk pengelompokan taksonomi (contoh: 'DISINFO_KEAMANAN', 'PROVOKASI_SARA', 'APRESIASI_PUBLIK').\n\n"
                 "Pastikan hasil kembalian menyertakan topic_id yang sesuai untuk masing-masing klasifikasi."
             )
         else:  # ollama / openrouter / custom
             prompt = (
-                f"Anda adalah Perwira Analis Intelijen Kognitif & Siber Sosial PUSSIBERAD TNI AD untuk target '{title_name}' ({title_desc}). Klasifikasikan batch topik narasi berikut:\n\n"
+                f"Anda adalah Analis Intelijen Kognitif & Siber Sosial untuk target '{title_name}' ({title_desc}). Klasifikasikan batch topik narasi berikut:\n\n"
                 f"{batch_text}\n"
                 "Harap berikan hasil klasifikasi untuk setiap topic_id dalam format JSON valid berikut:\n"
                 "{\n"
                 '  "classifications": [\n'
                 '    {\n'
                 '      "topic_id": 123,\n'
-                '      "threat_domain": "domain ancaman / kategori narasi dalam Bahasa Indonesia secara ringkas (maksimal 4-5 kata), konsisten, dan relevan dengan pertahanan siber sosial (Contoh: \'Disinformasi Pertahanan\', \'Provokasi SARA\', \'Apresiasi & Dukungan Publik\')",\n'
+                '      "threat_domain": "domain ancaman / kategori narasi dalam Bahasa Indonesia secara ringkas (maksimal 4-5 kata), konsisten, dan relevan dengan pertahanan siber sosial (Contoh: \'Disinformasi Keamanan\', \'Provokasi SARA\', \'Apresiasi & Dukungan Publik\')",\n'
                 '      "sub_issue": "penjelasan narasi/isu spesifik dalam Bahasa Indonesia (maksimal 10 kata)",\n'
-                '      "merge_group": "KODE_UPPERCASE untuk pengelompokan taksonomi (contoh: \'DISINFO_MILITER\')"\n'
+                '      "merge_group": "KODE_UPPERCASE untuk pengelompokan taksonomi (contoh: \'DISINFO_KEAMANAN\')"\n'
                 '    }\n'
                 '  ]\n'
                 "}\n\n"

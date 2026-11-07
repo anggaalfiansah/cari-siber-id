@@ -28,6 +28,7 @@ import {
   Printer,
   Lock,
   Radio,
+  Info,
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -150,6 +151,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({
   const [newWhitelistTag, setNewWhitelistTag] = useState('');
   const [newThreatTag, setNewThreatTag] = useState('');
   const [calibrationNotice, setCalibrationNotice] = useState<string>('');
+  const [isRegeneratingNarrative, setIsRegeneratingNarrative] = useState(false);
 
   // Filter untuk Tab 4: Eksplorasi Bukti Komentar
   const [commentSearch, setCommentSearch] = useState('');
@@ -262,6 +264,25 @@ export const ResultPage: React.FC<ResultPageProps> = ({
 
   const removeThreatTag = (tag: string) => {
     setCustomThreats(customThreats.filter((t) => t !== tag));
+  };
+
+  const handleRegenerateNarrative = async () => {
+    if (!runId) return;
+    setIsRegeneratingNarrative(true);
+    setExportNotice('');
+    try {
+      const res = await api.regenerate_narrative({ run_id: runId });
+      if (res?.success) {
+        await loadData(runId, true);
+        setExportNotice(res.message || 'Laporan KIRKA Siber Sosial berhasil disusun ulang.');
+      } else {
+        setExportNotice(`Gagal menyusun ulang narasi: ${res?.error || 'Kesalahan tidak diketahui'}`);
+      }
+    } catch (e: any) {
+      setExportNotice(`Gagal menyusun ulang narasi: ${e?.message || e}`);
+    } finally {
+      setIsRegeneratingNarrative(false);
+    }
   };
 
   const handleExportXlsx = async () => {
@@ -592,7 +613,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({
             {/* Top Status & Integrity Badges */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                3. PETA SITUASI INTELIJEN KOGNITIF (SITREP PUSSIBERAD)
+                3. PETA SITUASI INTELIJEN KOGNITIF (SITREP)
               </span>
 
               {cross?.is_multi_video ? (
@@ -658,7 +679,8 @@ export const ResultPage: React.FC<ResultPageProps> = ({
             </h1>
 
             <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px' }}>
-              Sumber Kanal: <strong style={{ color: '#cbd5e1' }}>{result?.meta?.channel_name || 'Multi-Platform Corpus'}</strong> • ID Operasi: <span className="mono-font" style={{ color: '#94a3b8' }}>{runId}</span>
+              {cross?.is_multi_video ? 'Cakupan Sumber Lintas Kanal:' : 'Sumber Kanal:'}{' '}
+              <strong style={{ color: '#cbd5e1' }}>{result?.meta?.channel_name || 'Multi-Platform Corpus'}</strong> • ID Operasi: <span className="mono-font" style={{ color: '#94a3b8' }}>{runId}</span>
             </div>
           </div>
 
@@ -689,10 +711,10 @@ export const ResultPage: React.FC<ResultPageProps> = ({
                 alignItems: 'center',
                 gap: '6px',
               }}
-              title="Pintasan Keyboard: F11 — Beralih ke Tampilan Layar Puskodal Penuh"
+              title="Pintasan Keyboard: F11 — Beralih ke Tampilan Layar Presentasi Penuh"
             >
               <Monitor size={15} color={isBriefingMode ? '#34d399' : '#38bdf8'} />
-              <span>{isBriefingMode ? 'Mode Puskodal AKTIF (F11)' : 'Mode Puskodal (F11)'}</span>
+              <span>{isBriefingMode ? 'Mode Briefing AKTIF (F11)' : 'Mode Briefing (F11)'}</span>
             </button>
 
             <button className="btn btn-secondary" onClick={onNavigateNew} title="Mulai Operasi Pemantauan Baru">
@@ -749,34 +771,33 @@ export const ResultPage: React.FC<ResultPageProps> = ({
       {/* Dekonstruksi Opini: Silent Majority vs Loud Minority Banner */}
       <div
         className="panel"
+        title={silentMajorityText}
         style={{
-          padding: '12px 18px',
+          padding: '10px 18px',
           background: 'linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, rgba(15, 23, 42, 0.85) 60%, rgba(239, 68, 68, 0.12) 100%)',
           border: '1px solid rgba(51, 65, 85, 0.6)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '8px',
+          gap: '6px',
+          cursor: 'help',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 700, color: '#f8fafc' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '0.78rem', fontWeight: 700, color: '#f8fafc' }}>
             <Radio size={15} color="#10b981" />
-            <span>DEKONSTRUKSI OPINI: KONSENSUS MAYORITAS PASIF (SILENT MAJORITY) VS MINORITAS BISING (LOUD MINORITY)</span>
+            <span>DEKONSTRUKSI OPINI: MAYORITAS PASIF (SILENT MAJORITY) VS MINORITAS BISING (LOUD MINORITY)</span>
+            <Info size={13} color="#64748b" />
           </div>
           <div style={{ display: 'flex', gap: '12px', fontSize: '0.75rem', fontWeight: 700 }}>
             <span style={{ color: '#34d399' }}>🟢 Mayoritas Organik: {silentMajorityPct}%</span>
-            <span style={{ color: '#f87171' }}>🔴 Distorsi Akun Terindikasi CIB/Agitator: {loudMinorityPct}%</span>
+            <span style={{ color: '#f87171' }}>🔴 Distorsi CIB/Agitator: {loudMinorityPct}%</span>
           </div>
         </div>
 
         {/* Visual Split Bar */}
-        <div style={{ width: '100%', height: '8px', borderRadius: '4px', overflow: 'hidden', display: 'flex', background: '#1e293b' }}>
+        <div style={{ width: '100%', height: '7px', borderRadius: '4px', overflow: 'hidden', display: 'flex', background: '#1e293b' }}>
           <div style={{ width: `${silentMajorityPct}%`, background: '#10b981', transition: 'width 0.3s ease' }} />
           <div style={{ width: `${loudMinorityPct}%`, background: '#ef4444', transition: 'width 0.3s ease' }} />
-        </div>
-
-        <div style={{ fontSize: '0.76rem', color: '#cbd5e1', lineHeight: 1.4 }}>
-          {silentMajorityText}
         </div>
       </div>
 
@@ -858,35 +879,36 @@ export const ResultPage: React.FC<ResultPageProps> = ({
                 style={{
                   background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(16, 185, 129, 0.08) 50%, rgba(15, 23, 42, 0.95) 100%)',
                   border: '1px solid rgba(16, 185, 129, 0.35)',
-                  borderRadius: '12px',
-                  padding: '14px 18px',
+                  borderRadius: '10px',
+                  padding: '10px 14px',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '12px',
+                  gap: '10px',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div
                       style={{
                         background: 'rgba(16, 185, 129, 0.2)',
-                        padding: '8px',
-                        borderRadius: '8px',
+                        padding: '6px',
+                        borderRadius: '7px',
                         border: '1px solid rgba(16, 185, 129, 0.4)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
                     >
-                      <Sparkles size={18} color="#10b981" />
+                      <Sparkles size={15} color="#10b981" />
                     </div>
-                    <div>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <span>Kalibrasi Konteks Agentic AI & Eliminasi False Positive (Human-in-the-Loop)</span>
-                      </div>
-                      <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: '2px 0 0' }}>
-                        Pisahkan yel-yel patriotik/apresiasi organik warga ("TNI Bersama Rakyat") dari operasi bot musuh dan terapkan analisa ulang instan (&lt;2 dtk).
-                      </p>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                      <span>Kalibrasi Konteks Agentic AI & Eliminasi False Positive (Human-in-the-Loop)</span>
+                      <span
+                        title='Pisahkan slogan kebangsaan/apresiasi organik warga ("NKRI Harga Mati") dari operasi bot dan terapkan analisa ulang instan (<2 dtk).'
+                        style={{ color: '#64748b', cursor: 'help', display: 'inline-flex', alignItems: 'center' }}
+                      >
+                        <Info size={14} />
+                      </span>
                     </div>
                   </div>
 
@@ -946,7 +968,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({
 
                 {calibrationReasoning && (
                   <div style={{ background: 'rgba(2, 132, 199, 0.08)', borderLeft: '3px solid #38bdf8', padding: '7px 12px', borderRadius: '0 6px 6px 0', fontSize: '0.76rem', color: '#e2e8f0' }}>
-                    <strong style={{ color: '#38bdf8' }}>Catatan Perwira Analis PUSSIBERAD: </strong>
+                    <strong style={{ color: '#38bdf8' }}>Catatan Analis AI: </strong>
                     {calibrationReasoning}
                   </div>
                 )}
@@ -1091,15 +1113,16 @@ export const ResultPage: React.FC<ResultPageProps> = ({
 
               {buzzerViewMode === 'individual' ? (
                 <>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
-                    <div>
-                      <h3 style={{ fontSize: '0.96rem', fontWeight: 700, color: '#f8fafc' }}>
-                        Daftar Dossier Akun Terindikasi (Dual-Engine: Skor Provokasi 🔥 vs Skor Bot 🤖)
-                      </h3>
-                      <p style={{ fontSize: '0.76rem', color: '#94a3b8', marginTop: '2px' }}>
-                        Klik tombol <strong>"Lihat Dossier"</strong> pada baris akun untuk membuka seluruh riwayat komentar dan sorotan kata kunci provokasi.
-                      </p>
-                    </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                    <h3 style={{ fontSize: '0.94rem', fontWeight: 700, color: '#f8fafc', margin: 0, display: 'inline-flex', alignItems: 'center', gap: '7px' }}>
+                      <span>Daftar Dossier Akun Terindikasi (Dual-Engine: Skor Provokasi 🔥 vs Skor Bot 🤖)</span>
+                      <span
+                        title='Klik tombol "Lihat Dossier" pada baris akun untuk membuka seluruh riwayat komentar dan sorotan kata kunci provokasi.'
+                        style={{ color: '#64748b', cursor: 'help', display: 'inline-flex', alignItems: 'center' }}
+                      >
+                        <Info size={14} />
+                      </span>
+                    </h3>
 
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                       <div style={{ position: 'relative', width: '210px' }}>
@@ -1240,14 +1263,15 @@ export const ResultPage: React.FC<ResultPageProps> = ({
                 /* SUB-VIEW: JARINGAN BOT MASSAL (KLASTER TEMPLATE KEMBAR) */
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-                    <div>
-                      <h3 style={{ fontSize: '0.96rem', fontWeight: 700, color: '#f8fafc' }}>
-                        Klaster Template Komentar Kembar Lintas Akun ({filteredBotNetworks.length} Klaster)
-                      </h3>
-                      <p style={{ fontSize: '0.76rem', color: '#94a3b8' }}>
-                        Mendeteksi akun-akun berbeda yang memposting kalimat identik/sama persis secara terkoordinasi.
-                      </p>
-                    </div>
+                    <h3 style={{ fontSize: '0.94rem', fontWeight: 700, color: '#f8fafc', margin: 0, display: 'inline-flex', alignItems: 'center', gap: '7px' }}>
+                      <span>Klaster Template Komentar Kembar Lintas Akun ({filteredBotNetworks.length} Klaster)</span>
+                      <span
+                        title="Mendeteksi akun-akun berbeda yang memposting kalimat identik/sama persis secara terkoordinasi."
+                        style={{ color: '#64748b', cursor: 'help', display: 'inline-flex', alignItems: 'center' }}
+                      >
+                        <Info size={14} />
+                      </span>
+                    </h3>
                     <input
                       type="text"
                       placeholder="Cari template atau akun..."
@@ -1322,14 +1346,15 @@ export const ResultPage: React.FC<ResultPageProps> = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {safeComparisonMatrix.length > 1 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <div>
-                    <h3 style={{ fontSize: '0.96rem', fontWeight: 700, color: '#f8fafc' }}>
-                      Matriks Komparasi Opini & Ancaman CIB Lintas Video ({safeComparisonMatrix.length} Video Target)
-                    </h3>
-                    <p style={{ fontSize: '0.76rem', color: '#94a3b8' }}>
-                      Perbandingan distribusi sentimen, topik dominan, dan skor CIB pada masing-masing video dalam korpus operasi.
-                    </p>
-                  </div>
+                  <h3 style={{ fontSize: '0.94rem', fontWeight: 700, color: '#f8fafc', margin: 0, display: 'inline-flex', alignItems: 'center', gap: '7px' }}>
+                    <span>Matriks Komparasi Opini & Ancaman CIB Lintas Video ({safeComparisonMatrix.length} Video Target)</span>
+                    <span
+                      title="Perbandingan distribusi sentimen, topik dominan, dan skor CIB pada masing-masing video dalam korpus operasi."
+                      style={{ color: '#64748b', cursor: 'help', display: 'inline-flex', alignItems: 'center' }}
+                    >
+                      <Info size={14} />
+                    </span>
+                  </h3>
                   <div style={{ overflowX: 'auto', border: '1px solid rgba(51, 65, 85, 0.5)', borderRadius: '10px' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
                       <thead>
@@ -1391,7 +1416,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({
                   </div>
                   <div>
                     <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc', margin: 0 }}>
-                      Laporan Perkiraan Intelijen Siber (KIRKA Siber Sosial — PUSSIBERAD)
+                      Laporan Perkiraan Intelijen Siber (KIRKA Siber Sosial)
                     </h2>
                     <span style={{ fontSize: '0.76rem', color: '#94a3b8' }}>
                       Terverifikasi Gate 4 (Anti-Halusinasi Fakta EDA) & Pemetaan Taktik DISARM Framework
@@ -1400,6 +1425,17 @@ export const ResultPage: React.FC<ResultPageProps> = ({
                 </div>
 
                 <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={handleRegenerateNarrative}
+                    disabled={isRegeneratingNarrative}
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', borderColor: 'rgba(56, 189, 248, 0.45)', color: '#38bdf8' }}
+                    title="Susun ulang Laporan KIRKA menggunakan AI + Telemetri CIB & DISARM terbaru"
+                  >
+                    <RefreshCw size={14} className={isRegeneratingNarrative ? 'spin' : ''} />
+                    <span>{isRegeneratingNarrative ? 'Menyusun KIRKA AI...' : 'Susun Ulang KIRKA AI'}</span>
+                  </button>
                   <button
                     type="button"
                     className="btn btn-secondary"
@@ -1470,14 +1506,15 @@ export const ResultPage: React.FC<ResultPageProps> = ({
           {activeTab === 'comments' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-                <div>
-                  <h3 style={{ fontSize: '0.96rem', fontWeight: 700, color: '#f8fafc' }}>
-                    Eksplorasi Barang Bukti Komentar ({filteredCorpusComments.length} dari {safeCorpusComments.length} Ditampilkan)
-                  </h3>
-                  <p style={{ fontSize: '0.76rem', color: '#94a3b8', marginTop: '2px' }}>
-                    Kata kunci hasutan, separatisme, dan ancaman siber ditandai otomatis dengan sorotan merah. Klik nama akun untuk membuka dossier lengkap.
-                  </p>
-                </div>
+                <h3 style={{ fontSize: '0.94rem', fontWeight: 700, color: '#f8fafc', margin: 0, display: 'inline-flex', alignItems: 'center', gap: '7px' }}>
+                  <span>Eksplorasi Barang Bukti Komentar ({filteredCorpusComments.length} dari {safeCorpusComments.length} Ditampilkan)</span>
+                  <span
+                    title="Kata kunci hasutan, separatisme, dan ancaman siber ditandai otomatis dengan sorotan merah. Klik nama akun untuk membuka dossier lengkap."
+                    style={{ color: '#64748b', cursor: 'help', display: 'inline-flex', alignItems: 'center' }}
+                  >
+                    <Info size={14} />
+                  </span>
+                </h3>
 
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                   <div style={{ position: 'relative', width: '240px' }}>

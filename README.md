@@ -1,29 +1,48 @@
-# 🛡️ CaRI-Siber ID – Cognitive Domain Intelligence & Narrative Threat Monitoring
+# 🛡️ CaRI-Siber ID – Sistem Intelijen Domain Kognitif & Forensik Ancaman Siber-Sosial
 
-### _Platform Desktop Analisis Domain Kognitif, Deteksi Manipulasi Opini (CIB), & Pemantauan Dinamika Ruang Siber_
+### _Platform Desktop Mandiri Deteksi Operasi Informasi (CIB), Pemetaan Polarisasi, & Forensik Bukti Digital_
 
-**CaRI-Siber ID** adalah platform intelijen kognitif mandiri berbasis aplikasi desktop (**PyWebView + React + TypeScript**) yang mengintegrasikan pemodelan topik deep learning (**IndoBERT + BERTopic**), **Agentic AI Hardened Gates** deterministik bebas halusinasi, dan modul analitik siber sosial untuk memantau opini publik, mendeteksi operasi terkoordinasi bot/buzzer (_Coordinated Inauthentic Behavior / CIB_), serta memetakan polarisasi sosial di ruang digital.
+**CaRI-Siber ID** adalah platform intelijen domain kognitif dan siber-sosial berbasis aplikasi desktop mandiri (**PyWebView + React 18 + TypeScript**) untuk pemantauan ruang siber, deteksi operasi informasi terkoordinasi, dan analisis opini publik. Sistem ini mengintegrasikan pemodelan topik deep learning lokal (**IndoBERT + BERTopic**), arsitektur **4 Agentic AI Hardened Verification Gates** bebas halusinasi, **Penyegelan Bukti Digital Kriptografis SHA-256 (*Chain of Custody*)**, serta **Kalibrasi Konteks *Human-in-the-Loop*** dengan kemampuan **Operasi Intranet *Air-Gapped* (100% Offline)**.
 
 ---
 
-## 🏛️ Fokus & Kemampuan Utama Platform
+## 🏛️ Kapabilitas Utama & Keunggulan Taktis
 
-1. **Deteksi Operasi Informasi & Buzzer/Bot (CIB Threat Score)**:
-   - Mengkalkulasi rasio repetisi akun (_author duplication_), lonjakan komentar serentak (_rapid-fire burst_), dan intensitas akun anomali berbobot tinggi.
-2. **Pemetaan Polarisasi Ruang Digital (Polarization Index)**:
-   - Menghitung rasio friksi antara kubu sentimen positif vs negatif secara kuantitatif ($0.00$ - $1.00$) untuk membedakan perdebatan organik vs polarisasi buatan.
-3. **Analisis Mayoritas Pasif (_Silent Majority Consensus_)**:
-   - Memisahkan narasi bising minoritas (_loud minority_) dengan aspirasi riil penonton pasif melalui normalisasi pembobotan keterlibatan (_likes & replies weight ratio_).
-4. **4 Agentic AI Hardened Gates (Bebas Halusinasi)**:
-   - **Gate 1 (Quality Gate)**: Validasi kualitas pembersihan kata slang/alay Nasalsabila & eliminasi token sampah.
-   - **Gate 2 (Topic Gate)**: Audit kohesi vektor klaster BERTopic dan pencegahan penggelembungan klaster (_anti-mega blob guardrail_).
-   - **Gate 3 (Labeling Gate)**: Pelabelan nama kategori isu dan sub-isu berbasis semantik AI kontekstual.
-   - **Gate 4 (Verification Gate)**: Audit silang deterministik dengan batasan konfidensi $\ge 0.70$.
-5. **Multi-Provider LLM & Keamanan Kredensial**:
-   - Mendukung Google Gemini, OpenAI, OpenRouter, EdgeOne, dan Custom OpenAI-compatible endpoints.
-   - Penyimpanan API key aman melalui Windows Credential Manager / Keyring terenkripsi.
-6. **Ekspor Laporan Intelijen Eksekutif (Excel XLSX)**:
-   - Menghasilkan dokumen laporan terstruktur multi-sheet (Overview, Klaster Isu, Deteksi CIB, Engagement, Komentar Teratas).
+### 1. 🔐 Integritas Bukti Digital Kriptografis SHA-256 (*Chain of Custody*)
+- Sesuai standar akuisisi bukti elektronik **ISO/IEC 27037**, setiap korpus data mentah maupun artefak analitik otomatis disegel secara kriptografis menggunakan algoritma **SHA-256** (`forensic_manifest.json`).
+- Mencatat waktu akuisisi UTC, ukuran byte eksak, jumlah baris, dan tanda tangan digital untuk menjamin keutuhan barang bukti (*Chain of Custody*) dari tahap pengumpulan hingga pelaporan eksekutif.
+- Dilengkapi badge **Segel Forensik Digital SHA-256** pada antarmuka SITREP untuk memastikan integritas berkas secara *real-time*.
+
+### 2. 🎯 Deteksi Operasi Informasi Terkoordinasi (CIB) & Provokator (*Dual-Track Detection*)
+- **Track A – *Coordinated Inauthentic Behavior* (CIB / Bot / Buzzer)**: Mendeteksi jaringan akun terkoordinasi lintas video berdasarkan kemiripan teks (*copypasta clustering*), lonjakan pengiriman pesan serentak (*rapid-fire burst*), dan anomali rasio duplikasi akun.
+- **Track B – Provokator, Agitator & *High-Risk Accounts***: Mengidentifikasi akun penyebar disinformasi, propaganda separatisme, provokasi SARA, hasutan kekerasan, dan ancaman siber/OT (DDoS, peretasan, doxing).
+- **Taksonomi 6 Domain Ancaman Siber-Sosial**: Mengklasifikasikan setiap klaster isu ke dalam *Disinformasi/Fitnah Institusi*, *Propaganda/Separatisme*, *Hasutan/Kekerasan*, *Polarisasi SARA*, *Ancaman Siber/OT*, atau *Organik/Aspirasi Publik*.
+
+### 3. 🧠 Agentic AI Context Calibrator (*Human-in-the-Loop*) & Kalkulasi Ulang Instan (< 2 Detik)
+- Mengeliminasi positif palsu (*false positive*) di mana slogan apresiasi organik warga (misalnya *"NKRI Harga Mati"*) terdeteksi sebagai pola berulang.
+- Analis dapat mengkalibrasi akun atau frasa sebagai **Slogan / Apresiasi Warga (Whitelist)** atau **Kata Kunci Ancaman** secara interaktif dan menjalankan **Kalkulasi Ulang Instan (< 2 detik)** tanpa perlu mengulang proses *scraping* maupun *clustering* BERTopic dari awal.
+
+### 4. 🛡️ 4 Agentic AI Hardened Verification Gates (Bebas Halusinasi)
+- **Gate 1 (*Quality Gate*)**: Normalisasi kata slang/singkatan bahasa Indonesia berbasis kamus Nasalsabila & audit kualitas token pra-pemodelan.
+- **Gate 2 (*Topic Gate*)**: Audit kohesi klaster vektor IndoBERT + BERTopic, penyatuan klaster duplikat otomatis, dan *anti-mega-blob guardrail*.
+- **Gate 3 (*Verification Gate*)**: Verifikasi silang deterministik label topik, sentimen, dan domain ancaman dengan ambang konfidensi $\ge 0,70$ serta *auto-reroute* batch berisiko.
+- **Gate 4 (*Report Gate*)**: Audit keterlacakan angka, persentase, dan kutipan pada draf laporan **Perkiraan Intelijen Siber (KIRKA)** terhadap tabel fakta CSV sebelum laporan disajikan.
+
+### 5. 📡 Pemetaan Polarisasi & Konsensus Mayoritas Pasif (*Silent Majority*)
+- **Polarization Index ($0,00 - 1,00$)**: Mengukur tingkat friksi antara kubu sentimen positif dan negatif secara kuantitatif untuk membedakan diskusi organik dari polarisasi buatan.
+- **Silent Majority Consensus**: Memisahkan kebisingan kelompok vokal minoritas (*loud minority*) dari dukungan riil audiens pasif melalui normalisasi rasio bobot *likes* terhadap volume komentar.
+
+### 6. 📂 Ingesti OSINT Lintas-Platform Offline & Korpus Simulasi Bawaan
+- **Universal Multi-Platform Importer**: Mendukung impor dataset komentar/unggahan dari **X (Twitter), TikTok, Instagram, Telegram, Facebook, dan YouTube** dalam format **`.CSV`**, **`.JSON`**, atau **`.XLSX`** dengan pemetaan kolom otomatis (*auto-column mapping*).
+- **Korpus Simulasi Bawaan**: Menyediakan dataset simulasi siap uji (*Operasi Pengamanan Perbatasan & Bakti Sosial* serta *Pertahanan Siber & Mitigasi Hoaks Infrastruktur Kritis*) untuk demonstrasi dan pengujian di lingkungan tanpa internet.
+
+### 7. 🔌 Mode Intranet (*Air-Gapped Local LLM*) & Kredensial Terenkripsi
+- **100% Air-Gapped Ready**: Mendukung koneksi ke server LLM lokal (**Ollama / vLLM / LocalAI** pada `http://127.0.0.1:11434/v1`) bersama model embedding **IndoBERT lokal** (`resources/models/indobert-base-p1`).
+- **Multi-Provider Cloud & Lokal**: Mendukung Local LLM (Ollama/vLLM), Google Gemini, OpenRouter, dan Custom OpenAI-compatible Endpoint dengan penyimpanan API Key terenkripsi di **Windows Credential Manager / OS Keyring**.
+
+### 8. 🖥️ Antarmuka Komando 5-Langkah & Ekspor Laporan KIRKA (`.XLSX`)
+- Desain antarmuka taktis *Dark Command Center* dengan **5 Langkah Progres Pipeline Terpadu**, pemetaan **DISARM Framework**, dan tombol **Mode Briefing Layar Penuh (`F11`)**.
+- Menghasilkan dokumen laporan **Perkiraan Intelijen Siber (KIRKA)** multi-sheet berformat Excel (`.xlsx`) beserta rekomendasi kontra-narasi strategis.
 
 ---
 
@@ -32,7 +51,9 @@
 - **Sistem Operasi**: Windows 10/11 (64-bit) atau macOS 11.0+ (Apple Silicon / Intel).
 - **Python**: Python 3.10, 3.11, atau 3.12 (direkomendasikan).
 - **Node.js**: Node.js 18+ & npm (untuk kompilasi antarmuka frontend).
-- **Koneksi Internet**: Dibutuhkan saat proses scraping dan inferensi API LLM (model IndoBERT dapat berjalan offline setelah terunduh).
+- **Mode Operasi**:
+  - **Mode Online / Hibrida**: Koneksi internet untuk akuisisi langsung YouTube dan API LLM Cloud.
+  - **Mode Air-Gapped / Offline Penuh**: Tanpa internet menggunakan fitur **Impor Korpus Eksternal / Simulasi**, model **IndoBERT lokal**, dan server **Ollama / vLLM lokal** (`http://127.0.0.1:11434/v1`).
 
 ---
 
@@ -75,7 +96,7 @@ Salin file template `.env.example` menjadi `.env` jika ingin menyetel konfiguras
 cp .env.example .env
 ```
 
-_(Catatan: Anda juga dapat memasukkan API Key secara langsung melalui menu **Pengaturan API** di dalam antarmuka desktop)._
+_(Catatan: Anda juga dapat mengonfigurasi endpoint **Intranet / Air-Gap** atau memasukkan API Key secara langsung melalui menu **Konfigurasi Sistem** di dalam antarmuka desktop)._
 
 ### 4. Menjalankan Aplikasi Desktop
 
@@ -108,7 +129,7 @@ _(Tambahkan argumen `--dev` jika ingin menghubungkan antarmuka ke Vite Dev Serve
    ```powershell
    & "C:\Program Files (x86)\NSIS\makensis.exe" installer.nsi
    ```
-   _File installer siap pakai akan tercipta di `dist/CaRI-Siber-ID-Setup.exe` (~240 MB dengan kompresi solid LZMA)._
+   _File installer siap pakai akan tercipta di `dist/CaRI-Siber-ID-Setup.exe`._
 
 ---
 
@@ -145,23 +166,23 @@ _(Tambahkan argumen `--dev` jika ingin menghubungkan antarmuka ke Vite Dev Serve
 cari-siber-id/
 ├── cari_siber/                      # Paket Utama Backend & Desktop Core
 │   ├── desktop/                    # Window pywebview & API JavaScript Bridge
-│   │   ├── api.py                  # API RPC bridge ke frontend React
+│   │   ├── api.py                  # API RPC bridge (YouTube, OSINT Importer, Forensic, Calibrator)
 │   │   ├── window.py               # Konfigurasi native webview desktop
-│   │   └── events.py               # Event emitter progres & log real-time
+│   │   └── events.py               # Event emitter progres 5-langkah & log real-time
 │   ├── engine/                     # Pipeline Analitik & AI Engine
-│   │   ├── core/                   # IndoBERT, BERTopic, AI Client, Agentic Gates
-│   │   ├── pipelines/              # Orkestrator scraping, topik, sentimen, narasi
-│   │   └── reporters/              # Generator laporan XLSX multi-sheet
-│   ├── services/                   # History database SQLite, CIB intelligence, results
+│   │   ├── core/                   # IndoBERT, BERTopic, AI Client (SSE Stream), 4 Agentic Gates
+│   │   ├── pipelines/              # Orkestrator akuisisi, topik, verifikasi, analisis, & KIRKA
+│   │   └── reporters/              # Generator laporan intelijen XLSX multi-sheet
+│   ├── services/                   # History DB SQLite, CIB Dual-Track, SHA-256 Forensics, Results
 │   ├── bootstrap.py                # Logging system & penanganan stream tanpa konsol
 │   ├── paths.py                    # Resolusi path lintas platform (Win/macOS/Linux)
 │   ├── settings.py                 # Manajemen konfigurasi & Keyring terenkripsi
 │   └── ui_dist/                    # Distribusi bundle produksi antarmuka React
-├── frontend/                       # Source Code Antarmuka Desktop (React 18 + Vite)
-│   ├── src/                        # Komponen UI, halaman analitik, chart visualisasi
+├── frontend/                       # Source Code Antarmuka Desktop (React 18 + TypeScript + Vite)
+│   ├── src/                        # Komponen UI, Panel Forensik SHA-256, Context Calibrator
 │   ├── package.json                # Dependensi frontend
 │   └── vite.config.ts              # Konfigurasi build Vite
-├── resources/                      # Kamus Slang Nasalsabila, Stopwords, & Konfigurasi NLP
+├── resources/                      # Kamus Slang, Stopwords, & Korpus Simulasi Bawaan (.csv)
 ├── dist/                           # Direktori output hasil build (.exe, .dmg, installer)
 ├── CaRI-Siber-ID.spec              # Spesifikasi PyInstaller lintas platform
 ├── installer.nsi                   # Skrip kompilasi installer NSIS Windows
@@ -173,7 +194,7 @@ cari-siber-id/
 
 ---
 
-## 🔒 Privasi Data & Keamanan
+## 🔒 Kedaulatan Data, Forensik & Keamanan Siber
 
-- **Penyimpanan Lokal**: Seluruh data audit, cache klaster, basis data SQLite (`history.db`), dan log disimpan secara lokal di direktori data pengguna (`%LOCALAPPDATA%\CaRI-Siber-ID` di Windows atau `~/Library/Application Support/CaRI-Siber-ID` di macOS).
-- **Kredensial Aman**: Kunci API tidak disimpan dalam teks polos (plaintext), melainkan diamankan menggunakan Windows Credential Manager atau Keychain native OS via pustaka `keyring`.
+- **Penyimpanan Lokal Terisolasi**: Seluruh berkas korpus, manifest forensik SHA-256 (`forensic_manifest.json`), aturan kalibrasi konteks (`context_calibration.json`), basis data SQLite (`history.db`), dan log audit disimpan 100% di direktori lokal pengguna (`%LOCALAPPDATA%\CaRI-Siber-ID` di Windows atau `~/Library/Application Support/CaRI-Siber-ID` di macOS).
+- **Kredensial Terenkripsi**: Kunci API tidak disimpan dalam teks polos (*plaintext*), melainkan diamankan menggunakan **Windows Credential Manager** atau **Keychain native OS** melalui pustaka `keyring`.

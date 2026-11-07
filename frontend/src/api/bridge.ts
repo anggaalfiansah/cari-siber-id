@@ -22,6 +22,7 @@ declare global {
         import_external_corpus: (payload: { filename: string; content_base64?: string; content_text?: string; title?: string }) => Promise<ImportCorpusResponse>;
         get_ai_threat_calibration: (payload: { run_id: string }) => Promise<any>;
         reanalyze_intelligence: (payload: { run_id: string; whitelist: string[]; threats: string[] }) => Promise<any>;
+        regenerate_narrative: (payload: { run_id: string }) => Promise<{ success: boolean; narrative_md?: string; message?: string; error?: string }>;
       };
     };
     __cariEmit?: (event: PyWebViewEvent) => void;
@@ -112,9 +113,9 @@ const mockApi = {
   }),
   get_ai_threat_calibration: async () => ({
     success: true,
-    whitelist_recommendations: ['TNI Bersama Rakyat', 'Terimakasih TNI', 'Bravo TNI', 'NKRI Harga Mati'],
+    whitelist_recommendations: ['NKRI Harga Mati', 'Terima Kasih Petugas', 'Tetap Semangat'],
     hostile_threat_keywords: ['papua merdeka', 'opm', 'kkb', 'pemberontak', 'diretas'],
-    reasoning_summary: 'Sistem merekomendasikan whitelist slogan resmi TNI dan apresiasi masyarakat agar tidak terjadi salah tuduh (False Positive). Frasa separatis dan provokasi ditandai sebagai ancaman.',
+    reasoning_summary: 'Sistem merekomendasikan whitelist slogan kebangsaan dan apresiasi masyarakat agar tidak terjadi salah tuduh (False Positive). Frasa separatis dan provokasi ditandai sebagai ancaman.',
   }),
   reanalyze_intelligence: async () => ({
     success: true,
@@ -128,7 +129,7 @@ const mockApi = {
       created_at: 'PRELOADED-SIMULASI',
       comment_count: 45,
       video_count: 3,
-      title: '[SIMULASI MILITER] Operasi Pengamanan Perbatasan & Bakti Teritorial TNI AD (3 Video Multi-CIB)',
+      title: '[SIMULASI OPERASI] Operasi Pengamanan Perbatasan & Bakti Sosial (3 Video Multi-CIB)',
       source_file: 'sample_corpus_tni.csv',
       size_mb: 0.02,
       sha256_hash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
@@ -139,7 +140,7 @@ const mockApi = {
       created_at: 'PRELOADED-SIMULASI',
       comment_count: 17,
       video_count: 2,
-      title: '[SIMULASI SIBER IT/OT] Pertahanan Siber PUSSIBERAD & Mitigasi Hoaks Infrastruktur Komando (2 Video)',
+      title: '[SIMULASI SIBER IT/OT] Pertahanan Siber & Mitigasi Hoaks Infrastruktur Kritis (2 Video)',
       source_file: 'sample_corpus_siber_ot.csv',
       size_mb: 0.01,
       sha256_hash: '8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4',

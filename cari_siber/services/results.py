@@ -377,10 +377,117 @@ class ResultsService:
             except Exception:
                 pass
 
+        # Normalisasi identitas Korpus Multi-Video (agar tidak menampilkan judul/kanal dari 1 video pertama saja)
+        search_keyword = str(meta.get("search_keyword", "")).strip()
+        run_ctx_path = os.path.join(run_dir, "json", "run_context.json")
+        if not search_keyword and os.path.exists(run_ctx_path):
+            try:
+                with open(run_ctx_path, "r", encoding="utf-8") as rcf:
+                    search_keyword = str(json.load(rcf).get("search_keyword", "")).strip()
+            except Exception:
+                pass
+
+        video_list_meta = eda_data.get("video_analysis", {}).get("video_list", [])
+        if not video_list_meta:
+            all_meta_csv = os.path.join(run_dir, "scrap", "youtube_videos_meta_all.csv")
+            if os.path.exists(all_meta_csv):
+                try:
+                    m_df = pd.read_csv(all_meta_csv)
+                    if not m_df.empty:
+                        video_list_meta = m_df.to_dict(orient="records")
+                except Exception:
+                    pass
+
+        total_videos_cnt = len(video_list_meta) if video_list_meta else (int(cross_intel.get("total_videos", 1)) if cross_intel else 1)
+        if total_videos_cnt > 1 or str(video_title).startswith("Multi-Video Corpus ("):
+            try:
+                from cari_siber.engine.pipelines.youtube_comments.pipeline_eda import infer_corpus_keyword_and_channels
+                ident = infer_corpus_keyword_and_channels(
+                    video_list_meta,
+                    search_keyword=search_keyword,
+                    fallback_topics=valid_topics,
+                )
+                new_title = ident.get("video_title") or video_title
+                new_channel = ident.get("channel_name") or channel_name
+                if not search_keyword and ident.get("search_keyword"):
+                    search_keyword = ident["search_keyword"]
+
+                if (
+                    str(video_title).startswith("Multi-Video Corpus (")
+                    or new_title != video_title
+                    or new_channel != channel_name
+                ):
+                    video_title = new_title
+                    channel_name = new_channel
+                    # Simpan perbaikan ke youtube_eda_summary.json dan SQLite history.db
+                    if eda_data and os.path.exists(eda_path):
+                        try:
+                            eda_data.setdefault("meta", {})["video_title"] = video_title
+                            eda_data["meta"]["channel_name"] = channel_name
+                            eda_data["meta"]["search_keyword"] = search_keyword
+                            eda_data["meta"]["app_name"] = video_title
+                            if "video_analysis" in eda_data and isinstance(eda_data["video_analysis"], dict):
+                                eda_data["video_analysis"]["video_title"] = video_title
+                                eda_data["video_analysis"]["channel_name"] = channel_name
+                            with open(eda_path, "w", encoding="utf-8") as ef:
+                                json.dump(eda_data, ef, ensure_ascii=False, indent=2)
+                        except Exception:
+                            pass
+                    try:
+                        from cari_siber.services.history import HistoryService
+                        run_id_str = os.path.basename(run_dir)
+                        with HistoryService._get_connection() as conn:
+                            conn.execute(
+                                "UPDATE runs SET video_title = ?, channel_name = ? WHERE id = ?",
+                                (video_title, channel_name, run_id_str),
+                            )
+                            conn.commit()
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+
+        # Bersihkan narasi dari kemungkinan kebocoran Chain-of-Thought (CoT) bahasa Inggris
+        from cari_siber.engine.core.ai_client import _strip_thinking_and_cot
+        cleaned_narrative = _strip_thinking_and_cot(narrative_md)
+        is_placeholder = cleaned_narrative in (
+            "",
+            "Gagal memuat dokumen narasi insight.",
+            "Narasi insight belum dibuat atau analisis belum selesai.",
+        )
+        if is_placeholder and total_comments > 0:
+            narrative_md = ResultsService._build_tactical_kirka_fallback(
+                video_title=video_title,
+                channel_name=channel_name,
+                total_comments=total_comments,
+                unique_authors_total=unique_authors_total,
+                pos_cnt=pos_cnt,
+                neg_cnt=neg_cnt,
+                net_cnt=net_cnt,
+                cib_score=cib_score,
+                cib_level=cib_level,
+                cib_metrics=cib_metrics_dict,
+                pol_index=pol_index,
+                pol_metrics=pol_metrics_dict,
+                valid_topics=valid_topics,
+                flagged_accounts=flagged_accounts,
+                coordinated_bot_networks=coordinated_bot_networks,
+                sha256_hash=sha256_hash,
+            )
+            try:
+                os.makedirs(os.path.dirname(narrative_path), exist_ok=True)
+                with open(narrative_path, "w", encoding="utf-8") as nf:
+                    nf.write(narrative_md)
+            except Exception:
+                pass
+        else:
+            narrative_md = cleaned_narrative
+
         return {
             "meta": {
                 "video_title": video_title,
                 "channel_name": channel_name,
+                "search_keyword": search_keyword,
                 "total_comments": total_comments,
                 "unique_authors_total": unique_authors_total,
                 "cib_score": cib_score,
@@ -564,3 +671,154 @@ class ResultsService:
             pass
 
         return telemetry_data
+
+    @staticmethod
+    def _build_tactical_kirka_fallback(
+        video_title: str,
+        channel_name: str,
+        total_comments: int,
+        unique_authors_total: int,
+        pos_cnt: int,
+        neg_cnt: int,
+        net_cnt: int,
+        cib_score: float,
+        cib_level: str,
+        cib_metrics: dict,
+        pol_index: float,
+        pol_metrics: dict,
+        valid_topics: list,
+        flagged_accounts: list,
+        coordinated_bot_networks: list,
+        sha256_hash: str = "",
+    ) -> str:
+        """
+        Menyusun Laporan Perkiraan Intelijen Siber (KIRKA Siber Sosial) berbasis data deterministik
+        apabila narasi LLM sebelumnya terpotong/bocor monolog CoT atau dijalankan secara full offline.
+        """
+        from collections import Counter
+
+        tot = max(1, total_comments)
+        neg_pct = (neg_cnt / tot) * 100.0
+        pos_pct = (pos_cnt / tot) * 100.0
+        net_pct = (net_cnt / tot) * 100.0
+
+        dup_rate = float((cib_metrics or {}).get("author_duplication_rate", 0.0)) * 100.0
+        burst_ratio = float((cib_metrics or {}).get("rapid_burst_ratio", 0.0)) * 100.0
+        silent_consensus = str((pol_metrics or {}).get("silent_majority_consensus", "Apresiasi & Dukungan Publik Organik"))
+
+        disarm_counter = Counter()
+        for acc in flagged_accounts or []:
+            for code in (acc.get("disarm_codes") or acc.get("disarm_framework") or []):
+                disarm_counter[str(code)] += 1
+
+        top_neg_topics = [t for t in (valid_topics or []) if t.get("sentiment") == "Negatif"][:5]
+        top_pos_topics = [t for t in (valid_topics or []) if t.get("sentiment") == "Positif"][:3]
+
+        topic_lines = []
+        for idx, t in enumerate((top_neg_topics or valid_topics[:5]), 1):
+            dom = t.get("threat_domain") or t.get("category") or "Opini & Respons Publik"
+            sub = t.get("sub_issue") or t.get("topic_name") or "-"
+            cnt = t.get("total_comments", 0)
+            pct_t = (cnt / tot) * 100.0
+            topic_lines.append(f"- **[{dom}] {sub}**: {cnt:,} komentar ({pct_t:.2f}% dari korpus) — Sentimen: *{t.get('sentiment', 'Netral')}*.")
+        topics_block = "\n".join(topic_lines) if topic_lines else "- Klaster topik terdistribusi merata pada percakapan publik."
+
+        pos_lines = []
+        for t in top_pos_topics:
+            sub = t.get("sub_issue") or t.get("topic_name") or "-"
+            cnt = t.get("total_comments", 0)
+            pos_lines.append(f"**{sub}** ({cnt:,} komentar)")
+        pos_summary = ", ".join(pos_lines) if pos_lines else "apresiasi terhadap kinerja satuan dan stabilitas nasional"
+
+        botnet_lines = []
+        for idx, bn in enumerate((coordinated_bot_networks or [])[:4], 1):
+            tmpl = str(bn.get("template_text", ""))[:130]
+            u_cnt = bn.get("unique_accounts_count", 0)
+            o_cnt = bn.get("total_occurrences", 0)
+            botnet_lines.append(
+                f"{idx}. *\"{tmpl}...\"* — Diposting identik oleh **{u_cnt} akun berbeda** sebanyak **{o_cnt} kali**."
+            )
+        botnet_block = "\n".join(botnet_lines) if botnet_lines else "- Tidak ditemukan klaster kalimat identik lintas akun dalam jumlah masif."
+
+        flagged_lines = []
+        for fa in (flagged_accounts or [])[:6]:
+            uname = fa.get("username", "Anonim")
+            alabel = fa.get("actor_label", "Akun Terindikasi")
+            b_sc = fa.get("bot_score", 0)
+            p_sc = fa.get("provocation_score", 0)
+            c_cnt = fa.get("total_comments", 0)
+            v_cnt = fa.get("videos_count", 1)
+            flagged_lines.append(
+                f"- **`{uname}`** ({alabel} | Risiko: **{fa.get('cib_risk_level', 'HIGH')}**) — "
+                f"Skor Bot: **{b_sc}/100**, Skor Provokasi: **{p_sc}/100**, Volume: **{c_cnt} komentar** pada **{v_cnt} video**."
+            )
+        flagged_block = "\n".join(flagged_lines) if flagged_lines else "- Tidak ditemukan akun provokator/bot yang melampaui ambang batas kritis."
+
+        disarm_lines = []
+        for code, cnt in disarm_counter.most_common(6):
+            disarm_lines.append(f"- **{code}**: Terdeteksi pada **{cnt} akun** terindikasi.")
+        if not disarm_lines:
+            disarm_lines.append("- **DISARM-T0083 / T0092**: Monitoring anomali amplifikasi dan repetisi pesan di ruang siber.")
+        disarm_block = "\n".join(disarm_lines)
+
+        sha_line = f"`{sha256_hash[:24]}...`" if sha256_hash else "Terverifikasi Lokal"
+
+        return f"""# LAPORAN PERKIRAAN INTELIJEN SIBER (KIRKA SIBER SOSIAL)
+**Target Operasi:** {video_title} {f'({channel_name})' if channel_name else ''}  
+**Volume Korpus:** {total_comments:,} Komentar ({unique_authors_total:,} Akun Unik) | **Segel Forensik SHA-256:** {sha_line}
+
+---
+
+## 1. SITUASI RUANG SIBER & INDEKS POLARISASI
+
+Berdasarkan ekstraksi telemetri dan pemodelan topik **IndoBERT + BERTopic** terhadap **{total_comments:,} komentar** dari **{unique_authors_total:,} akun unik**, dinamika opini di ruang siber menunjukkan distribusi sentimen sebagai berikut:
+- **Sentimen Negatif (Hasutan / Delegitimasi / Kritik Tajam):** **{neg_cnt:,} komentar ({neg_pct:.2f}%)**
+- **Sentimen Positif (Apresiasi & Dukungan Publik):** **{pos_cnt:,} komentar ({pos_pct:.2f}%)**
+- **Sentimen Netral / Diskusi Informatif:** **{net_cnt:,} komentar ({net_pct:.2f}%)**
+
+**Indeks Polarisasi Ruang Siber** tercatat pada angka **{pol_index:.2f}** (skala $0,00 - 1,00$) dengan **Skor Ancaman CIB (*Coordinated Inauthentic Behavior*)** sebesar **{cib_score:.1f}/100** (Status Kewaspadaan: **{cib_level}**). Analisis rasio keterlibatan (*Silent Majority vs Loud Minority*) menunjukkan bahwa meskipun kelompok vokal (*loud minority*) mendominasi kolom komentar dengan narasi negatif sebesar **{neg_pct:.2f}%**, konsensus mayoritas audiens pasif (*Silent Majority*) tetap memberikan bobot dukungan tinggi pada tema **{silent_consensus}** (mencakup {pos_summary}).
+
+---
+
+## 2. IDENTIFIKASI OPERASI INFORMASI TERKOORDINASI / CIB
+
+Mesin deteksi ganda (*Dual-Track Forensic Engine*) mengidentifikasi **{len(flagged_accounts or []):,} akun berisiko** dan **{len(coordinated_bot_networks or []):,} klaster jaringan pesan berulang (*copypasta*)**, dengan tingkat duplikasi penulis sebesar **{dup_rate:.1f}%** dan rasio lonjakan waktu simultan (*rapid-fire burst*) sebesar **{burst_ratio:.1f}%**.
+
+**A. Klaster Komentar Kembar Lintas Akun (*Coordinated Bot Networks*):**
+{botnet_block}
+
+**B. Dossier Akun Prioritas Pengawasan (Top *Flagged Threat Accounts*):**
+{flagged_block}
+
+---
+
+## 3. PEMETAAN NARASI ANCAMAN KOGNITIF & KORELASI ANCAMAN INFRASTRUKTUR IT/OT
+
+Pemetaan klaster isu utama yang mendominasi ruang kognitif pada korpus ini meliputi:
+{topics_block}
+
+**Analisis Korelasi Ancaman Siber-Sosial terhadap Operasi Komando & Infrastruktur IT/OT:**
+1. **Eskalasi Delegitimasi Institusi & Disinformasi Kebijakan:** Konsentrasi komentar negatif pada isu delegitimasi berpotensi menurunkan kepercayaan publik terhadap aparat dan kebijakan pemerintah apabila tidak diimbangi dengan rilis fakta lapangan yang terverifikasi.
+2. **Mitigasi Risiko *Swarming*, *Doxing*, & Gangguan Layanan Digital:** Pola mobilisasi akun secara serentak (*synchronized swarming*) sering menjadi indikator awal (*pre-attack indicator*) sebelum kampanye pelaporan massal (*mass-reporting*), *doxing* personel, atau gangguan DDoS pada portal informasi resmi satuan.
+
+---
+
+## 4. DISARM FRAMEWORK MAPPING
+
+Berdasarkan standar taksonomi operasi informasi **DISARM (*Disinformation Analysis and Risk Management*) / AMITT**, pola taktik lawan yang terdeteksi pada korpus ini dipetakan sebagai berikut:
+{disarm_block}
+
+---
+
+## 5. REKOMENDASI TINDAKAN PENANGKALAN & KONTRA-NARASI
+
+1. **Tim Komunikasi Strategis & Hubungan Masyarakat:**
+   - Segera luncurkan konten kontra-narasi berbasis bukti visual lapangan (*fact-sheet* dan dokumentasi kegiatan/penanggulangan krisis) dalam jendela waktu **24–48 jam** untuk memperkuat suara **Silent Majority** ({pos_cnt:,} komentar positif).
+   - Tingkatkan interaksi akun resmi (*official response*) pada utas komentar yang memiliki keterlibatan tinggi guna mencegah terbentuknya ruang gema (*echo chamber*) disinformasi.
+2. **Tim Analis Intelijen Kognitif & Pemantauan Media:**
+   - Lakukan pemantauan mendalam (*deep-dive profiling*) terhadap **{len(flagged_accounts or []):,} akun terindikasi** (khususnya akun dengan skor provokasi dan skor bot $\ge 60$) beserta korelasi lintas video pada jaringan penyebar narasi seragam.
+   - Gunakan fitur **Agentic AI Context Calibrator** secara berkala untuk memisahkan ekspresi organik warga dari manuver *astroturfing*.
+3. **Tim Pertahanan Siber & Keamanan Informasi (CSIRT / SOC):**
+   - Siagakan pemantauan trafik pada portal informasi resmi dan perketat segmentasi jaringan administrasi (IT) terhadap jaringan operasional (OT) selama periode lonjakan percakapan (*spike*) berlangsung.
+   - Arsipkan manifest barang bukti digital bersegel **SHA-256** (`forensic_manifest.json`) sebagai dasar pelaporan hukum dan koordinasi penanganan akun inotentik.
+"""

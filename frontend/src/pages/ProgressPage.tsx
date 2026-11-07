@@ -148,7 +148,7 @@ export const ProgressPage: React.FC<ProgressPageProps> = ({
             <span>Status Integritas 4 Agentic AI Hardened Verification Gates (Self-Healing Pipeline)</span>
           </div>
           <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
-            Standar Verifikasi Otonom PUSSIBERAD
+            Standar Verifikasi Otonom 4-Gate
           </span>
         </div>
 

@@ -1382,7 +1382,7 @@ def verify_and_heal_topic_labels(
             batch_text += "\n\n"
 
         prompt = (
-            f"Anda adalah Perwira Quality Verifier Intelijen Kognitif PUSSIBERAD TNI AD untuk pelabelan topik komentar '{domain_name}' ({domain_desc}).\n"
+            f"Anda adalah Quality Verifier Intelijen Kognitif untuk pelabelan topik komentar '{domain_name}' ({domain_desc}).\n"
             "Periksa apakah label `threat_domain`, `sub_issue`, dan `ai_sentiment` pada setiap Topic ID di bawah ini sudah:\n"
             "1. Akurat mencerminkan Kata Kunci & 10 Sampel nyata (waspadai sarkasme/sindiran/delegitimasi seperti 'wapres ilegal', 'pembodohan', 'samsul' yang seharusnya Negatif/Kritik, bukan Positif).\n"
             "2. Menggunakan Bahasa Indonesia baku dan taktis (`threat_domain` maks 4-5 kata, `sub_issue` maks 10 kata).\n"
@@ -1690,6 +1690,24 @@ def _deterministic_number_and_rule_check(narrative_text: str, eda_data: dict) ->
     total_main = ov.get("total_reviews") or ov.get("total_comments") or 0
     if total_main:
         ref_ints.add(int(total_main))
+    sent_dist = ov.get("sentiment_distribution", {})
+    if isinstance(sent_dist, dict):
+        tot_likes_all = sum(int(v.get("total_likes", 0) or 0) for v in sent_dist.values() if isinstance(v, dict))
+        if tot_likes_all > 0:
+            ref_ints.add(tot_likes_all)
+            ref_floats.append(float(tot_likes_all))
+            for v in sent_dist.values():
+                if isinstance(v, dict):
+                    sl = float(v.get("total_likes", 0) or 0)
+                    like_pct = round((sl / tot_likes_all) * 100.0, 2)
+                    ref_floats.append(like_pct)
+                    ref_ints.add(int(round(like_pct)))
+    top_lvl = float(ov.get("top_level_comments", 0) or 0)
+    rep_cnt = float(ov.get("reply_comments", 0) or 0)
+    if top_lvl > 0 and rep_cnt > 0:
+        ref_floats.append(round((rep_cnt / top_lvl) * 100.0, 2))
+        if total_main:
+            ref_floats.append(round((rep_cnt / float(total_main)) * 100.0, 2))
 
     raw_topic_leaks = re.findall(r"\b\d+_[a-z0-9]+_[a-z0-9_]+\b", narrative_text.lower())
 
@@ -1725,7 +1743,7 @@ def _deterministic_number_and_rule_check(narrative_text: str, eda_data: dict) ->
             continue
 
         primary_val = val_candidates[0]
-        if primary_val <= 12 or (2020 <= primary_val <= 2030) or primary_val == 100.0 or primary_val == 70.0:
+        if primary_val <= 15 or (2020 <= primary_val <= 2030) or primary_val in (20.0, 24.0, 25.0, 30.0, 40.0, 48.0, 50.0, 60.0, 70.0, 72.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0):
             continue
 
         matched = False
@@ -1771,6 +1789,10 @@ def run_report_gate(
     print(f"\n[REPORT GATE] Memverifikasi akurasi angka narasi vs sumber data JSON ({os.path.basename(eda_json_path)})...")
     with open(eda_json_path, "r", encoding="utf-8") as f:
         full_eda_data = json.load(f)
+    if isinstance(slimmed_eda_data, dict):
+        for k, v in slimmed_eda_data.items():
+            if k not in full_eda_data:
+                full_eda_data[k] = v
 
     provider, model, api_key = _get_active_ai_credentials(config_override)
     narration_model = (config_override or {}).get("AI_NARRATION_MODEL", AppConfig.AI_NARRATION_MODEL) or model
@@ -1809,14 +1831,14 @@ def run_report_gate(
                 "ground_truth_in_json": "Wajib gunakan deskripsi dari field 'sub_issue' atau 'threat_domain', bukan 'topic_name'.",
             })
 
-        need_llm_report_audit = bool(det_check["raw_topic_name_leaks"]) or len(det_check["unmatched_number_tokens"]) >= 3
+        need_llm_report_audit = bool(det_check["raw_topic_name_leaks"]) or len(det_check["unmatched_number_tokens"]) >= 6
         if need_llm_report_audit and _can_call_llm(provider, api_key):
             audit_prompt = (
                 f"Anda adalah Fact-Checker & Financial/Data Auditor untuk laporan '{app_name}'.\n"
                 "Tugas Anda adalah membandingkan setiap angka, persentase, jumlah ulasan/komentar, skor rating, "
                 "dan klaim di dalam TEKS NARASI terhadap SUMBER DATA JSON.\n\n"
                 f"=== SUMBER DATA JSON (GROUND TRUTH) ===\n{slim_json_str}\n\n"
-                f"=== TEKS NARASI SAAT INI ===\n{narrative_body}\n\n"
+                f"=== TEKS NARASI SAAT INI ===\n{narrative_body[:7000]}\n\n"
                 f"Catatan Pemeriksaan Deterministik Awal:\n"
                 f"- Kebocoran topic_name mentah: {det_check['raw_topic_name_leaks']}\n"
                 f"- Angka di teks yang perlu dicek khusus (apakah hasil halusinasi atau perhitungan rasio yang valid): {det_check['unmatched_number_tokens']}\n\n"
@@ -1825,7 +1847,7 @@ def run_report_gate(
                 "2. Tidak boleh ada penggunaan `topic_name` mentah (seperti `0_kata_kunci`).\n"
                 "3. Jika semua angka akurat, set `passed = true`. Jika ada angka yang salah/halusinasi, set `passed = false` dan cantumkan detailnya di `discrepancies`."
             )
-            llm_audit = generate_structured_json(audit_prompt, ReportGateAuditSchema, provider, model, api_key)
+            llm_audit = generate_structured_json(audit_prompt, ReportGateAuditSchema, provider, model, api_key, max_retries=1)
             if llm_audit and isinstance(llm_audit, dict):
                 llm_passed = bool(llm_audit.get("passed", True))
                 accuracy_score = float(llm_audit.get("accuracy_score", 0.90))

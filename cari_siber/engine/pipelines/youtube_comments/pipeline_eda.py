@@ -10,11 +10,121 @@ menyimpannya ke dalam `output/youtube/json/youtube_eda_summary.json`.
 
 import json
 import os
+import re
 import sys
 import numpy as np
 import pandas as pd
 
 from cari_siber.engine.core.config import AppConfig, extract_youtube_video_id
+
+_TITLE_STOPWORDS = {
+    "dan", "yang", "di", "ke", "dari", "ini", "itu", "untuk", "dengan", "pada",
+    "dalam", "oleh", "atau", "tidak", "tak", "bisa", "akan", "ada", "jadi", "lagi",
+    "bikin", "buat", "karena", "saat", "setelah", "hari", "terbaru", "full", "video",
+    "live", "breaking", "news", "berita", "update", "viral", "heboh", "mengejutkan",
+    "fakta", "balik", "menyibak", "darurat", "akibat", "soal", "terkait", "tentang",
+    "atas", "bawah", "para", "kami", "kita", "mereka", "anda", "saya", "dia", "nya",
+    "kan", "lah", "pun", "per", "sub", "eps", "part", "bagian", "indonesia", "tahun",
+    "2023", "2024", "2025", "2026", "youtube", "channel", "official", "tv", "id",
+    "apa", "siapa", "mengapa", "kenapa", "bagaimana", "dimana", "kapan", "apakah",
+    "masih", "sudah", "telah", "baru", "saja", "lebih", "paling", "sangat", "sekali",
+    "hingga", "sampai", "antara", "terhadap", "melalui", "secara", "bukan", "jangan",
+    "harus", "wajib", "boleh", "dapat", "mau", "ingin", "sedang", "tengah", "bakal",
+}
+
+
+def infer_corpus_keyword_and_channels(
+    video_list: list,
+    search_keyword: str = "",
+    fallback_topics: list = None,
+) -> dict:
+    """
+    Menyusun identitas korpus multi-video (Judul Kata Kunci Pencarian & Ringkasan Lintas Kanal)
+    agar header operasi multi-video tidak menampilkan judul/kanal dari 1 video pertama saja.
+    """
+    total_videos = len(video_list) if video_list else 1
+    clean_kw = str(search_keyword or "").strip()
+
+    # 1. Kumpulkan daftar kanal unik beserta urutan kemunculan / frekuensi
+    channel_counts = {}
+    for v in (video_list or []):
+        ch = str(v.get("channel_name") or "").strip()
+        if ch and ch.lower() not in ("nan", "none", "null", "youtube channel", "-"):
+            channel_counts[ch] = channel_counts.get(ch, 0) + 1
+
+    unique_channels = sorted(channel_counts.keys(), key=lambda k: (-channel_counts[k], k))
+    num_channels = len(unique_channels)
+
+    if total_videos > 1:
+        if num_channels > 1:
+            top_ch = ", ".join(unique_channels[:3])
+            rem_ch = num_channels - 3
+            channel_summary = (
+                f"{total_videos} Video Lintas {num_channels} Kanal ({top_ch}"
+                + (f", +{rem_ch} kanal lainnya)" if rem_ch > 0 else ")")
+            )
+        elif num_channels == 1:
+            channel_summary = f"{total_videos} Video dari Kanal {unique_channels[0]}"
+        else:
+            channel_summary = f"Korpus Multi-Video ({total_videos} Video Lintas Kanal)"
+    else:
+        channel_summary = unique_channels[0] if unique_channels else "YouTube Channel"
+
+    # 2. Jika kata kunci pencarian belum tersimpan (mis. pada run lama), rekonstruksi dari frekuensi kata antar-judul video
+    if not clean_kw and total_videos > 1:
+        doc_freq = {}
+        surface_forms = {}
+        first_pos = {}
+        for v_idx, v in enumerate(video_list or []):
+            raw_t = str(v.get("video_title") or v.get("caption") or "")
+            tokens = re.findall(r"[A-Za-z0-9]{3,}", raw_t)
+            seen_in_video = set()
+            for t_idx, tok in enumerate(tokens):
+                low = tok.lower()
+                if low in _TITLE_STOPWORDS or low.isdigit():
+                    continue
+                if low not in first_pos:
+                    first_pos[low] = (v_idx, t_idx)
+                # Simpan bentuk kapitalisasi asli yang paling representatif (mis. OPM, TNI, KKB, Papua)
+                if tok.isupper() and len(tok) <= 6:
+                    surface_forms[low] = tok
+                elif low not in surface_forms:
+                    surface_forms[low] = tok.capitalize()
+                if low not in seen_in_video:
+                    seen_in_video.add(low)
+                    doc_freq[low] = doc_freq.get(low, 0) + 1
+
+        # Pilih kata yang muncul di minimal 2 video (atau top 4 kata dengan doc_freq tertinggi)
+        ranked_tokens = sorted(
+            doc_freq.keys(),
+            key=lambda k: (-doc_freq[k], first_pos.get(k, (999, 999))),
+        )
+        strong_tokens = [k for k in ranked_tokens if doc_freq[k] >= 2][:5]
+        if not strong_tokens:
+            strong_tokens = ranked_tokens[:4]
+
+        if strong_tokens:
+            clean_kw = " ".join(surface_forms[k] for k in strong_tokens)
+        elif fallback_topics:
+            top_t = fallback_topics[0]
+            clean_kw = str(top_t.get("sub_issue") or top_t.get("category") or top_t.get("topic_name") or "").strip()
+
+    if total_videos > 1:
+        if clean_kw:
+            corpus_title = f"Kata Kunci Pencarian: \"{clean_kw}\" ({total_videos} Video)"
+        else:
+            corpus_title = f"Korpus Multi-Video ({total_videos} Video Lintas Kanal)"
+    else:
+        corpus_title = str(video_list[0].get("video_title") if video_list else clean_kw or "Video YouTube")
+
+    return {
+        "video_title": corpus_title,
+        "channel_name": channel_summary,
+        "search_keyword": clean_kw,
+        "unique_channels_count": num_channels,
+        "unique_channels": unique_channels,
+        "total_videos": total_videos,
+    }
 
 
 def _compute_overview(df_bcs, df_all):
@@ -133,7 +243,7 @@ def _compute_topic_analysis(df_bcs, df_all):
     return result
 
 
-def _compute_video_analysis(meta_csv_path: str, df_all: pd.DataFrame, video_id: str):
+def _compute_video_analysis(meta_csv_path: str, df_all: pd.DataFrame, video_id: str, search_keyword: str = ""):
     """Menganalisis metadata video YouTube (single maupun multi-video corpus) beserta top comments."""
     df_all_copy = df_all.copy() if not df_all.empty else pd.DataFrame()
     if not df_all_copy.empty:
@@ -231,8 +341,10 @@ def _compute_video_analysis(meta_csv_path: str, df_all: pd.DataFrame, video_id: 
     avg_views = int(total_views / total_videos) if total_videos > 0 else 0
     top_videos = sorted(video_list, key=lambda x: x.get("views_int", 0), reverse=True)[:10]
 
+    corpus_identity = infer_corpus_keyword_and_channels(video_list, search_keyword=search_keyword)
     if total_videos > 1:
-        primary_title = f"Multi-Video Corpus ({total_videos} Video): {primary_title}"
+        primary_title = corpus_identity["video_title"]
+        primary_channel = corpus_identity["channel_name"]
 
     # Kumpulkan Top 10 komentar dengan likes tertinggi dari seluruh corpus
     top_comments = []
@@ -262,6 +374,8 @@ def _compute_video_analysis(meta_csv_path: str, df_all: pd.DataFrame, video_id: 
         "video_likes": total_video_likes,
         "video_title": primary_title,
         "channel_name": primary_channel,
+        "search_keyword": corpus_identity.get("search_keyword", ""),
+        "unique_channels_count": corpus_identity.get("unique_channels_count", 1),
         "video_url": primary_url,
         "published_at": primary_published,
         "video_list": video_list,
@@ -490,7 +604,17 @@ def run_eda(config_override=None):
     df_topic_agg = pd.read_csv(topic_agg_path)
 
     meta_csv_path = os.path.join(output_dir, "scrap", f"youtube_video_meta_{video_id}.csv")
-    video_analysis = _compute_video_analysis(meta_csv_path, df_all, video_id)
+    search_keyword = str(cfg.get("SEARCH_KEYWORD") or getattr(AppConfig, "SEARCH_KEYWORD", "") or "").strip()
+    run_ctx_path = os.path.join(json_output_dir, "run_context.json")
+    if not search_keyword and os.path.exists(run_ctx_path):
+        try:
+            with open(run_ctx_path, "r", encoding="utf-8") as rcf:
+                rctx = json.load(rcf)
+                search_keyword = str(rctx.get("search_keyword", "")).strip()
+        except Exception:
+            pass
+
+    video_analysis = _compute_video_analysis(meta_csv_path, df_all, video_id, search_keyword=search_keyword)
 
     eda_results = {
         "overview": _compute_overview(df_bcs, df_all),
@@ -512,7 +636,9 @@ def run_eda(config_override=None):
         end_date = "-"
 
     app_name_cfg = cfg.get("YOUTUBE_APP_NAME", AppConfig.YOUTUBE_APP_NAME)
-    if app_name_cfg in ("YouTube Video", f"YouTube - {video_id}") and video_analysis.get("video_title"):
+    if video_analysis.get("total_videos", 1) > 1 and video_analysis.get("video_title"):
+        display_name = video_analysis["video_title"]
+    elif app_name_cfg in ("YouTube Video", f"YouTube - {video_id}") and video_analysis.get("video_title"):
         display_name = f"YouTube - {video_analysis['video_title'][:50]}"
     else:
         display_name = app_name_cfg
@@ -523,6 +649,9 @@ def run_eda(config_override=None):
         "video_url": video_analysis.get("video_url", f"https://www.youtube.com/watch?v={video_id}"),
         "video_title": video_analysis.get("video_title", ""),
         "channel_name": video_analysis.get("channel_name", ""),
+        "search_keyword": video_analysis.get("search_keyword", search_keyword),
+        "total_videos": video_analysis.get("total_videos", 1),
+        "unique_channels_count": video_analysis.get("unique_channels_count", 1),
         "date_range": {"start": start_date, "end": end_date},
     }
 

@@ -107,6 +107,7 @@ class DesktopApi:
         raw_urls = payload.get("video_urls", [])
         video_urls = [str(u).strip() for u in raw_urls if str(u).strip() and str(u).strip().lower() != "undefined"]
         source_run_id = str(payload.get("source_run_id", "")).strip() or None
+        search_keyword = str(payload.get("search_keyword", "")).strip()
 
         if (not video_url or video_url.lower() == "undefined") and video_urls:
             video_url = video_urls[0]
@@ -128,6 +129,7 @@ class DesktopApi:
                 include_replies=include_replies,
                 skip_scrape=skip_scrape,
                 source_run_id=source_run_id,
+                search_keyword=search_keyword,
             )
             return {"success": True, "run_id": run_id}
         except Exception as e:
@@ -146,11 +148,11 @@ class DesktopApi:
             demo_specs = [
                 (
                     "sample_corpus_tni.csv",
-                    "[SIMULASI MILITER] Operasi Pengamanan Perbatasan & Bakti Teritorial TNI AD (3 Video Multi-CIB)",
+                    "[SIMULASI OPERASI] Operasi Pengamanan Perbatasan & Bakti Sosial (3 Video Multi-CIB)",
                 ),
                 (
                     "sample_corpus_siber_ot.csv",
-                    "[SIMULASI SIBER IT/OT] Pertahanan Siber PUSSIBERAD & Mitigasi Hoaks Infrastruktur Komando (2 Video)",
+                    "[SIMULASI SIBER IT/OT] Pertahanan Siber & Mitigasi Hoaks Infrastruktur Kritis (2 Video)",
                 ),
             ]
             for fname, label_title in demo_specs:
@@ -225,9 +227,21 @@ class DesktopApi:
                         m_df = pd.read_csv(meta_all)
                         video_count = len(m_df)
                         t_col = "video_title" if "video_title" in m_df.columns else ("title" if "title" in m_df.columns else None)
-                        if t_col and not m_df.empty:
-                            first_t = str(m_df[t_col].iloc[0])
-                            title = f"{first_t} (+{video_count-1} video lainnya)" if video_count > 1 else first_t
+                        if video_count > 1:
+                            saved_kw = ""
+                            r_ctx_path = os.path.join(r_path, "json", "run_context.json")
+                            if os.path.exists(r_ctx_path):
+                                try:
+                                    with open(r_ctx_path, "r", encoding="utf-8") as rcf:
+                                        saved_kw = str(json.load(rcf).get("search_keyword", "")).strip()
+                                except Exception:
+                                    pass
+                            from cari_siber.engine.pipelines.youtube_comments.pipeline_eda import infer_corpus_keyword_and_channels
+                            v_records = m_df.to_dict(orient="records") if not m_df.empty else []
+                            ident = infer_corpus_keyword_and_channels(v_records, search_keyword=saved_kw)
+                            title = ident.get("video_title", f"Korpus Multi-Video ({video_count} Video)")
+                        elif t_col and not m_df.empty:
+                            title = str(m_df[t_col].iloc[0])
                     except Exception:
                         pass
                 elif os.path.exists(meta_single):
@@ -613,16 +627,16 @@ class DesktopApi:
 
             prompt_samples = "\n".join(sample_items)
 
-            prompt = f"""Anda adalah Perwira Analis Intelijen Kognitif & Pertahanan Ruang Siber PUSSIBERAD TNI AD.
+            prompt = f"""Anda adalah Analis Utama Intelijen Kognitif & Pertahanan Ruang Siber.
 Tugas Anda adalah melakukan KALIBRASI KONTEKS & ELIMINASI SALAH TUDUH (False Positive Elimination) terhadap temuan klaster komentar kembar berikut:
 
 DAFTAR KLASTER KOMENTAR KEMBAR:
 {prompt_samples}
 
-INSTRUKSI EVALUASI INTELIJEN MILITER:
-1. 'whitelist_recommendations': Identifikasi frasa yang merupakan SLOGAN RESMI INSTITUSI NEGARA (TNI/POLRI), YEL-YEL PATRIOTIK, atau APRESIASI SPONTAN WARGA (misal 'TNI Bersama Rakyat', 'Terimakasih TNI', 'NKRI Harga Mati'). Frasa ini harus dikecualikan agar tidak salah dituduh sebagai bot farm musuh.
-2. 'hostile_threat_keywords': Identifikasi kata kunci/frasa yang mengandung PROPAGANDA SEPARATIS (OPM/KKB), PROVOKASI DELEGITIMASI, HASUTAN KEKERASAN, atau POLA SERANGAN SIBER KOGNITIF ASIMETRIS yang wajib ditandai sebagai target ancaman (Hostile Threat).
-3. 'reasoning_summary': Buat penjelasan ringkas doktrin intelijen (maksimal 3-4 kalimat) mengenai justifikasi kalibrasi ini untuk Komandan Satuan Siber.
+INSTRUKSI EVALUASI INTELIJEN SIBER:
+1. 'whitelist_recommendations': Identifikasi frasa yang merupakan SLOGAN KEBANGSAAN, YEL-YEL PATRIOTIK, atau APRESIASI SPONTAN WARGA (misal 'NKRI Harga Mati', 'Terima Kasih Petugas'). Frasa ini harus dikecualikan agar tidak salah dituduh sebagai bot farm.
+2. 'hostile_threat_keywords': Identifikasi kata kunci/frasa yang mengandung PROPAGANDA SEPARATIS, PROVOKASI DELEGITIMASI, HASUTAN KEKERASAN, atau POLA SERANGAN SIBER KOGNITIF ASIMETRIS yang wajib ditandai sebagai target ancaman (Hostile Threat).
+3. 'reasoning_summary': Buat penjelasan ringkas analisis intelijen (maksimal 3-4 kalimat) mengenai justifikasi kalibrasi ini.
 
 Keluarkan hasil dalam format JSON terstruktur."""
 
@@ -680,7 +694,7 @@ Keluarkan hasil dalam format JSON terstruktur."""
                     "success": True,
                     "whitelist_recommendations": list(dict.fromkeys(fallback_wl))[:10],
                     "hostile_threat_keywords": list(dict.fromkeys(fallback_th))[:10],
-                    "reasoning_summary": f"Kalibrasi Cepat PUSSIBERAD: Mengeliminasi false positive pada slogan kebangsaan & mendeteksi potensi kampanye asimetris (Engine: {str(ai_err)[:70]}).",
+                    "reasoning_summary": f"Kalibrasi Cepat: Mengeliminasi false positive pada slogan kebangsaan & mendeteksi potensi kampanye asimetris (Engine: {str(ai_err)[:70]}).",
                 }
         except Exception as e:
             return {"success": False, "error": str(e)}
@@ -767,6 +781,75 @@ Keluarkan hasil dalam format JSON terstruktur."""
                 "bot_networks_count": len(botnets),
                 "flagged_accounts_count": len(flagged),
                 "message": "Analisis intelijen siber berhasil diperbarui seketika.",
+            }
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    def regenerate_narrative(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Menyusun ulang Laporan Perkiraan Intelijen Siber (KIRKA Siber Sosial) menggunakan LLM
+        secara langsung untuk run_id tertentu tanpa harus mengulang langkah 1-6.
+        """
+        run_id = str(payload.get("run_id", "")).strip() if isinstance(payload, dict) else str(payload or "").strip()
+        if not run_id:
+            return {"success": False, "error": "run_id wajib diisi."}
+
+        try:
+            run_dir = get_run_dir(run_id)
+            if not os.path.exists(run_dir):
+                return {"success": False, "error": "Direktori run tidak ditemukan."}
+
+            settings = AppSettings.load()
+            provider = str(settings.get("provider") or settings.get("ai_provider") or "gemini").lower().strip()
+            model = str(settings.get("model") or settings.get("ai_model") or "gemini-2.5-flash").strip()
+            api_key = str(settings.get("api_key") or settings.get(f"{provider}_api_key") or "").strip()
+            if not api_key:
+                api_key = str(
+                    settings.get("custom_api_key")
+                    or settings.get("gemini_api_key")
+                    or settings.get("openrouter_api_key")
+                    or ""
+                ).strip()
+
+            custom_base = str(
+                settings.get("base_url") or settings.get("custom_base_url") or "http://127.0.0.1:11434/v1"
+            ).strip()
+
+            AppConfig.configure_run(run_dir=run_dir, settings=settings)
+            if provider == "custom":
+                AppConfig.CUSTOM_BASE_URL = custom_base
+                AppConfig.CUSTOM_API_KEY = api_key
+
+            cfg_override = {
+                "OUTPUT_DIR": run_dir,
+                "AI_PROVIDER": provider,
+                "AI_MODEL": model,
+                "GEMINI_API_KEY": api_key if provider == "gemini" else settings.get("gemini_api_key", ""),
+                "OPENROUTER_API_KEY": api_key if provider == "openrouter" else settings.get("openrouter_api_key", ""),
+                "EDGEONE_API_KEY": api_key if provider == "edgeone" else settings.get("edgeone_api_key", ""),
+                "CUSTOM_API_KEY": api_key if provider == "custom" else settings.get("custom_api_key", ""),
+                "CUSTOM_BASE_URL": custom_base,
+            }
+
+            from cari_siber.engine.pipelines.youtube_comments.pipeline_narrate import run_narrator
+            run_narrator(config_override=cfg_override)
+
+            narrative_path = os.path.join(run_dir, "reports", "narrative_insights.md")
+            narrative_md = ""
+            if os.path.exists(narrative_path):
+                with open(narrative_path, "r", encoding="utf-8") as f:
+                    narrative_md = f.read()
+
+            from cari_siber.engine.core.ai_client import _strip_thinking_and_cot
+            narrative_md = _strip_thinking_and_cot(narrative_md)
+            if not narrative_md:
+                res = ResultsService.load_run_results(run_dir)
+                narrative_md = (res or {}).get("narrative_md", "")
+
+            return {
+                "success": True,
+                "narrative_md": narrative_md,
+                "message": "Laporan KIRKA Siber Sosial berhasil disusun ulang.",
             }
         except Exception as e:
             return {"success": False, "error": str(e)}

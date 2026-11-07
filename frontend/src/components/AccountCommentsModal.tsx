@@ -14,6 +14,7 @@ import {
   Copy,
   Check,
   Filter,
+  Info,
 } from 'lucide-react';
 import { FlaggedAccountItem, AuthorCommentItem } from '../api/types';
 import { api } from '../api/bridge';
@@ -176,14 +177,15 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
           <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
             <div
               style={{
-                width: '48px',
-                height: '48px',
+                width: '44px',
+                height: '44px',
+                flexShrink: 0,
                 borderRadius: '50%',
                 background: 'linear-gradient(135deg, #0284c7 0%, #1e1b4b 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '1.25rem',
+                fontSize: '1.15rem',
                 fontWeight: 700,
                 color: '#f8fafc',
                 border: '2px solid rgba(56, 189, 248, 0.4)',
@@ -280,9 +282,12 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
                       const isBotnet = tag.toLowerCase().includes('bot massal');
                       const isBurst = tag.toLowerCase().includes('burst');
                       const isCopypasta = tag.toLowerCase().includes('copypasta');
+                      // Untuk label DISARM panjang seperti "DISARM-T0088 (Dehumanization...)", tampilkan kode singkat & taruh detail di tooltip
+                      const shortLabel = isDisarm && tag.includes('(') ? tag.split('(')[0].trim() : tag;
                       return (
                         <span
                           key={idx}
+                          title={tag}
                           style={{
                             fontSize: '0.68rem',
                             background: isDisarm
@@ -318,9 +323,10 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
                             }`,
                             fontWeight: isDisarm || isBotnet || isBurst ? 700 : 500,
                             letterSpacing: isDisarm ? '0.2px' : 'normal',
+                            cursor: isDisarm ? 'help' : 'default',
                           }}
                         >
-                          {tag}
+                          {shortLabel}
                         </span>
                       );
                     })}
@@ -383,9 +389,17 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
           </div>
 
           {/* Engine 2: Skor Provokasi */}
-          <div style={{ background: 'rgba(239, 68, 68, 0.08)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.35)' }}>
-            <div style={{ fontSize: '0.7rem', color: '#f87171', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div
+            title={
+              account.score_breakdown
+                ? `Rincian Skor Provokasi — Leksikon Hasutan: ${account.score_breakdown.prov_lexicon ?? 0} • Pemicu Utas Konflik: ${account.score_breakdown.prov_thread ?? 0} • Resonansi Likes: ${account.score_breakdown.prov_resonance ?? 0}`
+                : 'Skor Provokasi berdasarkan leksikon hasutan, pemicu utas, dan resonansi likes'
+            }
+            style={{ background: 'rgba(239, 68, 68, 0.08)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.35)', cursor: 'help' }}
+          >
+            <div style={{ fontSize: '0.7rem', color: '#f87171', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px' }}>
               <span>🔥 SKOR PROVOKASI</span>
+              <Info size={12} color="#fca5a5" />
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginTop: '2px' }}>
               <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f87171' }}>
@@ -393,19 +407,20 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
               </span>
               <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>/ 100</span>
             </div>
-            {account.score_breakdown && (
-              <div style={{ fontSize: '0.62rem', color: '#fca5a5', marginTop: '2px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                <span>Hasut: {account.score_breakdown.prov_lexicon ?? 0}</span>
-                <span>• Utas: {account.score_breakdown.prov_thread ?? 0}</span>
-                <span>• Like: {account.score_breakdown.prov_resonance ?? 0}</span>
-              </div>
-            )}
           </div>
 
           {/* Engine 1: Skor Bot */}
-          <div style={{ background: 'rgba(2, 132, 199, 0.08)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(2, 132, 199, 0.35)' }}>
-            <div style={{ fontSize: '0.7rem', color: '#38bdf8', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div
+            title={
+              account.score_breakdown
+                ? `Rincian Skor Bot — Duplikasi/Copypasta: ${account.score_breakdown.copypasta ?? 0} • Lintas Video: ${account.score_breakdown.cross_video ?? 0} • Kecepatan/Burst: ${account.score_breakdown.temporal ?? 0}`
+                : 'Skor Bot berdasarkan duplikasi teks, sebaran lintas video, dan kecepatan posting'
+            }
+            style={{ background: 'rgba(2, 132, 199, 0.08)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(2, 132, 199, 0.35)', cursor: 'help' }}
+          >
+            <div style={{ fontSize: '0.7rem', color: '#38bdf8', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px' }}>
               <span>🤖 SKOR BOT</span>
+              <Info size={12} color="#7dd3fc" />
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginTop: '2px' }}>
               <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#38bdf8' }}>
@@ -413,13 +428,6 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
               </span>
               <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>/ 100</span>
             </div>
-            {account.score_breakdown && (
-              <div style={{ fontSize: '0.62rem', color: '#7dd3fc', marginTop: '2px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                <span>Copy: {account.score_breakdown.copypasta ?? 0}</span>
-                <span>• Vid: {account.score_breakdown.cross_video ?? 0}</span>
-                <span>• Spd: {account.score_breakdown.temporal ?? 0}</span>
-              </div>
-            )}
           </div>
         </div>
 

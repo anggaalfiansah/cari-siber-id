@@ -316,10 +316,61 @@ def _robust_json_repair_and_load(raw_text: str) -> dict:
     return json.loads(cleaned)
 
 
+def _strip_thinking_and_cot(text: str) -> str:
+    """
+    Membersihkan blok <think>...</think> maupun kebocoran monolog internal (Chain-of-Thought)
+    berbahasa Inggris dari model reasoning (seperti Qwen3 / DeepSeek) agar hanya menyisakan
+    naskah laporan Bahasa Indonesia yang bersih.
+    """
+    if not text:
+        return ""
+    cleaned = str(text).strip()
+    # 1. Hapus blok <think>...</think> tertutup
+    cleaned = re.sub(r"<think>.*?</think>", "", cleaned, flags=re.DOTALL | re.IGNORECASE).strip()
+    # 2. Jika ada tag <think> tidak tertutup di awal
+    if "<think>" in cleaned.lower():
+        idx = cleaned.lower().find("<think>")
+        after = cleaned[idx + 7:]
+        # Cari awal heading laporan Bahasa Indonesia jika ada
+        m_hdr = re.search(r"(?m)^(?:#+\s*|\*\*)?(?:LAPORAN PERKIRAAN INTELIJEN|1\.\s*SITUASI RUANG SIBER)", after)
+        if m_hdr:
+            cleaned = after[m_hdr.start():].strip()
+        else:
+            cleaned = cleaned[:idx].strip()
+
+    # 3. Deteksi apakah teks diawali monolog perencanaan bahasa Inggris ("We need...", "The user...", "Let's outline...")
+    cot_english_markers = (
+        "we need answer",
+        "we need to",
+        "need produce",
+        "user asks",
+        "the user wants",
+        "let's outline",
+        "thinking process:",
+        "need avoid unsupported",
+    )
+    low_head = cleaned[:600].lower()
+    if any(m in low_head for m in cot_english_markers):
+        # Cek apakah setelah monolog ada laporan utuh berbahasa Indonesia (bukan sekadar bullet outline Inggris)
+        m_id = re.search(
+            r"(?m)^(?:#{1,3}\s*|\*\*)?(?:LAPORAN PERKIRAAN INTELIJEN SIBER|##\s*1\.\s*SITUASI RUANG SIBER)",
+            cleaned,
+        )
+        if m_id:
+            candidate = cleaned[m_id.start():].strip()
+            # Pastikan kandidat bukan outline bahasa Inggris ("Overview: total...", "Limitations: dataset...")
+            cand_low = candidate[:800].lower()
+            if not any(eng in cand_low for eng in ("overview: total", "limitations: dataset", "need mention", "could use", "we need")):
+                return candidate
+        return ""
+
+    return cleaned
+
+
 # ==============================================================================
 # 1. TEXT GENERATION CALLS
 # ==============================================================================
-def generate_text(prompt: str, provider: str, model: str, api_key: str = None, min_length: int = 1, max_retries: int = 3, timeout: float = 45.0) -> str:
+def generate_text(prompt: str, provider: str, model: str, api_key: str = None, min_length: int = 1, max_retries: int = 3, timeout: float = 90.0) -> str:
     """
     Menghasilkan teks narasi bebas berdasarkan prompt menggunakan provider AI terpilih.
     Jika max_retries=1, hanya 1 kali percobaan (cocok untuk uji koneksi cepat).
@@ -350,7 +401,7 @@ def generate_text(prompt: str, provider: str, model: str, api_key: str = None, m
                         contents=prompt,
                     )
                     _record_usage(getattr(response, "usage_metadata", None), prompt, response.text or "")
-                    return response.text
+                    return _strip_thinking_and_cot(response.text or "")
                 except Exception as e:
                     err_msg = str(e)
                     if max_retries == 1:
@@ -359,7 +410,7 @@ def generate_text(prompt: str, provider: str, model: str, api_key: str = None, m
                     is_overload = "503" in err_msg or "UNAVAILABLE" in err_msg or "404" in err_msg
                     is_rate_limit = "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg or "quota" in err_msg.lower()
 
-                    if is_overload and cand_idx < len(target_candidates) - 1 and attempt >= 1:
+                    if is_overload and cand_idx < len(target_candidates) - 1:
                         print(f"    [GEMINI 503/404] Model '{cand_model}' sedang sibuk/tidak tersedia. Beralih ke model fallback '{target_candidates[cand_idx + 1]}'...")
                         break
 
@@ -409,10 +460,23 @@ def generate_text(prompt: str, provider: str, model: str, api_key: str = None, m
             try:
                 _t0 = time.time()
                 print(f"[INFO] Menghubungi {provider_label} (model: {model}) [Percobaan {attempt+1}/{num_retries}]...", flush=True)
+                sys_msg = (
+                    "/no_think\n"
+                    "Anda adalah sistem analisis intelijen siber dan ruang kognitif. "
+                    "Tulis LANGSUNG naskah akhir dalam Bahasa Indonesia sesuai instruksi tanpa proses berpikir/reasoning, "
+                    "tanpa tag <think>, dan tanpa kerangka kasar bahasa Inggris."
+                )
                 kwargs = {
                     "model": model,
-                    "messages": [{"role": "user", "content": prompt}],
+                    "messages": [
+                        {"role": "system", "content": sys_msg},
+                        {"role": "user", "content": prompt + "\n\n/no_think"},
+                    ],
                     "max_tokens": 8192,
+                    "extra_body": {
+                        "enable_thinking": False,
+                        "chat_template_kwargs": {"enable_thinking": False},
+                    },
                 }
                 if not is_edgeone and not is_custom:
                     kwargs["extra_headers"] = {
@@ -425,14 +489,35 @@ def generate_text(prompt: str, provider: str, model: str, api_key: str = None, m
                     # Coba mode streaming terlebih dahulu agar koneksi TCP tidak idle dan tidak terputus timeout proxy
                     kwargs_stream = kwargs.copy()
                     kwargs_stream["stream"] = True
-                    stream_resp = client.chat.completions.create(**kwargs_stream)
+                    try:
+                        stream_resp = client.chat.completions.create(**kwargs_stream)
+                    except Exception as eb_err:
+                        if "extra_body" in kwargs_stream and ("400" in str(eb_err) or "enable_thinking" in str(eb_err).lower() or "chat_template" in str(eb_err).lower()):
+                            kwargs.pop("extra_body", None)
+                            kwargs_stream.pop("extra_body", None)
+                            stream_resp = client.chat.completions.create(**kwargs_stream)
+                        else:
+                            raise eb_err
                     collected = []
+                    reasoning_collected = []
                     for chunk in stream_resp:
-                        if chunk.choices and chunk.choices[0].delta and chunk.choices[0].delta.content:
-                            collected.append(chunk.choices[0].delta.content)
+                        if chunk.choices and chunk.choices[0].delta:
+                            delta = chunk.choices[0].delta
+                            if getattr(delta, "content", None):
+                                collected.append(delta.content)
+                            else:
+                                r_chunk = getattr(delta, "reasoning_content", None) or getattr(delta, "reasoning", None)
+                                if r_chunk:
+                                    reasoning_collected.append(r_chunk)
                         if hasattr(chunk, "usage") and chunk.usage:
                             response_usage = chunk.usage
-                    content = "".join(collected)
+                    raw_content = "".join(collected).strip()
+                    content = _strip_thinking_and_cot(raw_content)
+                    if not content and reasoning_collected:
+                        # Hanya ambil dari reasoning_collected jika di dalamnya terdapat laporan Bahasa Indonesia utuh
+                        content = _strip_thinking_and_cot("".join(reasoning_collected).strip())
+                    if not content:
+                        raise ValueError("Stream SSE selesai namun hanya berisi monolog internal atau kosong.")
                     dur = time.time() - _t0
                     u_dict = {
                         "prompt_tokens": getattr(response_usage, "prompt_tokens", len(prompt) // 4) if response_usage else len(prompt) // 4,
@@ -444,9 +529,18 @@ def generate_text(prompt: str, provider: str, model: str, api_key: str = None, m
                     # Fallback non-streaming jika provider tidak mendukung server-sent events (SSE)
                     try:
                         print(f"      [AI Client] Streaming beralih ke standar non-streaming ({str(stream_err)[:80]})...", flush=True)
+                        kwargs.pop("extra_body", None)
                         response = client.chat.completions.create(**kwargs)
                         dur = time.time() - _t0
-                        content = response.choices[0].message.content
+                        raw_content = response.choices[0].message.content or ""
+                        content = _strip_thinking_and_cot(raw_content)
+                        if not content:
+                            r_fallback = (
+                                getattr(response.choices[0].message, "reasoning_content", None)
+                                or getattr(response.choices[0].message, "reasoning", None)
+                                or ""
+                            )
+                            content = _strip_thinking_and_cot(r_fallback)
                         response_usage = getattr(response, "usage", None)
                         u_dict = {"prompt_tokens": getattr(response_usage, "prompt_tokens", None), "completion_tokens": getattr(response_usage, "completion_tokens", None), "total_tokens": getattr(response_usage, "total_tokens", None)} if response_usage else {}
                         _log_api_traffic(provider, model, "text", f"{base_url}/chat/completions", "200 OK", dur, kwargs, {"content": content, "usage": u_dict})
@@ -460,10 +554,7 @@ def generate_text(prompt: str, provider: str, model: str, api_key: str = None, m
                     return content
                 if max_retries == 1:
                     return content or ""
-                if min_length > 1:
-                    print(f"    [{provider_label.upper()} WARNING] Respons terlalu pendek ({len(content or '')} karakter, min {min_length}). Mencoba ulang (Percobaan {attempt+1}/{num_retries})...", flush=True)
-                else:
-                    return content or ""
+                print(f"    [{provider_label.upper()} WARNING] Respons terlalu pendek ({len(content or '')} karakter, min {min_length}). Mencoba ulang (Percobaan {attempt+1}/{num_retries})...", flush=True)
                 time.sleep(3)
             except Exception as e:
                 err_msg = str(e)
@@ -482,7 +573,7 @@ def generate_text(prompt: str, provider: str, model: str, api_key: str = None, m
         if not is_edgeone and AppConfig.EDGEONE_API_KEY:
             print("[INFO] OpenRouter gagal merespons. Beralih otomatis ke fallback EdgeOne...")
             return generate_text(prompt, "edgeone", "@makers/deepseek-v4-flash", AppConfig.EDGEONE_API_KEY)
-        if AppConfig.GEMINI_API_KEY :
+        if AppConfig.GEMINI_API_KEY and not AppConfig.GEMINI_API_KEY.startswith("AQ."):
             print(f"[INFO] {provider_label} gagal merespons. Beralih otomatis ke fallback Gemini...")
             return generate_text(prompt, "gemini", "gemini-2.5-flash", AppConfig.GEMINI_API_KEY)
         return ""
@@ -505,9 +596,10 @@ def generate_text(prompt: str, provider: str, model: str, api_key: str = None, m
 # ==============================================================================
 # 2. STRUCTURED JSON GENERATION CALLS
 # ==============================================================================
-def generate_structured_json(prompt: str, response_schema, provider: str, model: str, api_key: str = None) -> dict:
+def generate_structured_json(prompt: str, response_schema, provider: str, model: str, api_key: str = None, max_retries: int = 3) -> dict:
     """
     Menghasilkan output JSON terstruktur sesuai skema Pydantic menggunakan provider AI terpilih.
+    Menggunakan streaming SSE terlebih dahulu untuk mencegah Request Timed Out (90s) pada gateway/model reasoning.
     """
     provider = provider.lower().strip()
 
@@ -527,8 +619,8 @@ def generate_structured_json(prompt: str, response_schema, provider: str, model:
         candidates = _get_gemini_candidate_models(model)
 
         for cand_idx, cand_model in enumerate(candidates):
-            max_retries = 3 if cand_idx == 0 else 2
-            for attempt in range(max_retries):
+            curr_retries = max_retries if cand_idx == 0 else 2
+            for attempt in range(curr_retries):
                 try:
                     response = client.models.generate_content(
                         model=cand_model,
@@ -546,20 +638,20 @@ def generate_structured_json(prompt: str, response_schema, provider: str, model:
                     is_overload = "503" in err_msg or "UNAVAILABLE" in err_msg or "404" in err_msg
                     is_rate_limit = "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg or "quota" in err_msg.lower()
 
-                    if is_overload and cand_idx < len(candidates) - 1 and attempt >= 1:
+                    if is_overload and cand_idx < len(candidates) - 1:
                         print(f"    [GEMINI 503/404] Model '{cand_model}' sedang mengalami lonjakan trafik. Beralih otomatis ke '{candidates[cand_idx + 1]}'...")
                         break
 
-                    if attempt < max_retries - 1:
+                    if attempt < curr_retries - 1:
                         if is_rate_limit:
                             wait_time = 15 + (attempt * 5)
-                            print(f"    [GEMINI 429] Batas kuota terlampaui. Menunggu {wait_time} detik sebelum mencoba kembali (Percobaan {attempt+1}/{max_retries})...")
+                            print(f"    [GEMINI 429] Batas kuota terlampaui. Menunggu {wait_time} detik sebelum mencoba kembali (Percobaan {attempt+1}/{curr_retries})...")
                         else:
                             wait_time = 4 + (attempt * 2)
-                            print(f"    [GEMINI ERROR] Terjadi kesalahan ({err_msg[:140]}). Menunggu {wait_time} detik (Percobaan {attempt+1}/{max_retries})...")
+                            print(f"    [GEMINI ERROR] Terjadi kesalahan ({err_msg[:140]}). Menunggu {wait_time} detik (Percobaan {attempt+1}/{curr_retries})...")
                         time.sleep(wait_time)
                     else:
-                        print(f"[GEMINI ERROR] Gagal memanggil model '{cand_model}' setelah {max_retries} percobaan: {err_msg[:180]}")
+                        print(f"[GEMINI ERROR] Gagal memanggil model '{cand_model}' setelah {curr_retries} percobaan: {err_msg[:180]}")
         return None
 
     elif provider in ("openrouter", "edgeone", "custom"):
@@ -592,14 +684,14 @@ def generate_structured_json(prompt: str, response_schema, provider: str, model:
         client = OpenAI(
             api_key=api_key,
             base_url=base_url,
-            timeout=90.0,
+            timeout=120.0,
             max_retries=0,
         )
 
-        max_retries = 3
         for attempt in range(max_retries):
             try:
                 system_instruction = (
+                    "/no_think\n"
                     "Anda adalah asisten JSON terstruktur tingkat tinggi. Berikan HANYA format JSON murni sesuai skema. "
                     "DILARANG KERAS menyertakan tag <think>...</think>, penalaran CoT tersembunyi, teks pembuka, maupun kata penutup. "
                     "DILARANG menggunakan trailing comma (koma sebelum '}' atau ']'). "
@@ -614,48 +706,97 @@ def generate_structured_json(prompt: str, response_schema, provider: str, model:
                             "role": "system",
                             "content": system_instruction,
                         },
-                        {"role": "user", "content": prompt},
+                        {"role": "user", "content": prompt + "\n\n/no_think"},
                     ],
                     "max_tokens": 8192,
                     "temperature": 0.1,
+                    "extra_body": {
+                        "enable_thinking": False,
+                        "chat_template_kwargs": {"enable_thinking": False},
+                    },
                 }
                 if not is_edgeone and not is_custom:
                     kwargs["extra_headers"] = {
-                        "HTTP-Referer": "https://github.com/pengikut-raja-capybara/cari-sentimen-id",
-                        "X-Title": "CaRI Sentimen ID",
+                        "HTTP-Referer": "https://github.com/pengikut-raja-capybara/cari-siber-id",
+                        "X-Title": "CaRI Siber ID",
                     }
                 if attempt == 0 and "free" not in model.lower():
                     kwargs["response_format"] = {"type": "json_object"}
 
                 _t0 = time.time()
                 print(f"      [AI Client] Mengirim request JSON ke {provider_label} ({model}) [Percobaan {attempt+1}/{max_retries}]...", flush=True)
+                raw_text = ""
+                response_usage = None
+
+                # Prioritaskan mode streaming SSE agar koneksi ke gateway/model reasoning tidak terputus akibat idle timeout
                 try:
-                    response = client.chat.completions.create(**kwargs)
-                except Exception as req_err:
-                    if "response_format" in kwargs and ("response_format" in str(req_err).lower() or "400" in str(req_err)):
-                        kwargs.pop("response_format", None)
+                    kwargs_stream = kwargs.copy()
+                    kwargs_stream["stream"] = True
+                    try:
+                        stream_resp = client.chat.completions.create(**kwargs_stream)
+                    except Exception as eb_err:
+                        if "extra_body" in kwargs_stream and ("400" in str(eb_err) or "enable_thinking" in str(eb_err).lower() or "chat_template" in str(eb_err).lower()):
+                            kwargs.pop("extra_body", None)
+                            kwargs_stream.pop("extra_body", None)
+                            stream_resp = client.chat.completions.create(**kwargs_stream)
+                        else:
+                            raise eb_err
+                    collected = []
+                    reasoning_collected = []
+                    for chunk in stream_resp:
+                        if chunk.choices and chunk.choices[0].delta:
+                            delta = chunk.choices[0].delta
+                            if getattr(delta, "content", None):
+                                collected.append(delta.content)
+                            else:
+                                r_chunk = getattr(delta, "reasoning_content", None) or getattr(delta, "reasoning", None)
+                                if r_chunk:
+                                    reasoning_collected.append(r_chunk)
+                        if hasattr(chunk, "usage") and chunk.usage:
+                            response_usage = chunk.usage
+                    raw_text = "".join(collected).strip()
+                    if (not raw_text or ("{" not in raw_text and "[" not in raw_text)) and reasoning_collected:
+                        r_text = "".join(reasoning_collected).strip()
+                        if "{" in r_text or "[" in r_text:
+                            raw_text = r_text
+                    if not raw_text:
+                        raise ValueError("Stream JSON kosong")
+                    dur = time.time() - _t0
+                    u_dict = {
+                        "prompt_tokens": getattr(response_usage, "prompt_tokens", len(prompt) // 4) if response_usage else len(prompt) // 4,
+                        "completion_tokens": getattr(response_usage, "completion_tokens", len(raw_text) // 4) if response_usage else len(raw_text) // 4,
+                        "total_tokens": getattr(response_usage, "total_tokens", (len(prompt) + len(raw_text)) // 4) if response_usage else (len(prompt) + len(raw_text)) // 4,
+                    }
+                    _log_api_traffic(provider, model, "structured_json_stream", f"{base_url}/chat/completions", "200 OK", dur, kwargs, {"raw_text": raw_text, "usage": u_dict})
+                except Exception:
+                    # Fallback ke non-streaming jika endpoint tidak mendukung stream + response_format
+                    try:
                         response = client.chat.completions.create(**kwargs)
-                    else:
-                        dur = time.time() - _t0
-                        _log_api_traffic(provider, model, "structured_json", f"{base_url}/chat/completions", "FAILED", dur, kwargs, error=str(req_err))
-                        raise req_err
+                    except Exception as req_err:
+                        if ("response_format" in kwargs or "extra_body" in kwargs) and ("400" in str(req_err) or "response_format" in str(req_err).lower() or "enable_thinking" in str(req_err).lower()):
+                            kwargs.pop("response_format", None)
+                            kwargs.pop("extra_body", None)
+                            response = client.chat.completions.create(**kwargs)
+                        else:
+                            dur = time.time() - _t0
+                            _log_api_traffic(provider, model, "structured_json", f"{base_url}/chat/completions", "FAILED", dur, kwargs, error=str(req_err))
+                            raise req_err
 
-                dur = time.time() - _t0
-                raw_text = response.choices[0].message.content
-                # Fallback ekstra jika model reasoning menaruh teks di atribut reasoning
-                if not raw_text or not raw_text.strip():
-                    reasoning_candidate = (
-                        getattr(response.choices[0].message, "reasoning_content", None)
-                        or getattr(response.choices[0].message, "reasoning", None)
-                        or getattr(response.choices[0].message, "reasoning_text", None)
-                    )
-                    if reasoning_candidate and isinstance(reasoning_candidate, str) and ("{" in reasoning_candidate or "[" in reasoning_candidate):
-                        raw_text = reasoning_candidate
+                    dur = time.time() - _t0
+                    raw_text = response.choices[0].message.content
+                    if not raw_text or not raw_text.strip():
+                        reasoning_candidate = (
+                            getattr(response.choices[0].message, "reasoning_content", None)
+                            or getattr(response.choices[0].message, "reasoning", None)
+                            or getattr(response.choices[0].message, "reasoning_text", None)
+                        )
+                        if reasoning_candidate and isinstance(reasoning_candidate, str) and ("{" in reasoning_candidate or "[" in reasoning_candidate):
+                            raw_text = reasoning_candidate
+                    response_usage = getattr(response, "usage", None)
+                    u_dict = {"prompt_tokens": getattr(response_usage, "prompt_tokens", None), "completion_tokens": getattr(response_usage, "completion_tokens", None), "total_tokens": getattr(response_usage, "total_tokens", None)} if response_usage else {}
+                    _log_api_traffic(provider, model, "structured_json", f"{base_url}/chat/completions", "200 OK", dur, kwargs, {"raw_text": raw_text, "usage": u_dict})
 
-                u = getattr(response, "usage", None)
-                u_dict = {"prompt_tokens": getattr(u, "prompt_tokens", None), "completion_tokens": getattr(u, "completion_tokens", None), "total_tokens": getattr(u, "total_tokens", None)} if u else {}
-                _log_api_traffic(provider, model, "structured_json", f"{base_url}/chat/completions", "200 OK", dur, kwargs, {"raw_text": raw_text, "usage": u_dict})
-                p_t, c_t, tot_t = _record_usage(getattr(response, "usage", None), prompt, raw_text or "")
+                p_t, c_t, tot_t = _record_usage(response_usage, prompt, raw_text or "")
                 print(f"      [AI Client] Respons diterima dalam {time.time() - _t0:.1f} dtk (Token: {p_t:,} in + {c_t:,} out = {tot_t:,} total | Akumulasi: {TOKEN_USAGE_TRACKER['total_tokens']:,}).", flush=True)
                 return _robust_json_repair_and_load(raw_text)
             except Exception as e:
@@ -678,7 +819,7 @@ def generate_structured_json(prompt: str, response_schema, provider: str, model:
         if not is_edgeone and AppConfig.EDGEONE_API_KEY:
             print("[INFO] OpenRouter gagal merespons JSON. Beralih otomatis ke fallback EdgeOne...")
             return generate_structured_json(prompt, response_schema, "edgeone", "@makers/deepseek-v4-flash", AppConfig.EDGEONE_API_KEY)
-        if AppConfig.GEMINI_API_KEY  and not AppConfig.GEMINI_API_KEY.startswith("["):
+        if AppConfig.GEMINI_API_KEY and not AppConfig.GEMINI_API_KEY.startswith("[") and not AppConfig.GEMINI_API_KEY.startswith("AQ."):
             print(f"[INFO] {provider_label} gagal merespons JSON. Beralih otomatis ke fallback Gemini...")
             return generate_structured_json(prompt, response_schema, "gemini", "gemini-2.5-flash", AppConfig.GEMINI_API_KEY)
         return None

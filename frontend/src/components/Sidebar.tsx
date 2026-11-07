@@ -99,7 +99,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, isBus
 
       {/* Footer Info */}
       <div style={{ padding: '14px 16px', borderTop: '1px solid rgba(51, 65, 85, 0.4)', fontSize: '0.75rem', color: '#475569' }}>
-        <div>PUSSIBERAD Standar Puskodal</div>
+        <div>Prototipe Analisis Intelijen Siber</div>
         <div style={{ marginTop: '2px', color: '#334155' }}>IndoBERT + 4 Hardened Gates + SHA256</div>
       </div>
     </aside>

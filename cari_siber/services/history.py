@@ -185,24 +185,51 @@ class HistoryService:
                 cursor = conn.execute("SELECT * FROM runs ORDER BY created_at DESC")
                 rows = [dict(row) for row in cursor.fetchall()]
                 for r in rows:
-                    if not r.get("sha256_hash") and r.get("run_dir") and os.path.isdir(r["run_dir"]):
-                        manifest_path = os.path.join(r["run_dir"], "json", "forensic_manifest.json")
-                        if os.path.exists(manifest_path):
-                            try:
-                                with open(manifest_path, "r", encoding="utf-8") as mf:
-                                    mdata = json.load(mf)
-                                    r["sha256_hash"] = mdata.get("primary_sha256", "")
-                            except Exception:
-                                pass
-                        else:
-                            manifest = HistoryService.generate_forensic_manifest(r["run_dir"], r.get("id", ""))
-                            r["sha256_hash"] = manifest.get("primary_sha256", "")
-                        if r.get("sha256_hash"):
-                            try:
-                                conn.execute("UPDATE runs SET sha256_hash = ? WHERE id = ?", (r["sha256_hash"], r["id"]))
-                                conn.commit()
-                            except Exception:
-                                pass
+                    r_dir = r.get("run_dir", "")
+                    if r_dir and os.path.isdir(r_dir):
+                        # Normalisasi retroaktif judul multi-video lama ("Multi-Video Corpus (...): <judul 1 video>")
+                        if str(r.get("video_title", "")).startswith("Multi-Video Corpus ("):
+                            all_meta_csv = os.path.join(r_dir, "scrap", "youtube_videos_meta_all.csv")
+                            if os.path.exists(all_meta_csv):
+                                try:
+                                    import pandas as pd
+                                    from cari_siber.engine.pipelines.youtube_comments.pipeline_eda import infer_corpus_keyword_and_channels
+                                    m_df = pd.read_csv(all_meta_csv)
+                                    if len(m_df) > 1:
+                                        saved_kw = ""
+                                        r_ctx = os.path.join(r_dir, "json", "run_context.json")
+                                        if os.path.exists(r_ctx):
+                                            with open(r_ctx, "r", encoding="utf-8") as rcf:
+                                                saved_kw = str(json.load(rcf).get("search_keyword", "")).strip()
+                                        ident = infer_corpus_keyword_and_channels(m_df.to_dict(orient="records"), search_keyword=saved_kw)
+                                        r["video_title"] = ident.get("video_title", r["video_title"])
+                                        r["channel_name"] = ident.get("channel_name", r.get("channel_name", ""))
+                                        conn.execute(
+                                            "UPDATE runs SET video_title = ?, channel_name = ? WHERE id = ?",
+                                            (r["video_title"], r["channel_name"], r["id"]),
+                                        )
+                                        conn.commit()
+                                except Exception:
+                                    pass
+
+                        if not r.get("sha256_hash"):
+                            manifest_path = os.path.join(r_dir, "json", "forensic_manifest.json")
+                            if os.path.exists(manifest_path):
+                                try:
+                                    with open(manifest_path, "r", encoding="utf-8") as mf:
+                                        mdata = json.load(mf)
+                                        r["sha256_hash"] = mdata.get("primary_sha256", "")
+                                except Exception:
+                                    pass
+                            else:
+                                manifest = HistoryService.generate_forensic_manifest(r_dir, r.get("id", ""))
+                                r["sha256_hash"] = manifest.get("primary_sha256", "")
+                            if r.get("sha256_hash"):
+                                try:
+                                    conn.execute("UPDATE runs SET sha256_hash = ? WHERE id = ?", (r["sha256_hash"], r["id"]))
+                                    conn.commit()
+                                except Exception:
+                                    pass
                 return rows
         except Exception as e:
             print(f"[HISTORY ERROR] Gagal membaca riwayat: {e}")
