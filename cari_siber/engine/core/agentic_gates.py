@@ -187,8 +187,13 @@ def _get_active_ai_credentials(config_override: dict = None):
 def _can_call_llm(provider: str, api_key: str) -> bool:
     if provider == "gemini":
         return bool(api_key and not api_key.startswith("["))
-    if provider in ("openrouter", "edgeone", "custom"):
+    if provider in ("openrouter", "edgeone"):
         return bool(api_key and not api_key.startswith("["))
+    if provider == "custom":
+        if api_key and not api_key.startswith("["):
+            return True
+        base_u = str(getattr(AppConfig, "CUSTOM_BASE_URL", "")).lower()
+        return any(h in base_u for h in ("127.0.0.1", "localhost", "0.0.0.0", "192.168.", "10.", "172."))
     if provider == "ollama":
         return True
     return False
@@ -1245,9 +1250,9 @@ class TopicRelabelItem(BaseModel):
         default="",
         description="Isi dengan 'Positif', 'Negatif', atau 'Netral' jika perlu dikoreksi.",
     )
-    corrected_business_category: str = Field(
+    corrected_threat_domain: str = Field(
         default="",
-        description="Kategori bisnis pengganti dalam Bahasa Indonesia (maksimal 4-5 kata) jika is_accurate=False.",
+        description="Domain ancaman / kategori narasi pengganti dalam Bahasa Indonesia (maksimal 4-5 kata) jika is_accurate=False.",
     )
     corrected_sub_issue: str = Field(
         default="",
@@ -1317,7 +1322,7 @@ def verify_and_heal_topic_labels(
 
     for idx, row in valid_rows.iterrows():
         t_id = int(row["topic_id"])
-        b_cat = str(row.get("business_category", "")).strip()
+        b_cat = str(row.get("threat_domain") or row.get("business_category", "")).strip()
         s_iss = str(row.get("sub_issue", "")).strip()
         m_grp = str(row.get("merge_group", "")).strip() if has_merge_group else ""
         a_sent = str(row.get("ai_sentiment", "")).strip() if has_ai_sentiment else ""
@@ -1352,7 +1357,7 @@ def verify_and_heal_topic_labels(
             "topic_id": t_id,
             "keywords": str(row.get("top_keywords", ""))[:180],
             "samples": str(row.get(sample_col, ""))[:800],
-            "business_category": b_cat,
+            "threat_domain": b_cat,
             "sub_issue": s_iss,
             "merge_group": m_grp,
             "ai_sentiment": a_sent,
@@ -1368,7 +1373,7 @@ def verify_and_heal_topic_labels(
                 f"- Topic ID: {item['topic_id']} [FLAGGED - PERLU DIVERIFIKASI ULANG]\n"
                 f"  Keywords: {item['keywords']}\n"
                 f"  10 Sampel: {item['samples']}\n"
-                f"  Label Saat Ini -> Kategori: '{item['business_category']}' | Sub-Isu: '{item['sub_issue']}'"
+                f"  Label Saat Ini -> Domain Ancaman: '{item['threat_domain']}' | Sub-Isu: '{item['sub_issue']}'"
             )
             if has_ai_sentiment:
                 batch_text += f" | Sentimen: '{item['ai_sentiment']}'"
@@ -1377,13 +1382,13 @@ def verify_and_heal_topic_labels(
             batch_text += "\n\n"
 
         prompt = (
-            f"Anda adalah Quality Verifier untuk pelabelan topik ulasan/komentar '{domain_name}' ({domain_desc}).\n"
-            "Periksa apakah label `business_category`, `sub_issue`, dan `ai_sentiment` pada setiap Topic ID di bawah ini sudah:\n"
-            "1. Akurat mencerminkan Kata Kunci & 10 Sampel nyata (waspadai sarkasme/sindiran seperti 'wapres ilegal', 'pembodohan', 'samsul' yang seharusnya Negatif/Kritik, bukan Positif).\n"
-            "2. Menggunakan Bahasa Indonesia baku dan ringkas (`business_category` maks 4-5 kata, `sub_issue` maks 10 kata).\n"
+            f"Anda adalah Perwira Quality Verifier Intelijen Kognitif PUSSIBERAD TNI AD untuk pelabelan topik komentar '{domain_name}' ({domain_desc}).\n"
+            "Periksa apakah label `threat_domain`, `sub_issue`, dan `ai_sentiment` pada setiap Topic ID di bawah ini sudah:\n"
+            "1. Akurat mencerminkan Kata Kunci & 10 Sampel nyata (waspadai sarkasme/sindiran/delegitimasi seperti 'wapres ilegal', 'pembodohan', 'samsul' yang seharusnya Negatif/Kritik, bukan Positif).\n"
+            "2. Menggunakan Bahasa Indonesia baku dan taktis (`threat_domain` maks 4-5 kata, `sub_issue` maks 10 kata).\n"
             "3. Tidak kosong dan tidak menggunakan istilah bahasa Inggris.\n\n"
             f"Daftar Topik untuk Diverifikasi:\n{batch_text}\n"
-            "Jika kurang tepat atau berstatus [FLAGGED], set `is_accurate = false` dan berikan `corrected_sentiment`, `corrected_business_category`, dan `corrected_sub_issue` yang akurat!"
+            "Jika kurang tepat atau berstatus [FLAGGED], set `is_accurate = false` dan berikan `corrected_sentiment`, `corrected_threat_domain`, dan `corrected_sub_issue` yang akurat!"
         )
 
         res = generate_structured_json(prompt, LabelVerificationBatchSchema, provider, model, api_key)
@@ -1402,13 +1407,15 @@ def verify_and_heal_topic_labels(
                     continue
                 is_acc = bool(v.get("is_accurate", True))
                 if not is_acc or t_id in deterministic_flagged_ids:
-                    new_cat = str(v.get("corrected_business_category", "")).strip()
+                    new_cat = str(v.get("corrected_threat_domain") or v.get("corrected_business_category", "")).strip()
                     new_sub = str(v.get("corrected_sub_issue", "")).strip()
                     new_grp = str(v.get("corrected_merge_group", "")).strip()
                     new_sent = str(v.get("corrected_sentiment", "")).strip().capitalize()
 
                     if new_cat:
-                        df.at[df_idx, "business_category"] = new_cat
+                        df.at[df_idx, "threat_domain"] = new_cat
+                        if "business_category" in df.columns:
+                            df.at[df_idx, "business_category"] = new_cat
                     if new_sub:
                         df.at[df_idx, "sub_issue"] = new_sub
                     if has_merge_group and new_grp and "merge_group" in df.columns:
@@ -1461,7 +1468,7 @@ def reroute_low_confidence_records(
             continue
         topic_label_lookup[tid] = {
             "topic_name": str(row.get("topic_name", f"Topic {tid}")),
-            "business_category": str(row.get("business_category", "")),
+            "threat_domain": str(row.get("threat_domain") or row.get("business_category", "")),
             "sub_issue": str(row.get("sub_issue", "")),
             "keywords": str(row.get("top_keywords", "")),
         }
@@ -1545,7 +1552,7 @@ def reroute_low_confidence_records(
                 for cid in sorted(cand_ids):
                     info = topic_label_lookup[cid]
                     cand_desc.append(
-                        f"Topic {cid} ({info['business_category']} - {info['sub_issue']} | kw: {info['keywords'][:60]})"
+                        f"Topic {cid} ({info['threat_domain']} - {info['sub_issue']} | kw: {info['keywords'][:60]})"
                     )
 
                 if not cand_desc:
@@ -1799,7 +1806,7 @@ def run_report_gate(
             passed = False
             discrepancies.append({
                 "claim_in_narrative": f"Penggunaan topic_name mentah: {', '.join(det_check['raw_topic_name_leaks'])}",
-                "ground_truth_in_json": "Wajib gunakan deskripsi dari field 'sub_issue' atau 'business_category', bukan 'topic_name'.",
+                "ground_truth_in_json": "Wajib gunakan deskripsi dari field 'sub_issue' atau 'threat_domain', bukan 'topic_name'.",
             })
 
         need_llm_report_audit = bool(det_check["raw_topic_name_leaks"]) or len(det_check["unmatched_number_tokens"]) >= 3
@@ -1864,7 +1871,7 @@ def run_report_gate(
             "INSTRUKSI REVISI:\n"
             "1. Perbaiki seluruh angka dan klaim yang keliru di atas agar 100% akurat sesuai SUMBER DATA JSON.\n"
             "2. Pertahankan struktur heading Markdown (`## 1.`, `## 2.`, dst.) dan gaya bahasa profesional.\n"
-            "3. Jangan pernah menampilkan kode `topic_name` mentah; selalu gunakan `sub_issue` atau `business_category`.\n"
+            "3. Jangan pernah menampilkan kode `topic_name` mentah; selalu gunakan `sub_issue` atau `threat_domain`.\n"
             "4. Kembalikan HANYA teks narasi Markdown yang sudah diperbaiki secara utuh."
         )
         revised_body = generate_text(revision_prompt, provider, narration_model, api_key)

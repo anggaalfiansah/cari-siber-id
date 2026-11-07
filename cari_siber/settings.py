@@ -16,7 +16,7 @@ DEFAULT_SETTINGS: Dict[str, Any] = {
     "ai_provider": "gemini",
     "ai_model": "gemini-2.5-flash",
     "youtube_api_key": "",
-    "custom_base_url": "https://api.tokenai.id/v1",
+    "custom_base_url": "http://127.0.0.1:11434/v1",
     "agentic_gates_enabled": True,
     "default_comment_limit": 1000,
     "default_sort_by": "top",
@@ -70,7 +70,7 @@ class AppSettings:
         settings["edgeone_api_key"] = AppSettings.get_secret("EDGEONE_API_KEY") or os.environ.get("EDGEONE_API_KEY", "") or settings.get("edgeone_api_key", "")
         settings["custom_api_key"] = AppSettings.get_secret("CUSTOM_API_KEY") or os.environ.get("CUSTOM_API_KEY", "") or settings.get("custom_api_key", "")
         settings["youtube_api_key"] = AppSettings.get_secret("YOUTUBE_API_KEY") or os.environ.get("YOUTUBE_API_KEY", "") or settings.get("youtube_api_key", "")
-        settings["custom_base_url"] = settings.get("custom_base_url", "https://api.tokenai.id/v1")
+        settings["custom_base_url"] = settings.get("custom_base_url", "http://127.0.0.1:11434/v1")
 
         # Multi-Account AI Profiles Management
         accounts = settings.get("ai_accounts")
@@ -78,7 +78,7 @@ class AppSettings:
             active_prov = settings.get("ai_provider", "gemini")
             active_model = settings.get("ai_model", "gemini-2.5-flash")
             current_key = settings.get(f"{active_prov}_api_key") or settings.get("custom_api_key") or ""
-            current_base = settings.get("custom_base_url") or "https://api.tokenai.id/v1"
+            current_base = settings.get("custom_base_url") or "http://127.0.0.1:11434/v1"
 
             default_acc = {
                 "id": "acc_default_1",

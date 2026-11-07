@@ -38,10 +38,12 @@ def run_engagement_analysis(config_override=None):
 
     analysis_data = []
 
-    df["business_category"] = df.get("business_category", pd.Series(dtype=object)).fillna("Lainnya")
+    if "threat_domain" not in df.columns and "business_category" in df.columns:
+        df["threat_domain"] = df["business_category"]
+    df["threat_domain"] = df.get("threat_domain", pd.Series(dtype=object)).fillna("Lainnya")
     df["sub_issue"] = df.get("sub_issue", pd.Series(dtype=object)).fillna("Umum")
     df["ai_sentiment"] = df.get("ai_sentiment", pd.Series(dtype=object)).fillna("Netral")
-    grouped = df.groupby(["topic_id", "business_category", "sub_issue", "ai_sentiment"], dropna=False)
+    grouped = df.groupby(["topic_id", "threat_domain", "sub_issue", "ai_sentiment"], dropna=False)
 
     for (t_id, category, sub_issue, sentiment), group in grouped:
         total_comments = len(group)
@@ -68,7 +70,7 @@ def run_engagement_analysis(config_override=None):
         analysis_data.append(
             {
                 "topic_id": t_id,
-                "business_category": category,
+                "threat_domain": category,
                 "sub_issue": sub_issue,
                 "ai_sentiment": sentiment,
                 "total_comments": total_comments,
@@ -93,7 +95,7 @@ def run_engagement_analysis(config_override=None):
     if not df_analysis.empty:
         print("\n[Preview Top 3 Topik dengan Engagement Tertinggi]:")
         print(
-            df_analysis[["business_category", "sum_reply_count", "total_likes", "engagement_score"]]
+            df_analysis[["threat_domain", "sum_reply_count", "total_likes", "engagement_score"]]
             .head(3)
             .to_string(index=False)
         )

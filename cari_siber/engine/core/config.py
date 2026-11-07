@@ -40,7 +40,7 @@ class AppConfig:
     OPENROUTER_API_KEY = ""
     EDGEONE_API_KEY = ""
     CUSTOM_API_KEY = ""
-    CUSTOM_BASE_URL = "https://api.tokenai.id/v1"
+    CUSTOM_BASE_URL = "http://127.0.0.1:11434/v1"
     
     # 2. Target Config
     TARGET_PLATFORM = "youtube"
@@ -141,7 +141,7 @@ class AppConfig:
             cls.OPENROUTER_API_KEY = settings.get("openrouter_api_key", "").strip()
             cls.EDGEONE_API_KEY = settings.get("edgeone_api_key", "").strip()
             cls.CUSTOM_API_KEY = settings.get("custom_api_key", "").strip()
-            cls.CUSTOM_BASE_URL = settings.get("custom_base_url", "https://api.tokenai.id/v1").strip()
+            cls.CUSTOM_BASE_URL = settings.get("custom_base_url", "http://127.0.0.1:11434/v1").strip()
             cls.YOUTUBE_API_KEY = settings.get("youtube_api_key", "").strip()
             cls.AGENTIC_GATES_ENABLED = bool(settings.get("agentic_gates_enabled", True))
 

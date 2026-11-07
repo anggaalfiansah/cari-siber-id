@@ -9,11 +9,11 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, isBusy }) => {
   const menuItems = [
-    { id: 'new', label: 'Inisialisasi Operasi Pemantauan', icon: PlusCircle },
-    { id: 'progress', label: 'Progres Operasi', icon: Activity, badge: isBusy ? 'Running' : null },
-    { id: 'result', label: 'Pusat Intelijen Kognitif & Situasi Siber', icon: BarChart3 },
-    { id: 'history', label: 'Riwayat Audit', icon: History },
-    { id: 'settings', label: 'Pengaturan API', icon: Settings },
+    { id: 'new', label: '1. Operasi Baru', icon: PlusCircle },
+    { id: 'progress', label: '2. Monitor Pipeline', icon: Activity, badge: isBusy ? 'Running' : null },
+    { id: 'result', label: '3. Peta Situasi (SITREP)', icon: BarChart3 },
+    { id: 'history', label: '4. Arsip Operasi', icon: History },
+    { id: 'settings', label: '5. Konfigurasi Sistem', icon: Settings },
   ];
 
   return (
@@ -99,8 +99,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, isBus
 
       {/* Footer Info */}
       <div style={{ padding: '14px 16px', borderTop: '1px solid rgba(51, 65, 85, 0.4)', fontSize: '0.75rem', color: '#475569' }}>
-        <div>Domain Kognitif v1.0</div>
-        <div style={{ marginTop: '2px', color: '#334155' }}>IndoBERT + 4 Hardened Gates</div>
+        <div>PUSSIBERAD Standar Puskodal</div>
+        <div style={{ marginTop: '2px', color: '#334155' }}>IndoBERT + 4 Hardened Gates + SHA256</div>
       </div>
     </aside>
   );

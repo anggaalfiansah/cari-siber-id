@@ -1,4 +1,8 @@
 import os
+import sys
+import io
+import base64
+import uuid
 from datetime import datetime
 import subprocess
 import json
@@ -8,12 +12,13 @@ from pydantic import BaseModel, Field
 
 from cari_siber.settings import AppSettings
 from cari_siber.engine.core.config import AppConfig
-from cari_siber.paths import get_run_dir
+from cari_siber.paths import get_run_dir, get_runs_dir, get_resources_dir
 from cari_siber.services.history import HistoryService
 from cari_siber.services.results import ResultsService
 from cari_siber.services.pipeline_runner import PipelineRunner
 from cari_siber.engine.core.ai_client import generate_text, generate_structured_json
 from cari_siber.services.intelligence import IntelligenceService
+from cari_siber.engine.reporters.youtube_comments import run_exporter
 
 
 class ThreatCalibrationSchema(BaseModel):
@@ -29,7 +34,6 @@ class ThreatCalibrationSchema(BaseModel):
         default="",
         description="Penilaian singkat perwira analis intelijen siber mengenai alasan kalibrasi konteks ini"
     )
-from cari_siber.engine.reporters.youtube_comments import run_exporter
 
 
 class DesktopApi:
@@ -49,15 +53,24 @@ class DesktopApi:
     def test_ai_connection(self, settings: Dict[str, Any]) -> Dict[str, Any]:
         import time
         provider = str(settings.get("provider") or settings.get("ai_provider") or "gemini").lower().strip()
-        model = str(settings.get("model") or settings.get("ai_model") or "").strip() or ("gemini-2.5-flash" if provider == "gemini" else "deepseek-v4-flash")
-        
+        model = str(settings.get("model") or settings.get("ai_model") or "").strip() or (
+            "gemini-2.5-flash" if provider == "gemini" else "qwen2.5:7b"
+        )
+
         # Ambil api_key sesuai provider / objek profil
         api_key = str(settings.get("api_key") or settings.get(f"{provider}_api_key") or "").strip()
         if not api_key:
-            api_key = str(settings.get("custom_api_key") or settings.get("gemini_api_key") or settings.get("openrouter_api_key") or "").strip()
+            api_key = str(
+                settings.get("custom_api_key")
+                or settings.get("gemini_api_key")
+                or settings.get("openrouter_api_key")
+                or ""
+            ).strip()
 
         if provider == "custom":
-            custom_base = str(settings.get("base_url") or settings.get("custom_base_url") or "https://api.tokenai.id/v1").strip()
+            custom_base = str(
+                settings.get("base_url") or settings.get("custom_base_url") or "http://127.0.0.1:11434/v1"
+            ).strip()
             AppConfig.CUSTOM_BASE_URL = custom_base
             AppConfig.CUSTOM_API_KEY = api_key
         elif provider == "openrouter":
@@ -68,7 +81,7 @@ class DesktopApi:
         t0 = time.time()
         try:
             resp = generate_text(
-                prompt="Tes koneksi CaRI-Siber ID. Balas satu kata: 'OK'.",
+                prompt="Tes koneksi CaRI-Siber ID. Balas satu kata: 'SIAP'.",
                 provider=provider,
                 model=model,
                 api_key=api_key,
@@ -78,7 +91,7 @@ class DesktopApi:
             )
             lat = round(time.time() - t0, 2)
             if resp:
-                perf_note = "⚡ Sangat Cepat" if lat < 4.0 else ("⚠️ Cukup Lambat" if lat > 15.0 else "✓ Normal")
+                perf_note = "Sangat Cepat" if lat < 4.0 else ("Cukup Lambat" if lat > 15.0 else "Normal")
                 return {
                     "success": True,
                     "latency_sec": lat,
@@ -104,7 +117,7 @@ class DesktopApi:
         skip_scrape = bool(payload.get("skip_scrape", False))
 
         if not video_url and not source_run_id:
-            return {"success": False, "error": "URL Video YouTube wajib diisi atau pilih data scraping sebelumnya."}
+            return {"success": False, "error": "URL Video YouTube wajib diisi atau pilih korpus bukti lokal/simulasi."}
 
         try:
             run_id = self.runner.start_youtube_analysis(
@@ -122,16 +135,53 @@ class DesktopApi:
 
     def list_reusable_corpora(self) -> list:
         """
-        Mendeteksi run-run yang memiliki data scraping komentar siap pakai
-        sehingga pengguna dapat menggunakan kembali korpus komentar tanpa perlu re-scraping.
+        Mendeteksi korpus simulasi militer bawaan (resources/) dan run-run yang memiliki
+        data scraping komentar siap pakai sehingga pengguna dapat melakukan operasi analisis
+        secara full offline / air-gapped tanpa perlu scraping ulang.
         """
         results = []
         try:
-            from cari_siber.paths import get_runs_dir
+            # 1. Muat Dataset Simulasi Militer bawaan (Pre-loaded Offline Demo Corpora)
+            res_dir = get_resources_dir()
+            demo_specs = [
+                (
+                    "sample_corpus_tni.csv",
+                    "[SIMULASI MILITER] Operasi Pengamanan Perbatasan & Bakti Teritorial TNI AD (3 Video Multi-CIB)",
+                ),
+                (
+                    "sample_corpus_siber_ot.csv",
+                    "[SIMULASI SIBER IT/OT] Pertahanan Siber PUSSIBERAD & Mitigasi Hoaks Infrastruktur Komando (2 Video)",
+                ),
+            ]
+            for fname, label_title in demo_specs:
+                fpath = os.path.join(res_dir, fname)
+                if os.path.exists(fpath):
+                    try:
+                        df_demo = pd.read_csv(fpath)
+                        v_cnt = int(df_demo["video_id"].nunique()) if "video_id" in df_demo.columns else 1
+                        c_cnt = len(df_demo)
+                        s_bytes = os.path.getsize(fpath)
+                        sha256_val = HistoryService.compute_sha256(fpath)
+                        results.append({
+                            "run_id": f"demo:{fname}",
+                            "created_at": "PRELOADED-SIMULASI",
+                            "comment_count": c_cnt,
+                            "video_count": v_cnt,
+                            "title": label_title,
+                            "source_file": fname,
+                            "size_mb": round(max(0.01, s_bytes / (1024 * 1024)), 2),
+                            "sha256_hash": sha256_val,
+                            "is_demo": True,
+                        })
+                    except Exception:
+                        pass
+
+            # 2. Muat Korpus dari Direktori Runs Pengguna
             runs_dir = get_runs_dir()
             if not os.path.exists(runs_dir):
-                return []
+                return results
 
+            user_corpora = []
             for r_id in os.listdir(runs_dir):
                 r_path = os.path.join(runs_dir, r_id)
                 if not os.path.isdir(r_path):
@@ -141,7 +191,6 @@ class DesktopApi:
                 if not os.path.exists(scrap_dir):
                     continue
 
-                # Cari file CSV komentar
                 csv_files = [
                     f for f in os.listdir(scrap_dir)
                     if f.startswith("youtube_comments_") and f.endswith(".csv")
@@ -150,7 +199,6 @@ class DesktopApi:
                 if not csv_files:
                     continue
 
-                # Ambil file terbesar (biasanya master corpus atau multi-video corpus)
                 csv_files.sort(key=lambda x: os.path.getsize(os.path.join(scrap_dir, x)), reverse=True)
                 primary_csv_name = csv_files[0]
                 primary_csv_path = os.path.join(scrap_dir, primary_csv_name)
@@ -158,19 +206,17 @@ class DesktopApi:
                 if size_bytes < 50:
                     continue
 
-                # Hitung jumlah baris komentar cepat (streaming lines)
                 line_count = 0
                 try:
                     with open(primary_csv_path, "r", encoding="utf-8", errors="ignore") as f:
                         for _ in f:
                             line_count += 1
-                    line_count = max(0, line_count - 1) # minus header
+                    line_count = max(0, line_count - 1)
                 except Exception:
                     line_count = int(size_bytes / 250)
 
-                # Deteksi jumlah video & judul dari metadata
                 video_count = 1
-                title = "YouTube Dataset"
+                title = "Korpus Bukti Digital"
                 meta_all = os.path.join(scrap_dir, "youtube_videos_meta_all.csv")
                 meta_single = os.path.join(scrap_dir, "youtube_video_meta.csv")
 
@@ -178,37 +224,201 @@ class DesktopApi:
                     try:
                         m_df = pd.read_csv(meta_all)
                         video_count = len(m_df)
-                        if "title" in m_df.columns and not m_df.empty:
-                            title = f"{m_df['title'].iloc[0]} (+{video_count-1} video lainnya)"
+                        t_col = "video_title" if "video_title" in m_df.columns else ("title" if "title" in m_df.columns else None)
+                        if t_col and not m_df.empty:
+                            first_t = str(m_df[t_col].iloc[0])
+                            title = f"{first_t} (+{video_count-1} video lainnya)" if video_count > 1 else first_t
                     except Exception:
                         pass
                 elif os.path.exists(meta_single):
                     try:
                         m_df = pd.read_csv(meta_single)
-                        if "title" in m_df.columns and not m_df.empty:
-                            title = str(m_df["title"].iloc[0])
+                        t_col = "video_title" if "video_title" in m_df.columns else ("title" if "title" in m_df.columns else None)
+                        if t_col and not m_df.empty:
+                            title = str(m_df[t_col].iloc[0])
                     except Exception:
                         pass
 
-                # Timestamp pembuatan
                 mtime = os.path.getmtime(primary_csv_path)
                 created_at = datetime.fromtimestamp(mtime).strftime("%Y-%m-%d %H:%M:%S")
+                sha256_val = HistoryService.compute_sha256(primary_csv_path)
 
-                results.append({
+                user_corpora.append({
                     "run_id": r_id,
                     "created_at": created_at,
                     "comment_count": line_count,
                     "video_count": video_count,
                     "title": title,
                     "source_file": primary_csv_name,
-                    "size_mb": round(size_bytes / (1024 * 1024), 2),
+                    "size_mb": round(max(0.01, size_bytes / (1024 * 1024)), 2),
+                    "sha256_hash": sha256_val,
+                    "is_demo": False,
                 })
 
-            # Urutkan berdasarkan waktu modifikasi terbaru
-            results.sort(key=lambda x: x["created_at"], reverse=True)
+            user_corpora.sort(key=lambda x: x["created_at"], reverse=True)
+            results.extend(user_corpora)
         except Exception as e:
             print(f"[API ERROR] list_reusable_corpora failed: {e}")
         return results
+
+    def import_external_corpus(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Impor korpus bukti digital eksternal (.CSV, .JSON, .XLSX) lintas platform
+        (YouTube, X/Twitter, TikTok, Telegram, log intelijen) untuk dianalisis secara offline.
+        """
+        filename = str(payload.get("filename", "external_corpus.csv")).strip()
+        content_b64 = str(payload.get("content_base64", "")).strip()
+        content_text = str(payload.get("content_text", "")).strip()
+        custom_title = str(payload.get("title", "")).strip()
+
+        if not content_b64 and not content_text:
+            return {"success": False, "error": "Konten berkas kosong atau tidak ditemukan."}
+
+        try:
+            raw_bytes = base64.b64decode(content_b64) if content_b64 else content_text.encode("utf-8")
+            ext = os.path.splitext(filename)[1].lower()
+
+            if ext == ".json":
+                parsed_json = json.loads(raw_bytes.decode("utf-8", errors="replace"))
+                if isinstance(parsed_json, dict):
+                    for k in ["comments", "data", "items", "records", "rows", "messages"]:
+                        if k in parsed_json and isinstance(parsed_json[k], list):
+                            parsed_json = parsed_json[k]
+                            break
+                df_raw = pd.DataFrame(parsed_json if isinstance(parsed_json, list) else [parsed_json])
+            elif ext in (".xlsx", ".xls"):
+                df_raw = pd.read_excel(io.BytesIO(raw_bytes))
+            else:
+                df_raw = pd.read_csv(io.BytesIO(raw_bytes))
+
+            if df_raw.empty:
+                return {"success": False, "error": "Berkas yang diimpor tidak memiliki baris data."}
+
+            # Normalisasi nama kolom lintas platform (YouTube, X, TikTok, Telegram, OSINT Dump)
+            col_map = {str(c).lower().strip(): c for c in df_raw.columns}
+
+            def _pick_col(candidates: List[str], default_val: Any = ""):
+                for cand in candidates:
+                    if cand in col_map:
+                        return df_raw[col_map[cand]]
+                return pd.Series([default_val] * len(df_raw))
+
+            df_norm = pd.DataFrame()
+            df_norm["comment_text"] = _pick_col(
+                ["comment_text", "text", "body", "content", "message", "ulasan", "komentar", "tweet", "caption"],
+                "",
+            ).fillna("").astype(str)
+
+            # Filter baris dengan teks kosong
+            df_norm = df_norm[df_norm["comment_text"].str.strip().ne("")].reset_index(drop=True)
+            if df_norm.empty:
+                return {"success": False, "error": "Tidak ditemukan kolom teks komentar (comment_text / text / body / komentar)."}
+
+            df_norm["comment_id"] = _pick_col(
+                ["comment_id", "id", "post_id", "tweet_id", "message_id"],
+                "",
+            ).reindex(df_norm.index, fill_value="")
+            df_norm["comment_id"] = [
+                str(val) if str(val).strip() else f"ext_{i+1:05d}"
+                for i, val in enumerate(df_norm["comment_id"])
+            ]
+
+            df_norm["username"] = _pick_col(
+                ["username", "author", "user", "screen_name", "handle", "sender", "nama", "author_name"],
+                "@anonim",
+            ).reindex(df_norm.index, fill_value="@anonim").fillna("@anonim").astype(str)
+
+            df_norm["author_channel_id"] = _pick_col(
+                ["author_channel_id", "user_id", "author_id", "account_id", "sender_id"],
+                "",
+            ).reindex(df_norm.index, fill_value="").fillna("").astype(str)
+            df_norm["author_channel_id"] = [
+                aid if str(aid).strip() else f"ID_{uname}"
+                for aid, uname in zip(df_norm["author_channel_id"], df_norm["username"])
+            ]
+
+            df_norm["author_channel_url"] = _pick_col(
+                ["author_channel_url", "profile_url", "user_url"],
+                "",
+            ).reindex(df_norm.index, fill_value="").fillna("").astype(str)
+
+            df_norm["like_count"] = pd.to_numeric(
+                _pick_col(["like_count", "likes", "favorite_count", "upvotes", "reactions", "jumlah_like"], 0).reindex(df_norm.index, fill_value=0),
+                errors="coerce",
+            ).fillna(0).astype(int)
+
+            df_norm["reply_count"] = pd.to_numeric(
+                _pick_col(["reply_count", "replies", "comments_count", "retweets", "jumlah_balasan"], 0).reindex(df_norm.index, fill_value=0),
+                errors="coerce",
+            ).fillna(0).astype(int)
+
+            now_iso = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            df_norm["created_at"] = _pick_col(
+                ["created_at", "timestamp", "date", "published_at", "time", "waktu", "tanggal"],
+                now_iso,
+            ).reindex(df_norm.index, fill_value=now_iso).fillna(now_iso).astype(str)
+
+            df_norm["is_reply"] = _pick_col(["is_reply"], False).reindex(df_norm.index, fill_value=False)
+            df_norm["is_hearted"] = _pick_col(["is_hearted"], False).reindex(df_norm.index, fill_value=False)
+            df_norm["is_pinned"] = _pick_col(["is_pinned"], False).reindex(df_norm.index, fill_value=False)
+            df_norm["is_official"] = _pick_col(["is_official"], False).reindex(df_norm.index, fill_value=False)
+
+            default_vid = os.path.splitext(os.path.basename(filename))[0][:24] or "EXT_CORPUS_01"
+            df_norm["video_id"] = _pick_col(
+                ["video_id", "source_id", "thread_id", "channel_id", "post_id"],
+                default_vid,
+            ).reindex(df_norm.index, fill_value=default_vid).fillna(default_vid).astype(str)
+
+            default_vtitle = custom_title or f"Impor Bukti Digital: {os.path.basename(filename)}"
+            df_norm["video_title"] = _pick_col(
+                ["video_title", "title", "source_title", "campaign", "topik"],
+                default_vtitle,
+            ).reindex(df_norm.index, fill_value=default_vtitle).fillna(default_vtitle).astype(str)
+
+            df_norm["channel_name"] = _pick_col(
+                ["channel_name", "platform", "source", "kanal", "media"],
+                "Korpus Multi-Platform Eksternal",
+            ).reindex(df_norm.index, fill_value="Korpus Multi-Platform Eksternal").fillna("Korpus Multi-Platform Eksternal").astype(str)
+
+            # Simpan ke dalam direktori run baru agar siap dieksekusi maupun digunakan berulang
+            import_run_id = "import_" + datetime.now().strftime("%Y%m%d_%H%M%S_") + str(uuid.uuid4())[:4]
+            import_run_dir = get_run_dir(import_run_id)
+            scrap_dir = os.path.join(import_run_dir, "scrap")
+            os.makedirs(scrap_dir, exist_ok=True)
+
+            all_csv_path = os.path.join(scrap_dir, "youtube_comments_all_videos.csv")
+            df_norm.to_csv(all_csv_path, index=False, encoding="utf-8-sig")
+
+            # Buat metadata video
+            meta_rows = []
+            for vid, vdf in df_norm.groupby("video_id"):
+                meta_rows.append({
+                    "video_id": str(vid),
+                    "video_title": str(vdf["video_title"].iloc[0]),
+                    "channel_name": str(vdf["channel_name"].iloc[0]),
+                    "video_url": f"https://www.youtube.com/watch?v={vid}",
+                    "published_at": str(vdf["created_at"].iloc[0])[:10],
+                    "views": int(len(vdf) * 100),
+                    "video_likes": int(vdf["like_count"].sum()),
+                })
+            if meta_rows:
+                pd.DataFrame(meta_rows).to_csv(os.path.join(scrap_dir, "youtube_videos_meta_all.csv"), index=False, encoding="utf-8-sig")
+                pd.DataFrame([meta_rows[0]]).to_csv(os.path.join(scrap_dir, f"youtube_video_meta_{meta_rows[0]['video_id']}.csv"), index=False, encoding="utf-8-sig")
+
+            manifest = HistoryService.generate_forensic_manifest(import_run_dir, import_run_id)
+            sha256_val = manifest.get("primary_sha256", "")
+
+            return {
+                "success": True,
+                "run_id": import_run_id,
+                "comment_count": len(df_norm),
+                "video_count": len(meta_rows),
+                "title": default_vtitle,
+                "sha256_hash": sha256_val,
+                "message": f"Berhasil mengimpor {len(df_norm)} bukti komentar ({len(meta_rows)} sumber/video). Segel SHA-256: {sha256_val[:16]}...",
+            }
+        except Exception as e:
+            return {"success": False, "error": f"Gagal memproses berkas korpus: {str(e)}"}
 
     def cancel_run(self) -> Dict[str, Any]:
         self.runner.request_cancel()
@@ -234,14 +444,12 @@ class DesktopApi:
             run = HistoryService.get_run(run_id)
             if run:
                 res = dict(run)
-                # Pastikan numerik terkonversi ke float murni
                 if res.get("cib_score") is not None:
                     res["cib_score"] = float(res["cib_score"])
                 if res.get("polarization_index") is not None:
                     res["polarization_index"] = float(res["polarization_index"])
                 return res
 
-            # Fallback jika run belum tersinkron di SQLite tapi foldernya ada
             run_dir = get_run_dir(run_id)
             if os.path.exists(run_dir):
                 data = ResultsService.load_run_results(run_dir)
@@ -261,6 +469,7 @@ class DesktopApi:
                         "created_at": "",
                         "completed_at": "",
                         "run_dir": run_dir,
+                        "sha256_hash": str(data.get("sha256_hash", "")),
                     }
             return None
         except Exception as e:
@@ -308,10 +517,8 @@ class DesktopApi:
             if hasattr(os, "startfile"):
                 os.startfile(folder)
             elif sys.platform == "darwin":
-                import subprocess
                 subprocess.Popen(["open", folder])
             else:
-                import subprocess
                 subprocess.Popen(["xdg-open", folder])
             return {"success": True}
         except Exception as e:
@@ -353,14 +560,12 @@ class DesktopApi:
             run_dir = get_run_dir(run_id)
             chart_path = os.path.join(run_dir, "charts", chart_id)
             if os.path.exists(chart_path):
-                import base64
                 with open(chart_path, "rb") as f:
                     b64 = base64.b64encode(f.read()).decode("utf-8")
                 return {"success": True, "data_uri": f"data:image/png;base64,{b64}"}
             return {"success": False, "error": "Chart tidak ditemukan."}
         except Exception as e:
             return {"success": False, "error": str(e)}
-
 
     def get_ai_threat_calibration(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -399,7 +604,6 @@ class DesktopApi:
                     "reasoning_summary": "Tidak ditemukan klaster template duplikat lintas akun pada run ini.",
                 }
 
-            # Ambil sampel klaster template teratas (maksimal 25)
             sample_items = []
             for idx, bn in enumerate(botnets[:25]):
                 txt = bn.get("template_text", "")
@@ -422,16 +626,22 @@ INSTRUKSI EVALUASI INTELIJEN MILITER:
 
 Keluarkan hasil dalam format JSON terstruktur."""
 
-            # Load active AI settings
             settings = AppSettings.load()
             provider = str(settings.get("provider") or settings.get("ai_provider") or "gemini").lower().strip()
             model = str(settings.get("model") or settings.get("ai_model") or "").strip()
             api_key = str(settings.get("api_key") or settings.get(f"{provider}_api_key") or "").strip()
             if not api_key:
-                api_key = str(settings.get("custom_api_key") or settings.get("gemini_api_key") or settings.get("openrouter_api_key") or "").strip()
+                api_key = str(
+                    settings.get("custom_api_key")
+                    or settings.get("gemini_api_key")
+                    or settings.get("openrouter_api_key")
+                    or ""
+                ).strip()
 
             if provider == "custom":
-                custom_base = str(settings.get("base_url") or settings.get("custom_base_url") or "https://api.tokenai.id/v1").strip()
+                custom_base = str(
+                    settings.get("base_url") or settings.get("custom_base_url") or "http://127.0.0.1:11434/v1"
+                ).strip()
                 AppConfig.CUSTOM_BASE_URL = custom_base
                 AppConfig.CUSTOM_API_KEY = api_key
             elif provider == "openrouter":
@@ -464,7 +674,7 @@ Keluarkan hasil dalam format JSON terstruktur."""
                     t_low = bn.get("template_text", "").lower()
                     if any(k in t_low for k in ["tni", "polri", "nkri", "terima kasih", "terimakasih", "bravo", "rakyat"]):
                         fallback_wl.append(bn.get("template_text"))
-                    if any(k in t_low for k in ["papua merdeka", "opm", "kkb", "pemberontak", "makzulkan", "hancurkan tni"]):
+                    if any(k in t_low for k in ["papua merdeka", "opm", "kkb", "pemberontak", "makzulkan", "hancurkan tni", "lumpuh", "diretas", "pencitraan"]):
                         fallback_th.append(bn.get("template_text"))
                 return {
                     "success": True,
@@ -501,7 +711,6 @@ Keluarkan hasil dalam format JSON terstruktur."""
             if df.empty:
                 return {"success": False, "error": "Korpus CSV kosong."}
 
-            # 1. Hitung ulang Jaringan Bot Massal
             botnets = IntelligenceService.calculate_coordinated_bot_networks(
                 df,
                 min_accounts=2,
@@ -510,21 +719,18 @@ Keluarkan hasil dalam format JSON terstruktur."""
                 custom_threats=custom_threats,
             )
 
-            # 2. Hitung ulang Akun Terduga (Flagged Accounts)
             flagged = IntelligenceService.calculate_flagged_accounts(
                 df,
                 custom_whitelist=custom_whitelist,
                 custom_threats=custom_threats,
             )
 
-            # 3. Hitung ulang Metrik CIB
             cib_metrics = IntelligenceService.calculate_cib_metrics(
                 df,
                 custom_whitelist=custom_whitelist,
                 custom_threats=custom_threats,
             )
 
-            # 4. Simpan kembali berkas JSON terkalibrasi ke run_dir
             json_dir = os.path.join(run_dir, "json")
             os.makedirs(json_dir, exist_ok=True)
 
@@ -546,7 +752,6 @@ Keluarkan hasil dalam format JSON terstruktur."""
             with open(os.path.join(json_dir, "cib_detection_summary.json"), "w", encoding="utf-8") as f:
                 json.dump(cib_dict, f, indent=2, ensure_ascii=False)
 
-            # 5. Perbarui SQLite History jika run_id terdaftar
             try:
                 HistoryService.update_cib_metrics(
                     run_id=run_id,

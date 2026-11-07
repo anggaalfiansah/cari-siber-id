@@ -392,6 +392,8 @@ def generate_text(prompt: str, provider: str, model: str, api_key: str = None, m
                 if is_custom
                 else (AppConfig.EDGEONE_API_KEY if is_edgeone else AppConfig.OPENROUTER_API_KEY)
             )
+        if not api_key and is_custom and any(h in str(base_url).lower() for h in ("127.0.0.1", "localhost", "0.0.0.0", "192.168.", "10.", "172.")):
+            api_key = "local-airgap"
         if not api_key:
             key_name = "CUSTOM_API_KEY" if is_custom else ("EDGEONE_API_KEY" if is_edgeone else "OPENROUTER_API_KEY")
             raise PipelineError(f"{key_name} tidak ditemukan di Pengaturan.")
@@ -581,6 +583,8 @@ def generate_structured_json(prompt: str, response_schema, provider: str, model:
                 if is_custom
                 else (AppConfig.EDGEONE_API_KEY if is_edgeone else AppConfig.OPENROUTER_API_KEY)
             )
+        if not api_key and is_custom and any(h in str(base_url).lower() for h in ("127.0.0.1", "localhost", "0.0.0.0", "192.168.", "10.", "172.")):
+            api_key = "local-airgap"
         if not api_key:
             key_name = "CUSTOM_API_KEY" if is_custom else ("EDGEONE_API_KEY" if is_edgeone else "OPENROUTER_API_KEY")
             raise PipelineError(f"{key_name} tidak ditemukan di Pengaturan.")

@@ -8,7 +8,7 @@ from typing import Dict, Any, Optional, Callable
 
 import pandas as pd
 
-from cari_siber.paths import get_run_dir
+from cari_siber.paths import get_run_dir, get_resources_dir
 from cari_siber.settings import AppSettings
 from cari_siber.bootstrap import get_log_stream
 from cari_siber.services.history import HistoryService
@@ -79,30 +79,64 @@ class PipelineRunner:
             elif video_url and str(video_url).strip():
                 resolved_urls = [str(video_url).strip()]
 
-            # Jika menggunakan korpus dari run sebelumnya (Reuse Corpus)
+            # Jika menggunakan korpus dari run sebelumnya (Reuse Corpus) atau Demo Dataset Militer
             if source_run_id:
-                source_dir = get_run_dir(str(source_run_id).strip())
-                source_scrap = os.path.join(source_dir, "scrap")
-                if os.path.exists(source_scrap):
-                    target_scrap = os.path.join(run_dir, "scrap")
-                    os.makedirs(target_scrap, exist_ok=True)
-                    for item in os.listdir(source_scrap):
-                        s_path = os.path.join(source_scrap, item)
-                        if os.path.isfile(s_path):
-                            shutil.copy2(s_path, os.path.join(target_scrap, item))
-                    skip_scrape = True
-                    print(f"[RUNNER] Berhasil menyalin data korpus scraping dari Run {source_run_id} ke {run_id}.")
+                src_id_str = str(source_run_id).strip()
+                if src_id_str.startswith("demo:"):
+                    demo_filename = os.path.basename(src_id_str.split("demo:", 1)[1])
+                    demo_csv_path = os.path.join(get_resources_dir(), demo_filename)
+                    if os.path.exists(demo_csv_path):
+                        target_scrap = os.path.join(run_dir, "scrap")
+                        os.makedirs(target_scrap, exist_ok=True)
+                        shutil.copy2(demo_csv_path, os.path.join(target_scrap, "youtube_comments_all_videos.csv"))
+                        shutil.copy2(demo_csv_path, os.path.join(target_scrap, "youtube_comments_simulasi.csv"))
+                        try:
+                            demo_df = pd.read_csv(demo_csv_path)
+                            if "video_id" in demo_df.columns:
+                                meta_rows = []
+                                for vid, vdf in demo_df.groupby("video_id"):
+                                    vtitle = str(vdf["video_title"].iloc[0]) if "video_title" in vdf.columns else f"Simulasi Video {vid}"
+                                    vchan = str(vdf["channel_name"].iloc[0]) if "channel_name" in vdf.columns else "Kanal Operasi Simulasi"
+                                    meta_rows.append({
+                                        "video_id": str(vid),
+                                        "video_title": vtitle,
+                                        "channel_name": vchan,
+                                        "video_url": f"https://www.youtube.com/watch?v={vid}",
+                                        "published_at": str(vdf["created_at"].iloc[0])[:10] if "created_at" in vdf.columns else "2026-10-01",
+                                        "views": int(len(vdf) * 1850),
+                                        "video_likes": int(len(vdf) * 95),
+                                    })
+                                if meta_rows:
+                                    pd.DataFrame(meta_rows).to_csv(os.path.join(target_scrap, "youtube_videos_meta_all.csv"), index=False, encoding="utf-8-sig")
+                                    pd.DataFrame([meta_rows[0]]).to_csv(os.path.join(target_scrap, f"youtube_video_meta_{meta_rows[0]['video_id']}.csv"), index=False, encoding="utf-8-sig")
+                                    resolved_urls = [m["video_url"] for m in meta_rows]
+                        except Exception as e:
+                            print(f"[RUNNER WARNING] Gagal membuat meta simulasi: {e}")
+                        skip_scrape = True
+                        print(f"[RUNNER] Berhasil memuat Korpus Simulasi Militer ({demo_filename}) ke {run_id}.")
+                else:
+                    source_dir = get_run_dir(src_id_str)
+                    source_scrap = os.path.join(source_dir, "scrap")
+                    if os.path.exists(source_scrap):
+                        target_scrap = os.path.join(run_dir, "scrap")
+                        os.makedirs(target_scrap, exist_ok=True)
+                        for item in os.listdir(source_scrap):
+                            s_path = os.path.join(source_scrap, item)
+                            if os.path.isfile(s_path):
+                                shutil.copy2(s_path, os.path.join(target_scrap, item))
+                        skip_scrape = True
+                        print(f"[RUNNER] Berhasil menyalin data korpus scraping dari Run {source_run_id} ke {run_id}.")
 
-                    # Ekstrak info video jika resolved_urls belum ada
-                    if not resolved_urls:
-                        meta_all = os.path.join(target_scrap, "youtube_videos_meta_all.csv")
-                        if os.path.exists(meta_all):
-                            try:
-                                m_df = pd.read_csv(meta_all)
-                                if "video_id" in m_df.columns:
-                                    resolved_urls = [f"https://www.youtube.com/watch?v={vid}" for vid in m_df["video_id"].dropna().unique()]
-                            except Exception:
-                                pass
+                        # Ekstrak info video jika resolved_urls belum ada
+                        if not resolved_urls:
+                            meta_all = os.path.join(target_scrap, "youtube_videos_meta_all.csv")
+                            if os.path.exists(meta_all):
+                                try:
+                                    m_df = pd.read_csv(meta_all)
+                                    if "video_id" in m_df.columns:
+                                        resolved_urls = [f"https://www.youtube.com/watch?v={vid}" for vid in m_df["video_id"].dropna().unique()]
+                                except Exception:
+                                    pass
 
             primary_url = resolved_urls[0] if resolved_urls else (video_url or "https://www.youtube.com/watch?v=corpus_reused")
 
@@ -303,6 +337,10 @@ class PipelineRunner:
                 except Exception:
                     pass
 
+            # Generate SHA-256 Digital Evidence Seal (Chain of Custody)
+            forensic_manifest = HistoryService.generate_forensic_manifest(run_dir, run_id)
+            sha256_hash = str(forensic_manifest.get("primary_sha256", ""))
+
             # Complete SQLite run
             HistoryService.complete_run(
                 run_id=run_id,
@@ -312,6 +350,7 @@ class PipelineRunner:
                 cib_score=cib_metrics.cib_threat_score,
                 cib_level=cib_metrics.cib_threat_level.value,
                 polarization_index=pol_metrics.polarization_index,
+                sha256_hash=sha256_hash,
             )
 
             # Emit lightweight completion event (frontend memuat data grafik on-demand via get_run_results)

@@ -39,12 +39,14 @@ export interface RunHistoryItem {
   created_at: string;
   completed_at?: string;
   run_dir: string;
+  sha256_hash?: string;
 }
 
 export interface TopicItem {
   topic_id: number;
   topic_name: string;
   category?: string;
+  threat_domain?: string;
   sub_issue?: string;
   keywords?: string;
   sentiment: string;
@@ -65,6 +67,7 @@ export interface InteractiveData {
     topic: string;
     full_topic: string;
     category?: string;
+    threat_domain?: string;
     keywords?: string;
     count: number;
     sentiment: string;
@@ -78,6 +81,7 @@ export interface AuthorCommentItem {
   reply_count: number;
   ai_sentiment: string;
   topic_name?: string;
+  threat_domain?: string;
   business_category?: string;
   sub_issue?: string;
   video_id?: string;
@@ -190,6 +194,18 @@ export interface TelemetryInfo {
   llm_calls_count: number;
 }
 
+export interface ForensicManifest {
+  run_id?: string;
+  sealed_at?: string;
+  algorithm?: string;
+  primary_sha256?: string;
+  raw_corpus_sha256?: string;
+  raw_corpus_file?: string;
+  final_corpus_sha256?: string;
+  final_corpus_file?: string;
+  chain_of_custody_status?: string;
+}
+
 export interface RunResult {
   meta: {
     video_title: string;
@@ -201,8 +217,12 @@ export interface RunResult {
     polarization_index?: number;
     run_dir: string;
     telemetry?: TelemetryInfo;
+    sha256_hash?: string;
   };
   telemetry?: TelemetryInfo;
+  sha256_hash?: string;
+  forensic_manifest?: ForensicManifest;
+  agentic_audit?: any;
   cib_score?: number;
   cib_level?: string;
   polarization_index?: number;
@@ -312,10 +332,20 @@ export interface ReusableCorpus {
   title: string;
   source_file: string;
   size_mb: number;
+  sha256_hash?: string;
+  is_demo?: boolean;
 }
 
-
-
+export interface ImportCorpusResponse {
+  success: boolean;
+  run_id?: string;
+  comment_count?: number;
+  video_count?: number;
+  title?: string;
+  sha256_hash?: string;
+  message?: string;
+  error?: string;
+}
 
 export interface ThreatCalibrationResult {
   success: boolean;

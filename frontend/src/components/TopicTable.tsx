@@ -13,7 +13,7 @@ export const TopicTable: React.FC<TopicTableProps> = ({ topics }) => {
   const safeTopics = Array.isArray(topics) ? topics : [];
 
   const filtered = safeTopics.filter((t) => {
-    const textSearch = (String(t.topic_name || '') + ' ' + String(t.sub_issue || '') + ' ' + String(t.category || '') + ' ' + String(t.sample_comment || '')).toLowerCase();
+    const textSearch = (String(t.topic_name || '') + ' ' + String(t.sub_issue || '') + ' ' + String(t.threat_domain || t.category || '') + ' ' + String(t.sample_comment || '')).toLowerCase();
     const matchText = textSearch.includes(filter.toLowerCase());
     const matchSent = selectedSentiment === 'ALL' || String(t.sentiment || '').toUpperCase() === selectedSentiment;
     return matchText && matchSent;
@@ -112,7 +112,7 @@ export const TopicTable: React.FC<TopicTableProps> = ({ topics }) => {
                     )}
                   </td>
                   <td style={{ padding: '12px 14px', color: '#cbd5e1' }}>
-                    {item.category || 'Isu Publik'}
+                    {item.threat_domain || item.category || 'Opini & Respons Publik'}
                   </td>
                   <td style={{ padding: '12px 14px' }}>
                     {getSentimentBadge(item.sentiment)}

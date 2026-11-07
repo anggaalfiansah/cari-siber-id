@@ -551,7 +551,7 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
                         {c.ai_sentiment}
                       </span>
 
-                      {c.business_category && (
+                      {(c.threat_domain || c.business_category) && (
                         <span
                           style={{
                             background: 'rgba(30, 41, 59, 0.7)',
@@ -561,7 +561,7 @@ export const AccountCommentsModal: React.FC<AccountCommentsModalProps> = ({
                             fontSize: '0.7rem',
                           }}
                         >
-                          {c.business_category}
+                          {c.threat_domain || c.business_category}
                         </span>
                       )}
 

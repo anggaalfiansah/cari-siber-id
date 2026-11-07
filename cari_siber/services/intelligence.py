@@ -886,7 +886,7 @@ class IntelligenceService:
                     "reply_count": int(crow.get("reply_count") or 0),
                     "ai_sentiment": str(crow.get("ai_sentiment", "Netral")),
                     "topic_name": str(crow.get("topic_name", "")),
-                    "business_category": str(crow.get("business_category", "")),
+                    "threat_domain": str(crow.get("threat_domain") or crow.get("business_category", "")), "business_category": str(crow.get("threat_domain") or crow.get("business_category", "")),
                     "sub_issue": str(crow.get("sub_issue", "")),
                     "video_id": str(crow.get("video_id", "")),
                     "video_title": str(crow.get("video_title", "")),

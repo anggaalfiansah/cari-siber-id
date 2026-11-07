@@ -22,7 +22,7 @@ def merge_topics_and_labels(df_mapping: pd.DataFrame, df_labels: pd.DataFrame, t
         df_mapping[topic_id_col] = df_mapping[topic_id_col].astype(str)
         df_labels[topic_id_col] = df_labels[topic_id_col].astype(str)
         
-    cols_to_use = [topic_id_col] + [c for c in ['business_category', 'sub_issue', 'merge_group'] if c in df_labels.columns]
+    cols_to_use = [topic_id_col] + [c for c in ['threat_domain', 'business_category', 'sub_issue', 'merge_group'] if c in df_labels.columns]
     df_labels_subset = df_labels[cols_to_use]
     
     return pd.merge(df_mapping, df_labels_subset, on=topic_id_col, how='left')

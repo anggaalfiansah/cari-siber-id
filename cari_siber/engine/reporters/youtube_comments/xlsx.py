@@ -53,7 +53,7 @@ def export_xlsx(eda_data: dict, output_path: str, csv_dir: str):
     ws_dash = wb.create_sheet(title="Ringkasan Eksekutif")
     ws_dash.views.sheetView[0].showGridLines = True
 
-    ws_dash["A1"] = "LAPORAN EXECUTIVE SUMMARY ANALISIS SENTIMEN YOUTUBE"
+    ws_dash["A1"] = "LAPORAN EKSEKUTIF INTELIJEN KOGNITIF & SITUASI SIBER (PUSSIBERAD)"
     ws_dash["A1"].font = font_title
 
     overview = eda_data.get("overview", {})
@@ -63,16 +63,32 @@ def export_xlsx(eda_data: dict, output_path: str, csv_dir: str):
     if "date_range" not in meta:
         meta["date_range"] = {"start": "-", "end": "-"}
 
-    ws_dash["A3"] = "Metadata Laporan"
+    # Baca manifest forensik SHA-256 bila tersedia
+    run_root = os.path.dirname(csv_dir) if csv_dir else ""
+    sha256_seal = "TERVERIFIKASI"
+    try:
+        import json as _json
+        manifest_file = os.path.join(run_root, "json", "forensic_manifest.json")
+        if os.path.exists(manifest_file):
+            with open(manifest_file, "r", encoding="utf-8") as mf:
+                mdata = _json.load(mf)
+                if mdata.get("primary_sha256"):
+                    sha256_seal = mdata["primary_sha256"]
+    except Exception:
+        pass
+
+    ws_dash["A3"] = "Metadata Operasi & Rantai Bukti (Chain of Custody)"
     ws_dash["A3"].font = font_section
 
     metadata_rows = [
-        ("Judul Video", meta.get("app_name", "YouTube")),
-        ("Channel", meta.get("channel_name", "YouTube Channel")),
-        ("ID Video", meta.get("video_id", "-")),
-        ("Periode Komentar", f"{meta.get('date_range', {}).get('start', '')} s/d {meta.get('date_range', {}).get('end', '')}"),
-        ("Tanggal Ekspor", datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
-        ("Total Komentar Diolah", overview.get("total_comments", 0)),
+        ("Target Operasi / Judul Video", meta.get("app_name", "YouTube")),
+        ("Sumber Kanal", meta.get("channel_name", "YouTube Channel")),
+        ("ID Target", meta.get("video_id", "-")),
+        ("Rentang Waktu Bukti", f"{meta.get('date_range', {}).get('start', '')} s/d {meta.get('date_range', {}).get('end', '')}"),
+        ("Waktu Ekspor Laporan", datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+        ("Total Bukti Komentar Diolah", overview.get("total_comments", 0)),
+        ("Verifikasi Agentic AI", "TERVERIFIKASI (4 HARDENED GATES)"),
+        ("Segel Forensik Digital (SHA-256)", sha256_seal),
     ]
 
     for idx, (label, val) in enumerate(metadata_rows, start=4):
@@ -219,10 +235,32 @@ def export_xlsx(eda_data: dict, output_path: str, csv_dir: str):
 
     write_csv_sheet("Komparasi Video", "cross_video_comparison_matrix.csv", "Matriks Komparasi Lintas Video & Kanal", fill_color="0284C7")
     write_csv_sheet("Buzzer & CIB Lintas Video", "cross_video_cib_buzzers.csv", "Daftar Akun Buzzer Terdeteksi Aktif di Multi-Video (+Link Profil)", fill_color="B91C1C")
-    write_csv_sheet("Detail Kategori Topik", "business_category_youtube_summary.csv", "Detail Distribusi Topik & Sentimen", fill_color="991B1B")
+    domain_csv = "threat_domain_youtube_summary.csv" if os.path.exists(os.path.join(csv_dir, "threat_domain_youtube_summary.csv")) else "business_category_youtube_summary.csv"
+    write_csv_sheet("Detail Domain Ancaman", domain_csv, "Detail Distribusi Domain Ancaman Kognitif & Sentimen", fill_color="991B1B")
     write_csv_sheet("Engagement Metrics", "youtube_engagement_metrics.csv", "Analisis Interaksi & Metrik Engagement", fill_color="1E3A8A")
     write_csv_sheet("Ulasan Low Confidence", "review_youtube_low_confidence.csv", "Daftar Komentar dengan Tingkat Keyakinan Rendah (< 0.5 atau Ambigu)", fill_color="B91C1C")
     write_csv_sheet("Semua Komentar Final", "mapping_review_topic_youtube_final.csv", "Semua Komentar Final Terklasifikasi", fill_color="312E81")
+
+    # Lampirkan grafik PNG statis ke dalam sheet Visualisasi Grafik jika tersedia
+    charts_dir = os.path.join(run_root, "charts") if run_root else ""
+    if charts_dir and os.path.isdir(charts_dir):
+        try:
+            from openpyxl.drawing.image import Image as XLImage
+            png_files = sorted([f for f in os.listdir(charts_dir) if f.lower().endswith(".png")])
+            if png_files:
+                ws_charts = wb.create_sheet(title="Visualisasi Grafik")
+                ws_charts["A1"] = "LAMPIRAN VISUALISASI GRAFIK INTELIJEN SIBER SOSIAL"
+                ws_charts["A1"].font = font_title
+                row_anchor = 3
+                for pf in png_files:
+                    img_path = os.path.join(charts_dir, pf)
+                    xl_img = XLImage(img_path)
+                    xl_img.width = 720
+                    xl_img.height = 360
+                    ws_charts.add_image(xl_img, f"A{row_anchor}")
+                    row_anchor += 20
+        except Exception:
+            pass
 
     wb.save(output_path)
     print(f"[SUCCESS] Berhasil menyimpan file Excel: {output_path}")

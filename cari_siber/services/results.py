@@ -55,9 +55,9 @@ class ResultsService:
                     if raw_sentiment not in ("Positif", "Negatif", "Netral"):
                         raw_sentiment = "Netral"
 
-                    b_cat = str(row.get("business_category", "")).strip()
+                    b_cat = str(row.get("threat_domain") or row.get("business_category", "")).strip()
                     if b_cat.lower() in ("nan", "none", "", "null"):
-                        b_cat = "Isu Publik"
+                        b_cat = "Opini & Respons Publik"
 
                     sub_iss = str(row.get("sub_issue", "")).strip()
                     if sub_iss.lower() in ("nan", "none", "", "null"):
@@ -69,6 +69,7 @@ class ResultsService:
                         "topic_id": int(row.get("topic_id", 0)) if pd.notna(row.get("topic_id")) else 0,
                         "topic_name": str(row.get("topic_name", "")),
                         "category": b_cat,
+                        "threat_domain": b_cat,
                         "sub_issue": sub_iss,
                         "keywords": raw_kw,
                         "sentiment": raw_sentiment,
@@ -267,6 +268,7 @@ class ResultsService:
             try:
                 sample_df = df_final.head(1000)
                 for _, crow in sample_df.iterrows():
+                    cat_val = str(crow.get("threat_domain") or crow.get("business_category", ""))
                     corpus_comments.append({
                         "comment_id": str(crow.get("comment_id", "")),
                         "username": str(crow.get("username", "Anonim")),
@@ -277,7 +279,8 @@ class ResultsService:
                         "reply_count": int(pd.to_numeric(crow.get("reply_count", 0), errors="coerce") or 0),
                         "ai_sentiment": str(crow.get("ai_sentiment", "Netral")),
                         "topic_name": str(crow.get("topic_name", "")),
-                        "business_category": str(crow.get("business_category", "")),
+                        "threat_domain": cat_val,
+                        "business_category": cat_val,
                         "sub_issue": str(crow.get("sub_issue", "")),
                         "video_id": str(crow.get("video_id", "")),
                         "video_title": str(crow.get("video_title", "")),
@@ -347,6 +350,33 @@ class ResultsService:
         # Load Telemetry Summary (atau rekonstruksi retroaktif jika belum ada berkas JSON-nya)
         telemetry = ResultsService._extract_run_telemetry(run_dir, meta)
 
+        # Load Forensic Manifest & SHA-256 Chain of Custody
+        forensic_manifest = {}
+        manifest_path = os.path.join(run_dir, "json", "forensic_manifest.json")
+        if os.path.exists(manifest_path):
+            try:
+                with open(manifest_path, "r", encoding="utf-8") as mf:
+                    forensic_manifest = json.load(mf)
+            except Exception:
+                pass
+        if not forensic_manifest or not forensic_manifest.get("primary_sha256"):
+            try:
+                from cari_siber.services.history import HistoryService
+                forensic_manifest = HistoryService.generate_forensic_manifest(run_dir, os.path.basename(run_dir))
+            except Exception:
+                pass
+        sha256_hash = str(forensic_manifest.get("primary_sha256", ""))
+
+        # Load Agentic AI 4-Gate Audit Log
+        agentic_audit = {}
+        audit_path = os.path.join(run_dir, "json", "agentic_audit_log.json")
+        if os.path.exists(audit_path):
+            try:
+                with open(audit_path, "r", encoding="utf-8") as af:
+                    agentic_audit = json.load(af)
+            except Exception:
+                pass
+
         return {
             "meta": {
                 "video_title": video_title,
@@ -358,8 +388,12 @@ class ResultsService:
                 "polarization_index": pol_index,
                 "run_dir": run_dir,
                 "telemetry": telemetry,
+                "sha256_hash": sha256_hash,
             },
             "telemetry": telemetry,
+            "sha256_hash": sha256_hash,
+            "forensic_manifest": forensic_manifest,
+            "agentic_audit": agentic_audit,
             "cib_score": cib_score,
             "cib_level": cib_level,
             "polarization_index": pol_index,
@@ -397,6 +431,7 @@ class ResultsService:
 
             comments = []
             for _, crow in matched_df.iterrows():
+                cat_val = str(crow.get("threat_domain") or crow.get("business_category", ""))
                 comments.append({
                     "comment_id": str(crow.get("comment_id", "")),
                     "comment_text": str(crow.get("comment_text", "")),
@@ -404,7 +439,8 @@ class ResultsService:
                     "reply_count": int(pd.to_numeric(crow.get("reply_count", 0), errors="coerce") or 0),
                     "ai_sentiment": str(crow.get("ai_sentiment", "Netral")),
                     "topic_name": str(crow.get("topic_name", "")),
-                    "business_category": str(crow.get("business_category", "")),
+                    "threat_domain": cat_val,
+                    "business_category": cat_val,
                     "sub_issue": str(crow.get("sub_issue", "")),
                     "video_id": str(crow.get("video_id", "")),
                     "video_title": str(crow.get("video_title", "")),

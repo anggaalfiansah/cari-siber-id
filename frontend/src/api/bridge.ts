@@ -1,4 +1,4 @@
-import { Settings, RunHistoryItem, RunResult, PyWebViewEvent, VideoDiscoveryResponse } from './types';
+import { Settings, RunHistoryItem, RunResult, PyWebViewEvent, VideoDiscoveryResponse, ImportCorpusResponse } from './types';
 
 declare global {
   interface Window {
@@ -18,6 +18,10 @@ declare global {
         open_folder: (id: string) => Promise<{ success: boolean; error?: string }>;
         get_author_comments: (payload: { run_id: string; author_key: string }) => Promise<{ success: boolean; comments?: any[]; error?: string }>;
         search_and_curate_videos: (payload: { keyword: string; max_curated?: number }) => Promise<VideoDiscoveryResponse>;
+        list_reusable_corpora: () => Promise<any[]>;
+        import_external_corpus: (payload: { filename: string; content_base64?: string; content_text?: string; title?: string }) => Promise<ImportCorpusResponse>;
+        get_ai_threat_calibration: (payload: { run_id: string }) => Promise<any>;
+        reanalyze_intelligence: (payload: { run_id: string; whitelist: string[]; threats: string[] }) => Promise<any>;
       };
     };
     __cariEmit?: (event: PyWebViewEvent) => void;
@@ -64,9 +68,10 @@ export function waitForPyWebView(): Promise<boolean> {
 // Fallback Mock API if run in regular browser without pywebview
 const mockApi = {
   get_settings: async (): Promise<Settings> => ({
-    ai_provider: 'gemini',
-    ai_model: 'gemini-2.5-flash',
-    gemini_api_key: 'mock-key',
+    ai_provider: 'custom',
+    ai_model: 'qwen2.5:7b',
+    custom_base_url: 'http://127.0.0.1:11434/v1',
+    gemini_api_key: '',
     youtube_api_key: '',
     agentic_gates_enabled: true,
     default_comment_limit: 1000,
@@ -74,7 +79,7 @@ const mockApi = {
     default_include_replies: true,
   }),
   save_settings: async () => ({ success: true, message: 'Mock save success' }),
-  test_ai_connection: async () => ({ success: true, message: 'Mock connection OK' }),
+  test_ai_connection: async () => ({ success: true, message: 'Mock connection OK (Intranet Air-Gapped Ready)' }),
   start_run: async () => ({ success: true, run_id: 'mock_run_1' }),
   cancel_run: async () => ({ success: true }),
   is_runner_busy: async () => false,
@@ -93,38 +98,25 @@ const mockApi = {
       {
         video_id: 'mock1',
         url: 'https://www.youtube.com/watch?v=mock1',
-        title: `Debat Hangat Terkait ${keyword || 'Isu Terkini'}`,
+        title: `Pemantauan Opini Ruang Siber: ${keyword || 'Operasi Pertahanan'}`,
         channel: 'Kanal Berita Nasional',
         duration: '14:20',
         views: '240 rb x ditonton',
         published: '2 hari yang lalu',
         thumbnail: 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=600&auto=format&fit=crop&q=60',
         relevance_score: 95,
-        curation_reason: 'Diskusi panelis resmi dengan volume komentar publik dan perdebatan argumentatif tinggi.',
+        curation_reason: 'Diskusi publik dengan volume interaksi dan dinamika narasi tinggi.',
         is_recommended: true,
-      },
-      {
-        video_id: 'mock2',
-        url: 'https://www.youtube.com/watch?v=mock2',
-        title: `Kupas Tuntas Dampak dan Polemik ${keyword || 'Kebijakan'}`,
-        channel: 'Forum Investigasi Siber',
-        duration: '22:15',
-        views: '110 rb x ditonton',
-        published: '5 hari yang lalu',
-        thumbnail: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&auto=format&fit=crop&q=60',
-        relevance_score: 88,
-        curation_reason: 'Memuat sudut pandang kontra-narasi dan polarisasi opini akar rumput.',
-        is_recommended: false,
       },
     ],
   }),
-    get_ai_threat_calibration: async (payload: { run_id: string }) => ({
+  get_ai_threat_calibration: async () => ({
     success: true,
-    whitelist_recommendations: ['TNI Bersama Rakyat', 'Terimakasih tni', 'Bravo TNI', 'NKRI Harga Mati'],
-    hostile_threat_keywords: ['papua merdeka', 'opm', 'kkb', 'pemberontak'],
+    whitelist_recommendations: ['TNI Bersama Rakyat', 'Terimakasih TNI', 'Bravo TNI', 'NKRI Harga Mati'],
+    hostile_threat_keywords: ['papua merdeka', 'opm', 'kkb', 'pemberontak', 'diretas'],
     reasoning_summary: 'Sistem merekomendasikan whitelist slogan resmi TNI dan apresiasi masyarakat agar tidak terjadi salah tuduh (False Positive). Frasa separatis dan provokasi ditandai sebagai ancaman.',
   }),
-  reanalyze_intelligence: async (payload: { run_id: string; whitelist: string[]; threats: string[] }) => ({
+  reanalyze_intelligence: async () => ({
     success: true,
     message: 'Analisis intelijen siber berhasil diperbarui seketika.',
     bot_networks_count: 5,
@@ -132,15 +124,37 @@ const mockApi = {
   }),
   list_reusable_corpora: async () => [
     {
-      run_id: '20261106_103448_4004e2',
-      created_at: '2026-11-06 10:34:48',
-      comment_count: 10281,
-      video_count: 100,
-      title: '100 Video YouTube Terkurasi (10,281 Komentar)',
-      source_file: 'youtube_comments_video_GpqlN-SBFqo.csv',
-      size_mb: 4.8,
+      run_id: 'demo:sample_corpus_tni.csv',
+      created_at: 'PRELOADED-SIMULASI',
+      comment_count: 45,
+      video_count: 3,
+      title: '[SIMULASI MILITER] Operasi Pengamanan Perbatasan & Bakti Teritorial TNI AD (3 Video Multi-CIB)',
+      source_file: 'sample_corpus_tni.csv',
+      size_mb: 0.02,
+      sha256_hash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      is_demo: true,
+    },
+    {
+      run_id: 'demo:sample_corpus_siber_ot.csv',
+      created_at: 'PRELOADED-SIMULASI',
+      comment_count: 17,
+      video_count: 2,
+      title: '[SIMULASI SIBER IT/OT] Pertahanan Siber PUSSIBERAD & Mitigasi Hoaks Infrastruktur Komando (2 Video)',
+      source_file: 'sample_corpus_siber_ot.csv',
+      size_mb: 0.01,
+      sha256_hash: '8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4',
+      is_demo: true,
     },
   ],
+  import_external_corpus: async ({ filename }: { filename: string }): Promise<ImportCorpusResponse> => ({
+    success: true,
+    run_id: 'import_mock_001',
+    comment_count: 50,
+    video_count: 1,
+    title: `Impor Bukti Digital: ${filename}`,
+    sha256_hash: '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
+    message: 'Berhasil mengimpor 50 bukti komentar.',
+  }),
 };
 
 export const api = new Proxy({} as any, {

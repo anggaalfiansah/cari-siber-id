@@ -24,10 +24,13 @@ from cari_siber.engine.core.agentic_gates import (
 
 
 def generate_youtube_category_summary(df: pd.DataFrame) -> pd.DataFrame:
-    """Membuat ringkasan kategori bisnis khusus untuk metrik komentar YouTube."""
+    """Membuat ringkasan domain ancaman khusus untuk metrik komentar ruang siber."""
     summary_data = []
 
-    group_cols = ["ai_sentiment", "business_category"]
+    if "threat_domain" not in df.columns and "business_category" in df.columns:
+        df["threat_domain"] = df["business_category"]
+
+    group_cols = ["ai_sentiment", "threat_domain"]
     for col in group_cols:
         if col in df.columns:
             df[col] = df[col].fillna("")
@@ -136,7 +139,10 @@ def run_aggregation(config_override=None):
     df_mapping["topic_id"] = df_mapping["topic_id"].astype(str)
     df_agg["topic_id"] = df_agg["topic_id"].astype(str)
 
-    cols_to_use = ["topic_id", "business_category", "sub_issue", "ai_sentiment"]
+    if "threat_domain" not in df_agg.columns and "business_category" in df_agg.columns:
+        df_agg["threat_domain"] = df_agg["business_category"]
+
+    cols_to_use = ["topic_id", "threat_domain", "sub_issue", "ai_sentiment"]
     df_agg_subset = df_agg[[c for c in cols_to_use if c in df_agg.columns]]
     df_topic_labeled = pd.merge(df_mapping, df_agg_subset, on="topic_id", how="left")
 
@@ -150,7 +156,7 @@ def run_aggregation(config_override=None):
 
     df_merged = pd.merge(df_topic_labeled, df_raw_subset, on="comment_id", how="left")
 
-    df_merged["business_category"] = df_merged["business_category"].fillna("")
+    df_merged["threat_domain"] = df_merged["threat_domain"].fillna("")
     df_merged["sub_issue"] = df_merged["sub_issue"].fillna("")
     if "ai_sentiment" in df_merged.columns:
         df_merged["ai_sentiment"] = df_merged["ai_sentiment"].fillna("Netral")
@@ -164,9 +170,9 @@ def run_aggregation(config_override=None):
     print(f"[INFO] Menyimpan file final mapping ke '{final_mapping_path}'")
 
     df_summary = generate_youtube_category_summary(df_merged)
-    summary_path = os.path.join(csv_output_dir, "business_category_youtube_summary.csv")
+    summary_path = os.path.join(csv_output_dir, "threat_domain_youtube_summary.csv")
     df_summary.to_csv(summary_path, index=False, encoding="utf-8-sig")
-    print(f"[INFO] Menyimpan ringkasan metrik kategori ke '{summary_path}'")
+    print(f"[INFO] Menyimpan ringkasan metrik domain ancaman ke '{summary_path}'")
 
     df_low = df_merged[df_merged["confidence_level"] == "Low"].copy()
     if not df_low.empty:
@@ -180,7 +186,7 @@ def run_aggregation(config_override=None):
             "ai_sentiment",
             "topic_id",
             "topic_name",
-            "business_category",
+            "threat_domain",
             "main_topic_prob",
             "alt_topic_1",
             "alt_topic_1_name",

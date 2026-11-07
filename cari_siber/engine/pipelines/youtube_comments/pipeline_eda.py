@@ -84,13 +84,14 @@ def _compute_topic_analysis(df_bcs, df_all):
         total_comments_sent = int(df_valid["comment_count_all"].sum())
 
         topics = []
+        cat_col_all = "threat_domain" if (not df_all.empty and "threat_domain" in df_all.columns) else "business_category"
         for idx, row in df_valid.iterrows():
-            cat_name = str(row.get("business_category", ""))
+            cat_name = str(row.get("threat_domain") or row.get("business_category", ""))
             sample_comments = []
-            if not df_all.empty and "business_category" in df_all.columns:
+            if not df_all.empty and cat_col_all in df_all.columns:
                 sub_df = df_all[
                     (df_all["ai_sentiment"] == sent_label)
-                    & (df_all["business_category"] == cat_name)
+                    & (df_all[cat_col_all] == cat_name)
                 ]
                 if not sub_df.empty:
                     sub_df_sorted = sub_df.copy()
@@ -107,6 +108,7 @@ def _compute_topic_analysis(df_bcs, df_all):
                 {
                     "rank": idx + 1,
                     "name": cat_name,
+                    "threat_domain": cat_name,
                     "business_category": cat_name,
                     "sub_issue": str(row.get("example_sub_issues", "")),
                     "example_sub_issues": str(row.get("example_sub_issues", "")),
@@ -237,6 +239,7 @@ def _compute_video_analysis(meta_csv_path: str, df_all: pd.DataFrame, video_id: 
     if not df_all_copy.empty:
         top_df = df_all_copy.sort_values(by=["like_count", "reply_count"], ascending=[False, False]).head(10)
         for _, crow in top_df.iterrows():
+            cat_val = str(crow.get("threat_domain") or crow.get("business_category", ""))
             top_comments.append(
                 {
                     "comment_id": str(crow.get("comment_id", "")),
@@ -245,7 +248,8 @@ def _compute_video_analysis(meta_csv_path: str, df_all: pd.DataFrame, video_id: 
                     "like_count": int(crow.get("like_count", 0)),
                     "reply_count": int(crow.get("reply_count", 0)),
                     "ai_sentiment": str(crow.get("ai_sentiment", "Netral")),
-                    "business_category": str(crow.get("business_category", "")),
+                    "threat_domain": cat_val,
+                    "business_category": cat_val,
                     "is_hearted": bool(str(crow.get("is_hearted", "")).lower() in ["true", "1"]),
                     "video_title": str(crow.get("video_title", "")),
                 }
@@ -277,10 +281,12 @@ def _compute_official_response(df_engagement):
 
     reply_gap_topics = []
     for _, row in df_gap.iterrows():
+        cat_val = str(row.get("threat_domain") or row.get("business_category", ""))
         reply_gap_topics.append(
             {
                 "topic_id": int(row["topic_id"]),
-                "business_category": str(row["business_category"]),
+                "threat_domain": cat_val,
+                "business_category": cat_val,
                 "sub_issue": str(row.get("sub_issue", "")),
                 "ai_sentiment": str(row["ai_sentiment"]),
                 "total_comments": int(row["total_comments"]),
@@ -308,9 +314,11 @@ def _compute_engagement_analysis(df_engagement):
 
     top_engaging_topics = []
     for _, row in df_top.iterrows():
+        cat_val = str(row.get("threat_domain") or row.get("business_category", ""))
         top_engaging_topics.append(
             {
-                "business_category": str(row["business_category"]),
+                "threat_domain": cat_val,
+                "business_category": cat_val,
                 "sub_issue": str(row.get("sub_issue", "")),
                 "ai_sentiment": str(row["ai_sentiment"]),
                 "engagement_score": float(row["engagement_score"]),
@@ -466,7 +474,9 @@ def run_eda(config_override=None):
     json_output_dir = os.path.join(output_dir, "json")
     os.makedirs(json_output_dir, exist_ok=True)
 
-    bcs_path = os.path.join(csv_output_dir, "business_category_youtube_summary.csv")
+    bcs_path_new = os.path.join(csv_output_dir, "threat_domain_youtube_summary.csv")
+    bcs_path_legacy = os.path.join(csv_output_dir, "business_category_youtube_summary.csv")
+    bcs_path = bcs_path_new if os.path.exists(bcs_path_new) else bcs_path_legacy
     mapping_path = os.path.join(csv_output_dir, "mapping_review_topic_youtube_final.csv")
     engagement_path = os.path.join(csv_output_dir, "youtube_engagement_metrics.csv")
     topic_agg_path = os.path.join(csv_output_dir, "master_topic_youtube_agregasi.csv")

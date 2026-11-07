@@ -149,9 +149,10 @@ def _chart_02_topic_analysis(data, images_dir, app_name):
 
     for sent, t_data in topic_data.items():
         for cat in t_data.get("categories", []):
+            cat_name = cat.get("threat_domain") or cat.get("business_category") or cat.get("name", "Umum")
             all_cats.append(
                 {
-                    "category": cat["business_category"],
+                    "category": cat_name,
                     "comment_count": cat["comment_count"],
                     "sentiment": sent,
                 }

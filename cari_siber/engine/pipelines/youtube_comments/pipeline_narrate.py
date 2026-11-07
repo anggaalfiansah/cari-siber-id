@@ -62,9 +62,11 @@ def _slim_json(data: dict) -> dict:
             for cat in categories[:5]:
                 raw_samples = cat.get("sample_comments", [])
                 clean_sample = [str(raw_samples[0])[:100]] if raw_samples else []
+                cat_name = cat.get("threat_domain") or cat.get("business_category") or cat.get("name")
                 slim_cats.append(
                     {
-                        "name": cat.get("business_category") or cat.get("name"),
+                        "name": cat_name,
+                        "threat_domain": cat_name,
                         "comment_count": cat.get("comment_count"),
                         "total_likes": cat.get("total_likes"),
                         "sub_issue": cat.get("sub_issue"),
@@ -89,9 +91,9 @@ Berikut adalah data telemetri dan statistik hasil ekstraksi intelijen:
 Susun Laporan Eksekutif dengan struktur doktrin pertahanan berikut:
 1. SITUASI RUANG SIBER & INDEKS POLARISASI (Overview ancaman, sentimen publik, dan deteksi Silent Majority vs Loud Minority)
 2. IDENTIFIKASI OPERASI INFORMASI TERKOORDINASI / CIB (Analisis jaringan bot, copypasta, dan pola waktu burst akun inotentik)
-3. PEMETAAN NARASI ANCAMAN KOGNITIF (Pemetaan isu pemicu friksi berdasar domain: Disinformasi, SARA, Delegitimasi Komando/Negara)
+3. PEMETAAN NARASI ANCAMAN KOGNITIF & KORELASI ANCAMAN INFRASTRUKTUR IT/OT (Pemetaan isu berdasar domain Disinformasi, SARA, Delegitimasi Komando/Negara, serta korelasi potensi eskalasi narasi siber sosial terhadap gangguan operasi komando, doxing personel, atau ancaman siber pada infrastruktur IT/OT pertahanan TNI AD)
 4. DISARM FRAMEWORK MAPPING (Pemetaan taktik dan teknik ancaman berdasarkan standar DISARM/AMITT)
-5. REKOMENDASI TINDAKAN PENANGKALAN & KONTRA-NARASI (Langkah taktis untuk Satuan Penerangan dan Tim Siber TNI AD)
+5. REKOMENDASI TINDAKAN PENANGKALAN & KONTRA-NARASI (Langkah taktis terukur untuk Satuan Penerangan, Puskodal, dan Tim Siber TNI AD)
 
 Gunakan terminologi intelijen pertahanan yang formal, tegas, analitis, dan berbasis angka faktual.
 """
@@ -145,8 +147,11 @@ def run_narrator(config_override=None):
         print("[WARNING] EDGEONE_API_KEY tidak diset di konfigurasi. Melewati pembuatan narasi AI.")
         return
     elif ai_provider == "custom" and not custom_api_key:
-        print("[WARNING] CUSTOM_API_KEY tidak diset di konfigurasi. Melewati pembuatan narasi AI.")
-        return
+        custom_base_url = str(cfg.get("CUSTOM_BASE_URL", AppConfig.CUSTOM_BASE_URL) or "").lower()
+        is_local = any(h in custom_base_url for h in ["127.0.0.1", "localhost", "0.0.0.0", "192.168.", "10.", "172."])
+        if not is_local:
+            print("[WARNING] CUSTOM_API_KEY tidak diset di konfigurasi. Melewati pembuatan narasi AI.")
+            return
 
     prompt = build_prompt(json_payload, app_name)
 

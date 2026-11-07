@@ -191,7 +191,7 @@ def process_youtube_bertopic(df, kamus, embedding_model, config, stopwords, csv_
                         "topic_id": t_id,
                         "topic_name": topic_name,
                         "ai_sentiment": "",
-                        "business_category": "",
+                        "threat_domain": "",
                         "sub_issue": "",
                         "comment_count": review_count,
                         "percentage": round(pct, 2),
