@@ -1,5 +1,6 @@
 import os
 import sys
+import shutil
 
 def is_frozen() -> bool:
     """Returns True if running inside a PyInstaller frozen bundle."""
@@ -96,7 +97,25 @@ def get_runs_dir() -> str:
     return runs_dir
 
 
+def get_prebuilt_runs_dir() -> str:
+    """Directory containing bundled prebuilt sample runs."""
+    return os.path.join(get_resources_dir(), "prebuilt_runs")
+
+
 def get_run_dir(run_id: str) -> str:
-    runs_dir = os.path.join(get_runs_dir(), run_id)
-    os.makedirs(runs_dir, exist_ok=True)
-    return runs_dir
+    user_run_dir = os.path.join(get_runs_dir(), run_id)
+    if os.path.exists(user_run_dir) and os.listdir(user_run_dir):
+        return user_run_dir
+
+    # Periksa apakah run_id merupakan salah satu prebuilt run bawaan
+    prebuilt_run_dir = os.path.join(get_prebuilt_runs_dir(), run_id)
+    if os.path.exists(prebuilt_run_dir):
+        # Otomatis salin ke runs_dir pengguna agar direktori siap pakai & dapat dimodifikasi/diekspor
+        try:
+            shutil.copytree(prebuilt_run_dir, user_run_dir, dirs_exist_ok=True)
+            return user_run_dir
+        except Exception:
+            return prebuilt_run_dir
+
+    os.makedirs(user_run_dir, exist_ok=True)
+    return user_run_dir

@@ -1,0 +1,14 @@
+{
+  "polarization_index": 0.72,
+  "sentiment_distribution": {
+    "Positif": 0.2415,
+    "Netral": 0.0146,
+    "Negatif": 0.7438
+  },
+  "dominant_conflict_topics": [
+    "Negara Indonesia Prabowo",
+    "Setuju Prabowo Hukum",
+    "Barat Lurah Lurah Barat"
+  ],
+  "silent_majority_consensus": "Didominasi Skeptisisme / Sentimen Negatif"
+}

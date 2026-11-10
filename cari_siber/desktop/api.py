@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 from cari_siber.settings import AppSettings
 from cari_siber.engine.core.config import AppConfig
-from cari_siber.paths import get_run_dir, get_runs_dir, get_resources_dir
+from cari_siber.paths import get_run_dir, get_runs_dir, get_resources_dir, get_prebuilt_runs_dir
 from cari_siber.services.history import HistoryService
 from cari_siber.services.results import ResultsService
 from cari_siber.services.pipeline_runner import PipelineRunner
@@ -143,7 +143,70 @@ class DesktopApi:
         """
         results = []
         try:
-            # 1. Muat Dataset Simulasi Militer bawaan (Pre-loaded Offline Demo Corpora)
+            # 1. Muat Dataset Prebuilt Bawaan Lengkap (Multi-Video Corpus Siap Pakai)
+            prebuilt_dir = get_prebuilt_runs_dir()
+            if os.path.exists(prebuilt_dir):
+                for pb_id in sorted(os.listdir(prebuilt_dir), reverse=True):
+                    pb_path = os.path.join(prebuilt_dir, pb_id)
+                    if not os.path.isdir(pb_path):
+                        continue
+                    scrap_dir = os.path.join(pb_path, "scrap")
+                    master_csv = os.path.join(scrap_dir, "youtube_comments_all_videos.csv")
+                    if not os.path.exists(master_csv):
+                        continue
+
+                    meta_all = os.path.join(scrap_dir, "youtube_videos_meta_all.csv")
+                    v_cnt = 1
+                    if os.path.exists(meta_all):
+                        try:
+                            v_cnt = len(pd.read_csv(meta_all))
+                        except Exception:
+                            pass
+
+                    t_title = f"Korpus Multi-Video ({v_cnt} Video)"
+                    r_ctx = os.path.join(pb_path, "json", "run_context.json")
+                    if os.path.exists(r_ctx):
+                        try:
+                            with open(r_ctx, "r", encoding="utf-8") as f:
+                                kw = json.load(f).get("search_keyword", "")
+                                if kw:
+                                    t_title = f'Kata Kunci: "{kw}" ({v_cnt} Video)'
+                        except Exception:
+                            pass
+                    if not t_title or t_title.startswith("Korpus Multi-Video"):
+                        eda_f = os.path.join(pb_path, "json", "youtube_eda_summary.json")
+                        if os.path.exists(eda_f):
+                            try:
+                                with open(eda_f, "r", encoding="utf-8") as ef:
+                                    t_title = json.load(ef).get("meta", {}).get("video_title", t_title)
+                            except Exception:
+                                pass
+
+                    s_bytes = os.path.getsize(master_csv)
+                    sha256_val = HistoryService.compute_sha256(master_csv)
+
+                    line_count = 0
+                    try:
+                        with open(master_csv, "r", encoding="utf-8", errors="ignore") as f:
+                            for _ in f:
+                                line_count += 1
+                        line_count = max(0, line_count - 1)
+                    except Exception:
+                        line_count = int(s_bytes / 250)
+
+                    results.append({
+                        "run_id": pb_id,
+                        "created_at": "PREBUILT-CONTOH",
+                        "comment_count": line_count,
+                        "video_count": v_cnt,
+                        "title": f"[CONTOH MULTI-VIDEO] {t_title}",
+                        "source_file": "youtube_comments_all_videos.csv",
+                        "size_mb": round(max(0.01, s_bytes / (1024 * 1024)), 2),
+                        "sha256_hash": sha256_val,
+                        "is_demo": True,
+                    })
+
+            # 2. Muat Dataset Simulasi Cepat bawaan (sample_corpus_*.csv)
             res_dir = get_resources_dir()
             demo_specs = [
                 (
@@ -178,13 +241,16 @@ class DesktopApi:
                     except Exception:
                         pass
 
-            # 2. Muat Korpus dari Direktori Runs Pengguna
+            # 3. Muat Korpus dari Direktori Runs Pengguna (Hindari duplikasi id yang sudah ada)
             runs_dir = get_runs_dir()
             if not os.path.exists(runs_dir):
                 return results
 
+            seen_run_ids = {r["run_id"] for r in results}
             user_corpora = []
             for r_id in os.listdir(runs_dir):
+                if r_id in seen_run_ids:
+                    continue
                 r_path = os.path.join(runs_dir, r_id)
                 if not os.path.isdir(r_path):
                     continue
@@ -498,7 +564,7 @@ class DesktopApi:
             return None
         try:
             run = HistoryService.get_run(run_id)
-            run_dir = run["run_dir"] if run and run.get("run_dir") else get_run_dir(run_id)
+            run_dir = run["run_dir"] if run and run.get("run_dir") and os.path.exists(run.get("run_dir")) else get_run_dir(run_id)
             if not run_dir or not os.path.exists(run_dir):
                 return None
             return ResultsService.load_run_results(run_dir)
@@ -512,22 +578,24 @@ class DesktopApi:
 
     def export_xlsx(self, run_id: str) -> Dict[str, Any]:
         run = HistoryService.get_run(run_id)
-        if not run:
+        run_dir = run["run_dir"] if run and run.get("run_dir") and os.path.exists(run.get("run_dir")) else get_run_dir(run_id)
+        if not run_dir or not os.path.exists(run_dir):
             return {"success": False, "error": "Run ID tidak ditemukan."}
 
         try:
-            xlsx_path = run_exporter(output_dir=run["run_dir"])
+            xlsx_path = run_exporter(output_dir=run_dir)
             return {"success": True, "path": xlsx_path}
         except Exception as e:
             return {"success": False, "error": str(e)}
 
     def open_folder(self, run_id: str) -> Dict[str, Any]:
         run = HistoryService.get_run(run_id)
-        if not run or not os.path.exists(run["run_dir"]):
+        run_dir = run["run_dir"] if run and run.get("run_dir") and os.path.exists(run.get("run_dir")) else get_run_dir(run_id)
+        if not run_dir or not os.path.exists(run_dir):
             return {"success": False, "error": "Folder run tidak ditemukan."}
 
         try:
-            folder = run["run_dir"]
+            folder = run_dir
             if hasattr(os, "startfile"):
                 os.startfile(folder)
             elif sys.platform == "darwin":

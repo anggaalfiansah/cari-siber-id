@@ -1,0 +1,18 @@
+﻿ai_sentiment,threat_domain,total_likes,total_replies,hearted_count,example_sub_issues,comment_count_all,comment_count_confident,share_confident
+Negatif,Provokasi SARA & Separatisme,59274,6053,79,"Seruan hukum mati bagi pengkhianat negara, Hashtag tersembunyi menyerang Jokowi dan pendukungnya",33570,33494,0.9977
+Negatif,Delegitimasi Institusi,333,55,0,"Cemoohan terhadap pejabat yang haus kekuasaan, Seruan hukum mati bagi Lembaga Sertifikasi Profesi, Analogi tupai jatuh untuk kritik pejabat",390,390,1.0
+Negatif,Disinformasi Pertahanan,1537,1013,0,"Narasi musuh dalam selimut di lingkaran istana, Spam emoji dan narasi konspirasi makar termul",280,280,1.0
+Negatif,Disinformasi Anggaran Negara,9,1,0,Pertanyaan sumber dana 25 triliun,34,34,1.0
+Negatif,Provokasi Agama & Politik,105,3,0,Ayat tipu daya Allah untuk lawan politik,26,26,1.0
+Negatif,Narasi Fitnah Penyadapan,1,0,0,Tuduhan penyadapan untuk kontrol politik,21,21,1.0
+Negatif,Kritik Kebijakan Ekonomi,27,3,0,Keluhan rupiah anjlok dan isu pengalihan,19,19,1.0
+Negatif,Delegitimasi Influencer Publik,0,0,0,Tuduhan artis dibayar penghianat bangsa,13,13,1.0
+Netral,Delegitimasi Institusi,138,105,1,Spekulasi identitas dalang penyadapan ilegal,504,504,1.0
+Netral,Spam Komentar Bot,7,0,0,Aktivitas spam komentar pujian otomatis oleh bot,79,79,1.0
+Netral,Spam & Noise Komentar,4,1,0,Komentar tidak relevan dan repetitif,44,44,1.0
+Netral,Kritik Kebijakan Publik,10,0,0,Pengalihan isu dari karhutla ke penyadapan presiden,36,36,1.0
+Netral,Spam Simbol Keagamaan,0,0,0,Repetisi takbir tanpa konteks substansi,11,11,1.0
+Netral,Lain-lain / Noise,0,0,0,Komentar umum/noise,1,0,0.0
+Positif,Apresiasi & Dukungan Publik,13114,1019,23,"Dukungan terhadap tindakan tegas Presiden Prabowo, Doa keselamatan untuk Presiden Prabowo Subianto, Respons doa dan dukungan terhadap konten",10661,10644,0.9984
+Positif,Kritik Kebijakan Publik,665,26,0,Tuntutan usut tuntas hingga akar masalah,475,474,0.9979
+Positif,Apresiasi Sistem Pemilu,1,0,0,Argumen berkas C1 mencegah kecurangan,19,18,0.9474

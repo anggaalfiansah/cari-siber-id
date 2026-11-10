@@ -1,0 +1,1827 @@
+[
+  {
+    "template_text": "Hukum mati... Penghianat bangsa",
+    "normalized_key": "hukum mati penghianat bangsa",
+    "unique_accounts_count": 11,
+    "total_occurrences": 11,
+    "unique_videos_count": 9,
+    "target_video_titles": [
+      "TERBONGKAR DALANG PENYADAPAN PRESIDEN PRABOWO OLEH MANTAN KAPOLRI LISTYO SIGIT BUKAN JOKOWI GIBRAM 2",
+      "Mahfud MD  Pengkhianatan Terjahat! Dugaan Makar Kasus Penyadapan Presiden Prabowo",
+      "Terseret Kasus Penyadapan Presiden, Irjen Pol Ahrie Sonta Akan Bersikap Kooperatif | Siang | 08/11",
+      "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+      "Tersangka Penyadapan Presiden Bertambah | Breaking News"
+    ],
+    "accounts": [
+      "@pemula1dae",
+      "@salmonmokoginta6088",
+      "@mhdnursyam2789",
+      "@azzamawidodo7473",
+      "@cacex-dongengdunia",
+      "@dewa_official-s4h",
+      "@AntonWibisonoS",
+      "@GabrielNababan-q3z",
+      "@dedesuparam2189",
+      "@Mesin_Waktuu",
+      "@sudiIrwan"
+    ],
+    "coordination_level": "CRITICAL_MASS",
+    "coordination_badge": "🔴 Sangat Kritis",
+    "is_hostile": true,
+    "sample_occurrences": [
+      {
+        "raw_text": "Hukum mati penghianat bangsa",
+        "author_id": "UC5fT9RGdckrjDigVk2ddAIA",
+        "username": "@pemula1dae",
+        "video_id": "8UYkaLY495c",
+        "video_title": "Kapten Jack Resmi Jadi Tersangka Baru Penyadapan Presiden! | Sindo Prime | 07/11",
+        "created_at": "2026-11-08 15:22:50",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Hukum mati penghianat Bangsa",
+        "author_id": "UCwVnjstxhqvj0v8cXtTEChA",
+        "username": "@salmonmokoginta6088",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-08 09:25:58",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Hukum mati penghianat bangsa",
+        "author_id": "UCk2FPXwhyxXMcth4xthFRpQ",
+        "username": "@mhdnursyam2789",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-08 06:26:32",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Hukum mati penghianat bangsa",
+        "author_id": "UCqAYONJUMoUBIrOrh3oZn6Q",
+        "username": "@azzamawidodo7473",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-07 23:31:56",
+        "sentiment": "Negatif",
+        "like_count": 1
+      },
+      {
+        "raw_text": "Hukum mati... Penghianat bangsa",
+        "author_id": "UCtmNxCTWNUu4_6gPSb8KygA",
+        "username": "@cacex-dongengdunia",
+        "video_id": "h0pbgofGTe4",
+        "video_title": "Terseret Kasus Penyadapan Presiden, Irjen Pol Ahrie Sonta Akan Bersikap Kooperatif | Siang | 08/11",
+        "created_at": "2026-11-08 22:54:00",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Hukum mati semua penghianat bangsa",
+    "normalized_key": "hukum mati semua penghianat bangsa",
+    "unique_accounts_count": 4,
+    "total_occurrences": 4,
+    "unique_videos_count": 3,
+    "target_video_titles": [
+      "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+      "Pengusutan Kasus Penyadapan Presiden Prabowo, Listyo Sigit dan 3 Jenderal Polri Tersangka",
+      "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP"
+    ],
+    "accounts": [
+      "@RohidAdi",
+      "@Mawar-t4t",
+      "@Hujaemah21",
+      "@abdoel_39"
+    ],
+    "coordination_level": "MEDIUM_COORDINATION",
+    "coordination_badge": "🟡 Bot Duplikat",
+    "is_hostile": true,
+    "sample_occurrences": [
+      {
+        "raw_text": "Hukum mati semua penghianat bangsa",
+        "author_id": "UCFwdMqAZnQ6q16dKY8EnsSQ",
+        "username": "@RohidAdi",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-07 23:27:53",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Hukum mati semua penghianat bangsa",
+        "author_id": "UCUHmoh42t6yeuyMM0KNYPJw",
+        "username": "@Mawar-t4t",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-07 23:29:19",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Hukum mati semua penghianat bangsa",
+        "author_id": "UC2Pbkj3-XENo3AQvd1JTTkA",
+        "username": "@Hujaemah21",
+        "video_id": "IDB7O9Hp4ss",
+        "video_title": "Pengusutan Kasus Penyadapan Presiden Prabowo, Listyo Sigit dan 3 Jenderal Polri Tersangka",
+        "created_at": "2026-11-08 19:33:20",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "hukum mati semua penghianat bangsa",
+        "author_id": "UC6oJ5JQRERWtN1HAj_-0rFQ",
+        "username": "@abdoel_39",
+        "video_id": "ToFtmFOuARw",
+        "video_title": "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP",
+        "created_at": "2026-11-06 23:34:06",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "PENGHIANAT WAJIB DIHUKUM MATI",
+    "normalized_key": "penghianat wajib dihukum mati",
+    "unique_accounts_count": 4,
+    "total_occurrences": 4,
+    "unique_videos_count": 3,
+    "target_video_titles": [
+      "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+      "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+      "OPERASI SENYAP PENYADAPAN PRESIDEN TERBONGKAR, SIAPA PETINGGI DI BELAKANGNYA? | INTERUPSI | FULL"
+    ],
+    "accounts": [
+      "@kakekpushrank6989",
+      "@rorianesdi",
+      "@JhonsenyoJhonsenyo-sc1yz",
+      "@aligatorosima5321"
+    ],
+    "coordination_level": "MEDIUM_COORDINATION",
+    "coordination_badge": "🟡 Bot Duplikat",
+    "is_hostile": true,
+    "sample_occurrences": [
+      {
+        "raw_text": "PENGHIANAT WAJIB DIHUKUM MATI",
+        "author_id": "UChvDYhsADPm30IhjJeB_AOg",
+        "username": "@kakekpushrank6989",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-07 23:29:48",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "PENGHIANAT WAJIB DIHUKUM MATI",
+        "author_id": "UC5bKmr19JaLIVWD_SrB1TBg",
+        "username": "@rorianesdi",
+        "video_id": "MEyj6iQ2x2I",
+        "video_title": "OPERASI SENYAP PENYADAPAN PRESIDEN TERBONGKAR, SIAPA PETINGGI DI BELAKANGNYA? | INTERUPSI | FULL",
+        "created_at": "2026-11-07 23:38:04",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "penghianat wajib dihukum mati",
+        "author_id": "UC-CeU6Djr8g4Icr1RJ-R0fg",
+        "username": "@JhonsenyoJhonsenyo-sc1yz",
+        "video_id": "72oa-TUD6co",
+        "video_title": "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+        "created_at": "2026-11-03 23:51:52",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Penghianat wajib dihukum mati",
+        "author_id": "UCrYfPCTXwMDG6OIBxDFKyaw",
+        "username": "@aligatorosima5321",
+        "video_id": "72oa-TUD6co",
+        "video_title": "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+        "created_at": "2026-11-03 23:51:55",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Hukum mati penghianat negara",
+    "normalized_key": "hukum mati penghianat negara",
+    "unique_accounts_count": 4,
+    "total_occurrences": 4,
+    "unique_videos_count": 3,
+    "target_video_titles": [
+      "🔴BREAKING NEWS - Eks Kapolri Listyo Sigit Tersangka Penyadapan Presiden",
+      "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+      "Ungkap! Motif Dibalik Siasat 3 Jendral TSK Kasus Penyadapan Presiden Prabowo | INDEPTH"
+    ],
+    "accounts": [
+      "@agung_nuridwan",
+      "@RizParfum",
+      "@AmihNurhayati-u5t",
+      "@AbdullahIka-i3s"
+    ],
+    "coordination_level": "MEDIUM_COORDINATION",
+    "coordination_badge": "🟡 Bot Duplikat",
+    "is_hostile": true,
+    "sample_occurrences": [
+      {
+        "raw_text": "Hukum mati penghianat negara",
+        "author_id": "UC2jOjbrUgHqhaWqeTAKMjfA",
+        "username": "@agung_nuridwan",
+        "video_id": "OyGRPb8D4tA",
+        "video_title": "Ungkap! Motif Dibalik Siasat 3 Jendral TSK Kasus Penyadapan Presiden Prabowo | INDEPTH",
+        "created_at": "2026-11-05 23:44:29",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Hukum mati penghianat negara",
+        "author_id": "UCBhi4O1mjx2hT-KNTpRji6g",
+        "username": "@RizParfum",
+        "video_id": "OyGRPb8D4tA",
+        "video_title": "Ungkap! Motif Dibalik Siasat 3 Jendral TSK Kasus Penyadapan Presiden Prabowo | INDEPTH",
+        "created_at": "2026-11-04 23:44:36",
+        "sentiment": "Negatif",
+        "like_count": 1
+      },
+      {
+        "raw_text": "Hukum mati penghianat negara",
+        "author_id": "UCSnb0iQNovk8z8a-Vj2mymw",
+        "username": "@AmihNurhayati-u5t",
+        "video_id": "eOUCVEYjtW4",
+        "video_title": "🔴BREAKING NEWS - Eks Kapolri Listyo Sigit Tersangka Penyadapan Presiden",
+        "created_at": "2026-11-04 23:51:14",
+        "sentiment": "Negatif",
+        "like_count": 3
+      },
+      {
+        "raw_text": "Hukum mati penghianat negara",
+        "author_id": "UC88Xx9RV_2D7dVZj_g77I_A",
+        "username": "@AbdullahIka-i3s",
+        "video_id": "72oa-TUD6co",
+        "video_title": "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+        "created_at": "2026-11-03 23:51:47",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "PENGHIANAT BANGSA HARUS DI HUKUM MATI!!!",
+    "normalized_key": "penghianat bangsa harus di hukum mati",
+    "unique_accounts_count": 3,
+    "total_occurrences": 3,
+    "unique_videos_count": 3,
+    "target_video_titles": [
+      "🔴BREAKING NEWS - Polri Tetapkan Tersangka Baru Kasus Penyadapan Presiden Prabowo",
+      "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+      "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP"
+    ],
+    "accounts": [
+      "@zulkiflisultandm9536",
+      "@sukriusman2931",
+      "@IvanRanta-l3m"
+    ],
+    "coordination_level": "MEDIUM_COORDINATION",
+    "coordination_badge": "🟡 Bot Duplikat",
+    "is_hostile": true,
+    "sample_occurrences": [
+      {
+        "raw_text": "Penghianat Bangsa Harus Di hukum Mati",
+        "author_id": "UCtlisJjuT0e_lpj8jWIptQQ",
+        "username": "@zulkiflisultandm9536",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-08 10:25:50",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Penghianat Bangsa harus di hukum MATI",
+        "author_id": "UC1IKV7ndEJA6oQyciuCIdig",
+        "username": "@sukriusman2931",
+        "video_id": "ToFtmFOuARw",
+        "video_title": "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP",
+        "created_at": "2026-11-05 23:34:35",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "PENGHIANAT BANGSA HARUS DI HUKUM MATI!!!",
+        "author_id": "UCp6DTA0QuxedW005UIDz9ig",
+        "username": "@IvanRanta-l3m",
+        "video_id": "i03nc2uxjbM",
+        "video_title": "🔴BREAKING NEWS - Polri Tetapkan Tersangka Baru Kasus Penyadapan Presiden Prabowo",
+        "created_at": "2026-11-05 23:43:05",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Hukum mati para pengkhianat bangsa",
+    "normalized_key": "hukum mati para pengkhianat bangsa",
+    "unique_accounts_count": 3,
+    "total_occurrences": 3,
+    "unique_videos_count": 3,
+    "target_video_titles": [
+      "Tersangka Penyadapan Presiden Bertambah | Breaking News",
+      "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+      "🔴BREAKING NEWS - Polri Tetapkan Tersangka Baru Kasus Penyadapan Presiden Prabowo"
+    ],
+    "accounts": [
+      "@jumaidijumaidi5245",
+      "@pitiwiwiwwiwiw",
+      "@Hartini-ed1bz"
+    ],
+    "coordination_level": "MEDIUM_COORDINATION",
+    "coordination_badge": "🟡 Bot Duplikat",
+    "is_hostile": true,
+    "sample_occurrences": [
+      {
+        "raw_text": "Hukum mati para pengkhianat bangsa",
+        "author_id": "UCt7Q73vhaxlrcp2N4fG8-oQ",
+        "username": "@jumaidijumaidi5245",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-08 07:26:22",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "hukum mati para pengkhianat bangsa",
+        "author_id": "UCEL1U-qy02SBhuWtJG9Ebaw",
+        "username": "@pitiwiwiwwiwiw",
+        "video_id": "i03nc2uxjbM",
+        "video_title": "🔴BREAKING NEWS - Polri Tetapkan Tersangka Baru Kasus Penyadapan Presiden Prabowo",
+        "created_at": "2026-11-06 23:42:56",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Hukum mati para pengkhianat bangsa",
+        "author_id": "UCpE06D8d2KzNTSrF9nfrBrQ",
+        "username": "@Hartini-ed1bz",
+        "video_id": "FIGKEo-CtrM",
+        "video_title": "Tersangka Penyadapan Presiden Bertambah | Breaking News",
+        "created_at": "2026-11-05 23:48:47",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Penghianat Bangsa harus di hukum Mati.",
+    "normalized_key": "penghianat bangsa harus di hukum mati.",
+    "unique_accounts_count": 3,
+    "total_occurrences": 3,
+    "unique_videos_count": 3,
+    "target_video_titles": [
+      "Usman Hamid & Islah Bahrawi Bongkar Motif Penyadapan Presiden oleh Listyo CS, Ada Apa?",
+      "Ungkap! Motif Dibalik Siasat 3 Jendral TSK Kasus Penyadapan Presiden Prabowo | INDEPTH",
+      "PDIP & Demokrat Soal Kasus Penyadapan Presiden Prabowo oleh 3 Jenderal Polisi"
+    ],
+    "accounts": [
+      "@DudiDermawan-i1r",
+      "@banyulangit1719",
+      "@HarunArFatih1823"
+    ],
+    "coordination_level": "MEDIUM_COORDINATION",
+    "coordination_badge": "🟡 Bot Duplikat",
+    "is_hostile": true,
+    "sample_occurrences": [
+      {
+        "raw_text": "Penghianat Bangsa harus di hukum Mati.",
+        "author_id": "UC9l4pFGL3mIdL-YjL6a9FxA",
+        "username": "@DudiDermawan-i1r",
+        "video_id": "OyGRPb8D4tA",
+        "video_title": "Ungkap! Motif Dibalik Siasat 3 Jendral TSK Kasus Penyadapan Presiden Prabowo | INDEPTH",
+        "created_at": "2026-11-04 23:44:35",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Penghianat bangsa harus di hukum mati.",
+        "author_id": "UCYZ3dYwPAl1UW_A1MkLVeig",
+        "username": "@banyulangit1719",
+        "video_id": "tdsBZIdfFAw",
+        "video_title": "Usman Hamid & Islah Bahrawi Bongkar Motif Penyadapan Presiden oleh Listyo CS, Ada Apa?",
+        "created_at": "2026-11-04 23:46:16",
+        "sentiment": "Negatif",
+        "like_count": 9
+      },
+      {
+        "raw_text": "Penghianat bangsa harus di hukum mati.",
+        "author_id": "UC94gAi5xK4vR9u13VnakDPA",
+        "username": "@HarunArFatih1823",
+        "video_id": "yUj6NMQmOZQ",
+        "video_title": "PDIP & Demokrat Soal Kasus Penyadapan Presiden Prabowo oleh 3 Jenderal Polisi",
+        "created_at": "2026-11-04 23:50:06",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Penghianat negara wajib dihukum mati",
+    "normalized_key": "penghianat negara wajib dihukum mati",
+    "unique_accounts_count": 3,
+    "total_occurrences": 3,
+    "unique_videos_count": 2,
+    "target_video_titles": [
+      "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+      "PDIP & Demokrat Soal Kasus Penyadapan Presiden Prabowo oleh 3 Jenderal Polisi"
+    ],
+    "accounts": [
+      "@RamliWan-i6j",
+      "@nocomment9743",
+      "@trisnaadi4276"
+    ],
+    "coordination_level": "MEDIUM_COORDINATION",
+    "coordination_badge": "🟡 Bot Duplikat",
+    "is_hostile": true,
+    "sample_occurrences": [
+      {
+        "raw_text": "Penghianat negara wajib dihukum mati",
+        "author_id": "UCJ1z6uFqNcdy11Pz7PlP_Aw",
+        "username": "@RamliWan-i6j",
+        "video_id": "yUj6NMQmOZQ",
+        "video_title": "PDIP & Demokrat Soal Kasus Penyadapan Presiden Prabowo oleh 3 Jenderal Polisi",
+        "created_at": "2026-11-04 23:50:07",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "penghianat negara wajib dihukum MATI",
+        "author_id": "UCW3jPNr8d8uE73m8CNf2URA",
+        "username": "@nocomment9743",
+        "video_id": "72oa-TUD6co",
+        "video_title": "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+        "created_at": "2026-11-04 23:51:18",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "PENGHIANAT NEGARA WAJIB DIHUKUM MATI",
+        "author_id": "UCWOvYmwa9wp7PwyOYwO-dmg",
+        "username": "@trisnaadi4276",
+        "video_id": "72oa-TUD6co",
+        "video_title": "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+        "created_at": "2026-11-03 23:51:39",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Makar harus di hukum mati",
+    "normalized_key": "makar harus di hukum mati",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 2,
+    "target_video_titles": [
+      "Kapten Jack Resmi Jadi Tersangka Baru Penyadapan Presiden! | Sindo Prime | 07/11",
+      "Istana Nyatakan Penyadapan Presiden Prabowo Sebagai Makar | Kabar Pagi"
+    ],
+    "accounts": [
+      "@ZaenalArdexs-ci7eu",
+      "@IndraRukmana-ex5xw"
+    ],
+    "coordination_level": "MEDIUM_COORDINATION",
+    "coordination_badge": "🟡 Bot Duplikat",
+    "is_hostile": true,
+    "sample_occurrences": [
+      {
+        "raw_text": "Makar harus di hukum mati",
+        "author_id": "UCUbk-GhEcPzl82f0yf_zjMg",
+        "username": "@ZaenalArdexs-ci7eu",
+        "video_id": "8UYkaLY495c",
+        "video_title": "Kapten Jack Resmi Jadi Tersangka Baru Penyadapan Presiden! | Sindo Prime | 07/11",
+        "created_at": "2026-11-08 05:23:24",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Makar harus di hukum mati",
+        "author_id": "UCkqhHaTcQcAvU_p8MYqtScA",
+        "username": "@IndraRukmana-ex5xw",
+        "video_id": "Txc6mAFmIUE",
+        "video_title": "Istana Nyatakan Penyadapan Presiden Prabowo Sebagai Makar | Kabar Pagi",
+        "created_at": "2026-11-08 11:41:05",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Hukum mati semua pengkhianat bangsa",
+    "normalized_key": "hukum mati semua pengkhianat bangsa",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN"
+    ],
+    "accounts": [
+      "@ImranAlqasim-to1gr",
+      "@sumitropuro5977"
+    ],
+    "coordination_level": "MEDIUM_COORDINATION",
+    "coordination_badge": "🟡 Bot Duplikat",
+    "is_hostile": true,
+    "sample_occurrences": [
+      {
+        "raw_text": "Hukum mati semua pengkhianat bangsa",
+        "author_id": "UC_0rjcml9iTkU5lop3Ftgvw",
+        "username": "@ImranAlqasim-to1gr",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-08 21:24:22",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Hukum mati semua pengkhianat bangsa",
+        "author_id": "UCiZ-eQb00Bw8b20WCXyHnVw",
+        "username": "@sumitropuro5977",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-08 06:26:36",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Makar layak di hukum mati",
+    "normalized_key": "makar layak di hukum mati",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 2,
+    "target_video_titles": [
+      "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+      "LIVE REPORT: Update Kasus Penyadapan Presiden Langsung dari Mabes Polri [Selamat Pagi Indonesia]"
+    ],
+    "accounts": [
+      "@HermanArios-s9m",
+      "@indah-z3n9m"
+    ],
+    "coordination_level": "MEDIUM_COORDINATION",
+    "coordination_badge": "🟡 Bot Duplikat",
+    "is_hostile": true,
+    "sample_occurrences": [
+      {
+        "raw_text": "Makar layak di hukum mati",
+        "author_id": "UCU_YPPuUH_f7gkZDx_uiUjw",
+        "username": "@HermanArios-s9m",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-08 00:27:26",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Makar layak di hukum mati",
+        "author_id": "UCNojxERuDXqi7jlor9vgjoQ",
+        "username": "@indah-z3n9m",
+        "video_id": "0WkadEDszgI",
+        "video_title": "LIVE REPORT: Update Kasus Penyadapan Presiden Langsung dari Mabes Polri [Selamat Pagi Indonesia]",
+        "created_at": "2026-11-04 23:49:17",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "pengkhianat bangsa harus di hukum mati!!!!",
+    "normalized_key": "pengkhianat bangsa harus di hukum mati",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 2,
+    "target_video_titles": [
+      "Mahfud MD: Penyadapan Presiden Kejahatan yang Biadab | iNews Pagi 4/11",
+      "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP"
+    ],
+    "accounts": [
+      "@aurbi_historia",
+      "@cowokrumahan5924"
+    ],
+    "coordination_level": "MEDIUM_COORDINATION",
+    "coordination_badge": "🟡 Bot Duplikat",
+    "is_hostile": true,
+    "sample_occurrences": [
+      {
+        "raw_text": "Pengkhianat Bangsa harus di hukum mati",
+        "author_id": "UCfJi5mJYm0waekW0mT9XOqg",
+        "username": "@aurbi_historia",
+        "video_id": "ToFtmFOuARw",
+        "video_title": "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP",
+        "created_at": "2026-11-07 23:33:48",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "pengkhianat bangsa harus di hukum mati!!!!",
+        "author_id": "UC_mmpfNCsh1qJ_AymSY6_1g",
+        "username": "@cowokrumahan5924",
+        "video_id": "qGE0qdsrM-g",
+        "video_title": "Mahfud MD: Penyadapan Presiden Kejahatan yang Biadab | iNews Pagi 4/11",
+        "created_at": "2026-11-04 23:50:53",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Pengkhianat negara harus dihukum mati....!",
+    "normalized_key": "pengkhianat negara harus dihukum mati",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 2,
+    "target_video_titles": [
+      "Terseret Kasus Penyadapan Presiden, Irjen Pol Ahrie Sonta Akan Bersikap Kooperatif | Siang | 08/11",
+      "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP"
+    ],
+    "accounts": [
+      "@MohAnsori-p5m",
+      "@Namarendom-97k"
+    ],
+    "coordination_level": "MEDIUM_COORDINATION",
+    "coordination_badge": "🟡 Bot Duplikat",
+    "is_hostile": true,
+    "sample_occurrences": [
+      {
+        "raw_text": "Pengkhianat negara harus dihukum mati...",
+        "author_id": "UCMWOhthldJNVUUqpuUKsekQ",
+        "username": "@MohAnsori-p5m",
+        "video_id": "ToFtmFOuARw",
+        "video_title": "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP",
+        "created_at": "2026-11-06 23:34:09",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Pengkhianat negara harus dihukum mati....!",
+        "author_id": "UCI3Nx3zcFi7grNVmiMGjVhg",
+        "username": "@Namarendom-97k",
+        "video_id": "h0pbgofGTe4",
+        "video_title": "Terseret Kasus Penyadapan Presiden, Irjen Pol Ahrie Sonta Akan Bersikap Kooperatif | Siang | 08/11",
+        "created_at": "2026-11-08 19:36:01",
+        "sentiment": "Negatif",
+        "like_count": 1
+      }
+    ]
+  },
+  {
+    "template_text": "@bulan378 Allah sebaik baik pembuat makar",
+    "normalized_key": "allah sebaik baik pembuat makar",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP"
+    ],
+    "accounts": [
+      "@MadganiSobidalab",
+      "@sayfulanam8670"
+    ],
+    "coordination_level": "MEDIUM_COORDINATION",
+    "coordination_badge": "🟡 Bot Duplikat",
+    "is_hostile": true,
+    "sample_occurrences": [
+      {
+        "raw_text": "Allah sebaik baik pembuat makar",
+        "author_id": "UCwz57MLbWN8rM4B5HCV6Kfg",
+        "username": "@MadganiSobidalab",
+        "video_id": "ToFtmFOuARw",
+        "video_title": "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP",
+        "created_at": "2026-11-05 23:34:58",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "@bulan378 Allah sebaik baik pembuat makar",
+        "author_id": "UClDjZKyuJE1ylzK4foIeEgA",
+        "username": "@sayfulanam8670",
+        "video_id": "ToFtmFOuARw",
+        "video_title": "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP",
+        "created_at": "2026-11-06 23:35:16",
+        "sentiment": "Negatif",
+        "like_count": 5
+      }
+    ]
+  },
+  {
+    "template_text": "Hukum mati semua yg terlibat penyadapan",
+    "normalized_key": "hukum mati semua yg terlibat penyadapan",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 2,
+    "target_video_titles": [
+      "TERBONGKAR DALANG PENYADAPAN PRESIDEN PRABOWO OLEH MANTAN KAPOLRI LISTYO SIGIT BUKAN JOKOWI GIBRAM 2",
+      "Ungkap! Motif Dibalik Siasat 3 Jendral TSK Kasus Penyadapan Presiden Prabowo | INDEPTH"
+    ],
+    "accounts": [
+      "@muhammadidris9365",
+      "@Abeng123-u8q"
+    ],
+    "coordination_level": "MEDIUM_COORDINATION",
+    "coordination_badge": "🟡 Bot Duplikat",
+    "is_hostile": true,
+    "sample_occurrences": [
+      {
+        "raw_text": "Hukum mati semua yg terlibat penyadapan",
+        "author_id": "UCMAG1Ogval2ppcnK5Mn0i4w",
+        "username": "@muhammadidris9365",
+        "video_id": "zjFyzqxZiVI",
+        "video_title": "TERBONGKAR DALANG PENYADAPAN PRESIDEN PRABOWO OLEH MANTAN KAPOLRI LISTYO SIGIT BUKAN JOKOWI GIBRAM 2",
+        "created_at": "2026-11-07 23:39:59",
+        "sentiment": "Negatif",
+        "like_count": 1
+      },
+      {
+        "raw_text": "Hukum mati semua yg terlibat penyadapan",
+        "author_id": "UCKHglaoBZk_KMBn9C2SKS0Q",
+        "username": "@Abeng123-u8q",
+        "video_id": "OyGRPb8D4tA",
+        "video_title": "Ungkap! Motif Dibalik Siasat 3 Jendral TSK Kasus Penyadapan Presiden Prabowo | INDEPTH",
+        "created_at": "2026-11-07 23:44:26",
+        "sentiment": "Negatif",
+        "like_count": 1
+      }
+    ]
+  },
+  {
+    "template_text": "Hukum mati para penghianat NKRI",
+    "normalized_key": "hukum mati para penghianat nkri",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 2,
+    "target_video_titles": [
+      "Tersangka Penyadapan Presiden Bertambah | Breaking News",
+      "Mahfud MD: Penyadapan Presiden Kejahatan yang Biadab | iNews Pagi 4/11"
+    ],
+    "accounts": [
+      "@Basrianto-w1s",
+      "@expedisipt.sekawanputra6741"
+    ],
+    "coordination_level": "MEDIUM_COORDINATION",
+    "coordination_badge": "🟡 Bot Duplikat",
+    "is_hostile": true,
+    "sample_occurrences": [
+      {
+        "raw_text": "Hukum mati para penghianat NKRI",
+        "author_id": "UCTTlnaVDRdmM0zhKY-wcFeQ",
+        "username": "@Basrianto-w1s",
+        "video_id": "FIGKEo-CtrM",
+        "video_title": "Tersangka Penyadapan Presiden Bertambah | Breaking News",
+        "created_at": "2026-11-05 23:48:52",
+        "sentiment": "Negatif",
+        "like_count": 275
+      },
+      {
+        "raw_text": "hukum mati para penghianat NKRI",
+        "author_id": "UClPEvPyYOZP_jayvTJX0B9Q",
+        "username": "@expedisipt.sekawanputra6741",
+        "video_id": "qGE0qdsrM-g",
+        "video_title": "Mahfud MD: Penyadapan Presiden Kejahatan yang Biadab | iNews Pagi 4/11",
+        "created_at": "2026-11-04 23:50:53",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Maju terus pantang mundur",
+    "normalized_key": "maju terus pantang mundur",
+    "unique_accounts_count": 3,
+    "total_occurrences": 3,
+    "unique_videos_count": 2,
+    "target_video_titles": [
+      "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+      "🔴BREAKING NEWS - Polri Tetapkan Tersangka Baru Kasus Penyadapan Presiden Prabowo"
+    ],
+    "accounts": [
+      "@LinaDev-c7e",
+      "@RianMusthafa-d5m",
+      "@KasiadiHadi-n8e"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "Maju terus pantang mundur",
+        "author_id": "UC6u9nkR3snQSrPil3R6dCfg",
+        "username": "@LinaDev-c7e",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-08 12:25:22",
+        "sentiment": "Positif",
+        "like_count": 1
+      },
+      {
+        "raw_text": "Maju terus pantang mundur",
+        "author_id": "UCFeg9coy6c7YFEZt049EIKA",
+        "username": "@RianMusthafa-d5m",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-07 23:29:23",
+        "sentiment": "Positif",
+        "like_count": 2
+      },
+      {
+        "raw_text": "Maju terus pantang mundur",
+        "author_id": "UCwg5E8uwlGtkAZkLWoKsy6A",
+        "username": "@KasiadiHadi-n8e",
+        "video_id": "i03nc2uxjbM",
+        "video_title": "🔴BREAKING NEWS - Polri Tetapkan Tersangka Baru Kasus Penyadapan Presiden Prabowo",
+        "created_at": "2026-11-05 23:43:08",
+        "sentiment": "Positif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "LURAH BARAT = LUHUT BINSAR",
+    "normalized_key": "lurah barat = luhut binsar",
+    "unique_accounts_count": 3,
+    "total_occurrences": 3,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN"
+    ],
+    "accounts": [
+      "@tokobukudavarim",
+      "@maciporaptor",
+      "@harinaldi1198"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "LURAH BARAT = LUHUT BINSAR",
+        "author_id": "UCO3ioL52N_iBjfO9vLppzog",
+        "username": "@tokobukudavarim",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-08 09:26:01",
+        "sentiment": "Netral",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Lurah Barat = Luhut Binsar",
+        "author_id": "UCgTEmgcEo52lz0clNGBN68Q",
+        "username": "@maciporaptor",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-08 00:27:28",
+        "sentiment": "Netral",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Lurah Barat = Luhut Binsar",
+        "author_id": "UCn9W-BKTBa4UEai1Q1BaKXQ",
+        "username": "@harinaldi1198",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-07 23:28:30",
+        "sentiment": "Netral",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Lurah Barat, Luhut Binsar??",
+    "normalized_key": "lurah barat, luhut binsar",
+    "unique_accounts_count": 3,
+    "total_occurrences": 3,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN"
+    ],
+    "accounts": [
+      "@HPSekenAndroidPalembang",
+      "@jokoihf",
+      "@Aisahsobari"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "Lurah Barat, Luhut Binsar??",
+        "author_id": "UCmjDlt2JNxUjJu68bK5mjRA",
+        "username": "@HPSekenAndroidPalembang",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-08 00:27:20",
+        "sentiment": "Netral",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Lurah barat, luhut binsar",
+        "author_id": "UCmjGxs4It1ZqWjGsGY_B0Pg",
+        "username": "@jokoihf",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-07 23:28:18",
+        "sentiment": "Netral",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Lurah barat, luhut binsar",
+        "author_id": "UCbay1h_ePIcpjHqhMoO0_ng",
+        "username": "@Aisahsobari",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-07 23:29:42",
+        "sentiment": "Netral",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "POLISI BERSAMA MASYARAKAT...",
+    "normalized_key": "polisi bersama masyarakat",
+    "unique_accounts_count": 3,
+    "total_occurrences": 3,
+    "unique_videos_count": 3,
+    "target_video_titles": [
+      "[FULL] BREAKING NEWS - POLRI UNGKAP KASUS PENYADAPAN ILEGAL TERHADAP PRESIDEN",
+      "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+      "🔴BREAKING NEWS - Polri Tetapkan Tersangka Baru Kasus Penyadapan Presiden Prabowo"
+    ],
+    "accounts": [
+      "@rullyparare-g5w",
+      "@DenYupi",
+      "@Yuiazzahra"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "polisi bersama masyarakat",
+        "author_id": "UCtPhlcCx1IlviikQQks_Vkg",
+        "username": "@rullyparare-g5w",
+        "video_id": "i03nc2uxjbM",
+        "video_title": "🔴BREAKING NEWS - Polri Tetapkan Tersangka Baru Kasus Penyadapan Presiden Prabowo",
+        "created_at": "2026-11-05 23:43:11",
+        "sentiment": "Positif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "POLISI BERSAMA MASYARAKAT...",
+        "author_id": "UC7TidKpbd975qLkYttCuZww",
+        "username": "@DenYupi",
+        "video_id": "GaUNKy0_ZQY",
+        "video_title": "[FULL] BREAKING NEWS - POLRI UNGKAP KASUS PENYADAPAN ILEGAL TERHADAP PRESIDEN",
+        "created_at": "2026-11-03 23:45:42",
+        "sentiment": "Positif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Polisi Bersama Masyarakat",
+        "author_id": "UCt3JXr_YVJGxaw0B9AfdRAA",
+        "username": "@Yuiazzahra",
+        "video_id": "72oa-TUD6co",
+        "video_title": "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+        "created_at": "2026-11-03 23:51:50",
+        "sentiment": "Positif",
+        "like_count": 5
+      }
+    ]
+  },
+  {
+    "template_text": "Cari di Google Ga r uda hoki..modall berapapun psti jepee😎",
+    "normalized_key": "cari di google ga r uda hokimodall berapapun psti jepee😎",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 2,
+    "target_video_titles": [
+      "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+      "Kapten Jack Resmi Jadi Tersangka Baru Penyadapan Presiden! | Sindo Prime | 07/11"
+    ],
+    "accounts": [
+      "@NelsonRadosław",
+      "@CookKristian-u5m"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "Cari di Google Ga r uda hoki..modall berapapun psti jepee😎",
+        "author_id": "UCROoxl4opsp-EfhoQaSreVw",
+        "username": "@NelsonRadosław",
+        "video_id": "8UYkaLY495c",
+        "video_title": "Kapten Jack Resmi Jadi Tersangka Baru Penyadapan Presiden! | Sindo Prime | 07/11",
+        "created_at": "2026-11-08 07:23:13",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Cari di Google Ga r uda hoki..modall berapapun psti jepee😎",
+        "author_id": "UC0hJBPkw6M9LA4zN4lkIniA",
+        "username": "@CookKristian-u5m",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-08 07:26:24",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Seriusan broo Ga r uda hoki..Spesial hanya di hari ini langsung jepe🔥😎",
+    "normalized_key": "seriusan broo ga r uda hokispesial hanya di hari ini langsung jepe🔥😎",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 2,
+    "target_video_titles": [
+      "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+      "Kapten Jack Resmi Jadi Tersangka Baru Penyadapan Presiden! | Sindo Prime | 07/11"
+    ],
+    "accounts": [
+      "@GreenKristinn",
+      "@RossSebastián-n8c"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "Seriusan broo Ga r uda hoki..Spesial hanya di hari ini langsung jepe🔥😎",
+        "author_id": "UCHmetPsrWzLHzA6blzZyaQg",
+        "username": "@GreenKristinn",
+        "video_id": "8UYkaLY495c",
+        "video_title": "Kapten Jack Resmi Jadi Tersangka Baru Penyadapan Presiden! | Sindo Prime | 07/11",
+        "created_at": "2026-11-08 07:23:13",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Seriusan broo Ga r uda hoki..Spesial hanya di hari ini langsung jepe🔥😎",
+        "author_id": "UC3SjDSuXG6VuUiO018JrnhA",
+        "username": "@RossSebastián-n8c",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-08 07:26:24",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Lurah barat, luhut binsar kah?",
+    "normalized_key": "lurah barat, luhut binsar kah?",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN"
+    ],
+    "accounts": [
+      "@muchamadluqmanhakim8589",
+      "@duniabinatang_id"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "Lurah barat, luhut binsar kah?",
+        "author_id": "UCBFjpJ7NHUPzX5HEd6j9MxA",
+        "username": "@muchamadluqmanhakim8589",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-08 22:24:16",
+        "sentiment": "Netral",
+        "like_count": 0
+      },
+      {
+        "raw_text": "lurah barat, Luhut binsar kah?",
+        "author_id": "UCRpFQhc3ByFpFkPqAQjKVbw",
+        "username": "@duniabinatang_id",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-07 23:30:56",
+        "sentiment": "Netral",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Lurah Barat = Luhut Binsar ?",
+    "normalized_key": "lurah barat = luhut binsar ?",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN"
+    ],
+    "accounts": [
+      "@jukiiiiii78",
+      "@yayangrusdiana2774"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "Lurah Barat = Luhut Binsar ?",
+        "author_id": "UCY9L4nMmKIUSGflL0eHFL7A",
+        "username": "@jukiiiiii78",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-08 15:24:59",
+        "sentiment": "Netral",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Lurah Barat = Luhut Binsar ?",
+        "author_id": "UCgp4EqliwEn2cmvFFeBOAIw",
+        "username": "@yayangrusdiana2774",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-08 12:25:21",
+        "sentiment": "Netral",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Kebenaran akan menemukan jalannya",
+    "normalized_key": "kebenaran akan menemukan jalannya",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 2,
+    "target_video_titles": [
+      "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+      "Analisis David Pajung Soal Penyadapan Presiden Prabowo oleh Listyo Sigit"
+    ],
+    "accounts": [
+      "@DastanArcelio-zt2xs",
+      "@Nr.Komala"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "Kebenaran akan menemukan jalannya",
+        "author_id": "UCSCXR1z3dYpEDFUNdT-0YsQ",
+        "username": "@DastanArcelio-zt2xs",
+        "video_id": "mANMtfCn0OE",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "created_at": "2026-11-07 23:33:00",
+        "sentiment": "Positif",
+        "like_count": 1
+      },
+      {
+        "raw_text": "Kebenaran akan menemukan jalannya",
+        "author_id": "UCYfJKP85YLk8J8IFzdPHvAA",
+        "username": "@Nr.Komala",
+        "video_id": "_qJ_Uk7fgCQ",
+        "video_title": "Analisis David Pajung Soal Penyadapan Presiden Prabowo oleh Listyo Sigit",
+        "created_at": "2026-11-07 23:50:58",
+        "sentiment": "Positif",
+        "like_count": 3
+      }
+    ]
+  },
+  {
+    "template_text": "Kebenaran akan menemukan jalannya sendiri",
+    "normalized_key": "kebenaran akan menemukan jalannya sendiri",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 2,
+    "target_video_titles": [
+      "Usman Hamid & Islah Bahrawi Bongkar Motif Penyadapan Presiden oleh Listyo CS, Ada Apa?",
+      "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP"
+    ],
+    "accounts": [
+      "@solonpts",
+      "@dominggusmanno4517"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "Kebenaran akan menemukan jalannya sendiri",
+        "author_id": "UCUyRvwr-P4GzQlJNgJ1DcGA",
+        "username": "@solonpts",
+        "video_id": "ToFtmFOuARw",
+        "video_title": "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP",
+        "created_at": "2026-11-07 23:33:44",
+        "sentiment": "Negatif",
+        "like_count": 2
+      },
+      {
+        "raw_text": "Kebenaran akan menemukan jalannya sendiri",
+        "author_id": "UCyNKQw-X30DMdVLmtHVjUxQ",
+        "username": "@dominggusmanno4517",
+        "video_id": "tdsBZIdfFAw",
+        "video_title": "Usman Hamid & Islah Bahrawi Bongkar Motif Penyadapan Presiden oleh Listyo CS, Ada Apa?",
+        "created_at": "2026-11-06 23:46:14",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Kembalikan Polri dibawah TNI",
+    "normalized_key": "kembalikan polri dibawah tni",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP"
+    ],
+    "accounts": [
+      "@Akashihaz",
+      "@iwanpurnomo1816"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "Kembalikan Polri dibawah TNI",
+        "author_id": "UC_9ef5J3unwJmsuekgYY6sA",
+        "username": "@Akashihaz",
+        "video_id": "ToFtmFOuARw",
+        "video_title": "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP",
+        "created_at": "2026-11-08 00:34:10",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Kembalikan Polri dibawah TNI",
+        "author_id": "UCb_or1fBeUHv4DyqKmiXsaw",
+        "username": "@iwanpurnomo1816",
+        "video_id": "ToFtmFOuARw",
+        "video_title": "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP",
+        "created_at": "2026-11-04 23:35:45",
+        "sentiment": "Negatif",
+        "like_count": 48
+      }
+    ]
+  },
+  {
+    "template_text": "Kenapa gibran tidak di sadap ??",
+    "normalized_key": "kenapa gibran tidak di sadap",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 2,
+    "target_video_titles": [
+      "Ungkap! Motif Dibalik Siasat 3 Jendral TSK Kasus Penyadapan Presiden Prabowo | INDEPTH",
+      "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP"
+    ],
+    "accounts": [
+      "@MarlboroFC",
+      "@user-ymm-e5q"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "Kenapa gibran tidak di sadap ??",
+        "author_id": "UCOmRKDmX_CY0WJoAPQYfTQQ",
+        "username": "@MarlboroFC",
+        "video_id": "ToFtmFOuARw",
+        "video_title": "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP",
+        "created_at": "2026-11-06 23:34:11",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "kenapa gibran tidak di sadap",
+        "author_id": "UCqDUgg91Z92d37x81mkVLxg",
+        "username": "@user-ymm-e5q",
+        "video_id": "OyGRPb8D4tA",
+        "video_title": "Ungkap! Motif Dibalik Siasat 3 Jendral TSK Kasus Penyadapan Presiden Prabowo | INDEPTH",
+        "created_at": "2026-11-04 23:45:13",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Sambo tertawa melihat ini😂",
+    "normalized_key": "sambo tertawa melihat ini😂",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 2,
+    "target_video_titles": [
+      "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+      "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP"
+    ],
+    "accounts": [
+      "@burhangimangcok8945",
+      "@madewahyudi7623"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "Sambo tertawa melihat ini😂",
+        "author_id": "UCt5jM-sAGozZIWeCDCsN-jw",
+        "username": "@burhangimangcok8945",
+        "video_id": "ToFtmFOuARw",
+        "video_title": "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP",
+        "created_at": "2026-11-05 23:34:21",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Sambo tertawa melihat ini😂",
+        "author_id": "UC224zITweNUBStUhUw5jmfA",
+        "username": "@madewahyudi7623",
+        "video_id": "72oa-TUD6co",
+        "video_title": "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+        "created_at": "2026-11-03 23:51:27",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "20:20 Pantas trending! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+    "normalized_key": "20:20 pantas trending! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi"
+    ],
+    "accounts": [
+      "@PaulBaccanello-z9g",
+      "@CharlotteHindmarsh"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "20:20 Pantas trending! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "author_id": "UC0Ds5_cmlyM3hyuwHyn3IPw",
+        "username": "@PaulBaccanello-z9g",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-08 13:36:06",
+        "sentiment": "Netral",
+        "like_count": 0
+      },
+      {
+        "raw_text": "20:20 Pantas trending! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "author_id": "UCa8okK2yAM5Uhz9zS8sOz6A",
+        "username": "@CharlotteHindmarsh",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-08 13:36:06",
+        "sentiment": "Netral",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Berbobot banget walau singkat! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+    "normalized_key": "berbobot banget walau singkat! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi"
+    ],
+    "accounts": [
+      "@OliverBurnside-l8w",
+      "@CharlotteWilson-f2n"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "Berbobot banget walau singkat! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "author_id": "UCqzqKkoJEiUE2_RokYdkn9A",
+        "username": "@OliverBurnside-l8w",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-08 13:36:06",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Berbobot banget walau singkat! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "author_id": "UCCPtWMDJhiH4YoDvXK84vnQ",
+        "username": "@CharlotteWilson-f2n",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-07 23:36:07",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "19:27 Transisinya s mooth! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+    "normalized_key": "19:27 transisinya s mooth! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi"
+    ],
+    "accounts": [
+      "@SophieLomas-h7l",
+      "@MirrahFoulkes-h2m"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "19:27 Transisinya s mooth! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "author_id": "UCRIl5AHjdSaIRUcgu_5lhxg",
+        "username": "@SophieLomas-h7l",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-08 13:36:06",
+        "sentiment": "Netral",
+        "like_count": 0
+      },
+      {
+        "raw_text": "19:27 Transisinya s mooth! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "author_id": "UCsmavdznsTNzpNGSAEO1hSA",
+        "username": "@MirrahFoulkes-h2m",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-07 23:36:07",
+        "sentiment": "Netral",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Ini sih definisi konten berkualitas! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+    "normalized_key": "ini sih definisi konten berkualitas! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi"
+    ],
+    "accounts": [
+      "@AmeliaArmstrong-c3s",
+      "@LucasPalen-y8g"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "Ini sih definisi konten berkualitas! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "author_id": "UCjhz8AVkl6BOdM7_uDd_RrQ",
+        "username": "@AmeliaArmstrong-c3s",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-08 13:36:06",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Ini sih definisi konten berkualitas! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "author_id": "UC39eqhulFvbcAq30JCT9F1A",
+        "username": "@LucasPalen-y8g",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-07 23:36:08",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Gua Yang Habis Wd 43Jt Bilek😂🤣🙈 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+    "normalized_key": "gua yang habis wd 43jt bilek😂🤣🙈 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi"
+    ],
+    "accounts": [
+      "@DonLane-b5g",
+      "@AmeliaOvis-r8n"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "Gua Yang Habis Wd 43Jt Bilek😂🤣🙈 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "author_id": "UCy2m1-JXwwVpMccxbB_0qTw",
+        "username": "@DonLane-b5g",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-08 13:36:06",
+        "sentiment": "Netral",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Gua Yang Habis Wd 43Jt Bilek😂🤣🙈 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "author_id": "UCmlkbBAZi0SdMJ9A14ABHRQ",
+        "username": "@AmeliaOvis-r8n",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-07 23:36:08",
+        "sentiment": "Netral",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "05:22 Selalu dinanti nih kontennya! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+    "normalized_key": "05:22 selalu dinanti nih kontennya! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi"
+    ],
+    "accounts": [
+      "@LucasHannan-g4m",
+      "@ChristianBlack-k9v"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "05:22 Selalu dinanti nih kontennya! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "author_id": "UCQB5dAJHJpvNq_f0s-x1mUA",
+        "username": "@LucasHannan-g4m",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-08 13:36:06",
+        "sentiment": "Netral",
+        "like_count": 0
+      },
+      {
+        "raw_text": "05:22 Selalu dinanti nih kontennya! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "author_id": "UC3vViU-NQh9CFgWEO7Ohuog",
+        "username": "@ChristianBlack-k9v",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-07 23:36:07",
+        "sentiment": "Netral",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "11:09 Caption dari ⭐ 𝗦𝗜𝗔𝗣𝟰𝟲 ⭐ bikin mikir",
+    "normalized_key": "11:09 caption dari ⭐ 𝗦𝗜𝗔𝗣𝟰𝟲 ⭐ bikin mikir",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi"
+    ],
+    "accounts": [
+      "@OliviaDowns-o9k",
+      "@LillianSullivan-z9t"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "11:09 Caption dari ⭐ 𝗦𝗜𝗔𝗣𝟰𝟲 ⭐ bikin mikir",
+        "author_id": "UCKVwVFlGnCakGQBD9YmN5RQ",
+        "username": "@OliviaDowns-o9k",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-08 13:36:07",
+        "sentiment": "Netral",
+        "like_count": 0
+      },
+      {
+        "raw_text": "11:09 Caption dari ⭐ 𝗦𝗜𝗔𝗣𝟰𝟲 ⭐ bikin mikir",
+        "author_id": "UCSyZhw_nqg_wfSgYjfA3hvA",
+        "username": "@LillianSullivan-z9t",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-07 23:36:07",
+        "sentiment": "Netral",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "19:28 Nyaman banget ditonton! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+    "normalized_key": "19:28 nyaman banget ditonton! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi"
+    ],
+    "accounts": [
+      "@AmeliaMcfall-g8c",
+      "@MaggieMorrison-w7t"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "19:28 Nyaman banget ditonton! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "author_id": "UChjnpiWbx4uVB_ze3oXrq-Q",
+        "username": "@AmeliaMcfall-g8c",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-08 13:36:07",
+        "sentiment": "Netral",
+        "like_count": 0
+      },
+      {
+        "raw_text": "19:28 Nyaman banget ditonton! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "author_id": "UC_hum-peGfosUWA0z2_NxmQ",
+        "username": "@MaggieMorrison-w7t",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-07 23:36:08",
+        "sentiment": "Netral",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "15:23 Konsistennya bikin salut! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+    "normalized_key": "15:23 konsistennya bikin salut! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi"
+    ],
+    "accounts": [
+      "@AmeliaLehmann-n6p",
+      "@MilaRamirez-h1h"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "15:23 Konsistennya bikin salut! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "author_id": "UCZvFJaloPSkv2wjvswbtnFA",
+        "username": "@AmeliaLehmann-n6p",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-08 13:36:07",
+        "sentiment": "Netral",
+        "like_count": 0
+      },
+      {
+        "raw_text": "15:23 Konsistennya bikin salut! 𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "author_id": "UC0ckppTY7srrb9hGUUj4S3Q",
+        "username": "@MilaRamirez-h1h",
+        "video_id": "wSYMv0eH5ao",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "created_at": "2026-11-07 23:36:08",
+        "sentiment": "Netral",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "Hukum tabur tuai sedang berjalan..",
+    "normalized_key": "hukum tabur tuai sedang berjalan",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 2,
+    "target_video_titles": [
+      "Saya Percaya ! Sosok Dalang Penyadapan Ilegal Presiden Prabowo !",
+      "🔴BREAKING NEWS - Polri Tetapkan Tersangka Baru Kasus Penyadapan Presiden Prabowo"
+    ],
+    "accounts": [
+      "@tarjonojono9839",
+      "@AgusArdi-v2v"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "Hukum tabur tuai sedang berjalan..",
+        "author_id": "UCLl3POjztPgbwnlvvdDc3JQ",
+        "username": "@tarjonojono9839",
+        "video_id": "OWsZDjRhBpE",
+        "video_title": "Saya Percaya ! Sosok Dalang Penyadapan Ilegal Presiden Prabowo !",
+        "created_at": "2026-11-06 23:37:01",
+        "sentiment": "Negatif",
+        "like_count": 0
+      },
+      {
+        "raw_text": "Hukum tabur tuai sedang berjalan",
+        "author_id": "UC0Ax_nHspv2aba_rolO1ABQ",
+        "username": "@AgusArdi-v2v",
+        "video_id": "i03nc2uxjbM",
+        "video_title": "🔴BREAKING NEWS - Polri Tetapkan Tersangka Baru Kasus Penyadapan Presiden Prabowo",
+        "created_at": "2026-11-06 23:43:29",
+        "sentiment": "Negatif",
+        "like_count": 0
+      }
+    ]
+  },
+  {
+    "template_text": "dukung kapolri suyudi beserta jajaran🎉",
+    "normalized_key": "dukung kapolri suyudi beserta jajaran🎉",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan"
+    ],
+    "accounts": [
+      "@fahriaditya-speed",
+      "@IndonesiaGaza2026"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "dukung kapolri suyudi beserta jajaran🎉",
+        "author_id": "UCNRewkQxZxnfLjxwetjZXEw",
+        "username": "@fahriaditya-speed",
+        "video_id": "72oa-TUD6co",
+        "video_title": "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+        "created_at": "2026-11-03 23:52:31",
+        "sentiment": "Negatif",
+        "like_count": 739
+      },
+      {
+        "raw_text": "dukung kapolri suyudi beserta jajaran🎉",
+        "author_id": "UCLVFYyIGevwNt5_sK2Xp0ag",
+        "username": "@IndonesiaGaza2026",
+        "video_id": "72oa-TUD6co",
+        "video_title": "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+        "created_at": "2026-11-04 23:52:36",
+        "sentiment": "Negatif",
+        "like_count": 3
+      }
+    ]
+  },
+  {
+    "template_text": "Semoga kapolri tindak kasus ijazah Jokowi dn gibran",
+    "normalized_key": "semoga kapolri tindak kasus ijazah jokowi dn gibran",
+    "unique_accounts_count": 2,
+    "total_occurrences": 2,
+    "unique_videos_count": 1,
+    "target_video_titles": [
+      "Bagaimana Awal Mula Presiden Tahu Dirinya Jadi Target Penyadapan oleh Listyo Sigit Dkk?"
+    ],
+    "accounts": [
+      "@ghiyaspermataizhar",
+      "@IndonesiaGaza2026"
+    ],
+    "coordination_level": "ORGANIC_RESONANCE",
+    "coordination_badge": "🟢 Apresiasi Publik / Gema Organik",
+    "is_hostile": false,
+    "sample_occurrences": [
+      {
+        "raw_text": "Semoga kapolri tindak kasus ijazah Jokowi dn gibran",
+        "author_id": "UCMbh57miim7enFO7SYnWscg",
+        "username": "@ghiyaspermataizhar",
+        "video_id": "iUTB6WtSpM0",
+        "video_title": "Bagaimana Awal Mula Presiden Tahu Dirinya Jadi Target Penyadapan oleh Listyo Sigit Dkk?",
+        "created_at": "2026-11-04 23:52:54",
+        "sentiment": "Negatif",
+        "like_count": 9
+      },
+      {
+        "raw_text": "Semoga kapolri tindak kasus ijazah Jokowi dn gibran",
+        "author_id": "UCLVFYyIGevwNt5_sK2Xp0ag",
+        "username": "@IndonesiaGaza2026",
+        "video_id": "iUTB6WtSpM0",
+        "video_title": "Bagaimana Awal Mula Presiden Tahu Dirinya Jadi Target Penyadapan oleh Listyo Sigit Dkk?",
+        "created_at": "2026-11-05 23:52:55",
+        "sentiment": "Negatif",
+        "like_count": 1
+      }
+    ]
+  }
+]

@@ -1,0 +1,26 @@
+﻿topic_id,threat_domain,sub_issue,ai_sentiment,total_comments,sum_reply_count,total_likes,hearted_comments,official_comments,user_comments,engagement_score
+13,Disinformasi Pertahanan,Spam emoji dan narasi konspirasi makar termul,Negatif,55,981,1178,0,2,53,17.84
+11,Delegitimasi Institusi,Seruan hukum mati bagi Lembaga Sertifikasi Profesi,Negatif,120,42,239,0,0,120,0.35
+4,Apresiasi & Dukungan Publik,Doa keselamatan untuk Presiden Prabowo Subianto,Positif,425,94,1707,1,0,425,0.22
+2,Delegitimasi Institusi,Spekulasi identitas dalang penyadapan ilegal,Netral,504,105,138,1,0,504,0.21
+0,Provokasi SARA & Separatisme,Seruan hukum mati bagi pengkhianat negara,Negatif,33492,6048,59251,79,2,33490,0.18
+19,Kritik Kebijakan Ekonomi,Keluhan rupiah anjlok dan isu pengalihan,Negatif,19,3,27,0,0,19,0.16
+8,Disinformasi Pertahanan,Narasi musuh dalam selimut di lingkaran istana,Negatif,225,32,359,0,0,225,0.14
+18,Provokasi Agama & Politik,Ayat tipu daya Allah untuk lawan politik,Negatif,26,3,105,0,0,26,0.12
+1,Apresiasi & Dukungan Publik,Dukungan terhadap tindakan tegas Presiden Prabowo,Positif,9545,906,10572,22,2,9543,0.09
+10,Provokasi SARA & Separatisme,Hashtag tersembunyi menyerang Jokowi dan pendukungnya,Negatif,78,5,23,0,0,78,0.06
+3,Kritik Kebijakan Publik,Tuntutan usut tuntas hingga akar masalah,Positif,475,26,665,0,0,475,0.05
+16,Delegitimasi Institusi,Analogi tupai jatuh untuk kritik pejabat,Negatif,21,1,7,0,0,21,0.05
+6,Delegitimasi Institusi,Cemoohan terhadap pejabat yang haus kekuasaan,Negatif,249,12,87,0,0,249,0.05
+7,Apresiasi & Dukungan Publik,Ucapan terima kasih atas informasi Prof Gema,Positif,220,8,166,0,0,220,0.04
+9,Apresiasi & Dukungan Publik,Dukungan internasional terhadap kepemimpinan Prabowo,Positif,89,4,30,0,2,87,0.04
+17,Disinformasi Anggaran Negara,Pertanyaan sumber dana 25 triliun,Negatif,34,1,9,0,0,34,0.03
+5,Apresiasi & Dukungan Publik,Respons doa dan dukungan terhadap konten,Positif,382,7,639,0,0,382,0.02
+15,Spam & Noise Komentar,Komentar tidak relevan dan repetitif,Netral,44,1,4,0,0,44,0.02
+-1,Lain-lain / Noise,Komentar umum/noise,Netral,1,0,0,0,0,1,0.0
+14,Kritik Kebijakan Publik,Pengalihan isu dari karhutla ke penyadapan presiden,Netral,36,0,10,0,0,36,0.0
+12,Spam Komentar Bot,Aktivitas spam komentar pujian otomatis oleh bot,Netral,79,0,7,0,0,79,0.0
+20,Apresiasi Sistem Pemilu,Argumen berkas C1 mencegah kecurangan,Positif,19,0,1,0,0,19,0.0
+21,Narasi Fitnah Penyadapan,Tuduhan penyadapan untuk kontrol politik,Negatif,21,0,1,0,0,21,0.0
+22,Spam Simbol Keagamaan,Repetisi takbir tanpa konteks substansi,Netral,11,0,0,0,0,11,0.0
+23,Delegitimasi Influencer Publik,Tuduhan artis dibayar penghianat bangsa,Negatif,13,0,0,0,0,13,0.0

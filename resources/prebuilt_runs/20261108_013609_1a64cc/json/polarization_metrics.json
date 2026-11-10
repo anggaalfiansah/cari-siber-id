@@ -1,0 +1,14 @@
+{
+  "polarization_index": 0.26,
+  "sentiment_distribution": {
+    "Positif": 0.0827,
+    "Netral": 0.1438,
+    "Negatif": 0.7734
+  },
+  "dominant_conflict_topics": [
+    "Papua Indonesia Orang",
+    "Papua Orang Indonesia",
+    "Berita Monyet Bbc"
+  ],
+  "silent_majority_consensus": "Didominasi Skeptisisme / Sentimen Negatif"
+}

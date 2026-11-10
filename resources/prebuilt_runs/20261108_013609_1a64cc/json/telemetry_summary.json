@@ -1,0 +1,10 @@
+{
+  "ai_provider": "custom",
+  "ai_model": "qwen3.8-flash",
+  "total_duration_sec": 815.0,
+  "duration_formatted": "13m 35s",
+  "prompt_tokens": 36259,
+  "completion_tokens": 6798,
+  "total_tokens": 43064,
+  "llm_calls_count": 17
+}

@@ -1,0 +1,2623 @@
+{
+  "overview": {
+    "total_comments": 5729,
+    "top_level_comments": 3719,
+    "reply_comments": 2010,
+    "total_hearted": 9,
+    "total_official_replies": 0,
+    "sentiment_distribution": {
+      "Positif": {
+        "count": 474,
+        "pct": 8.27,
+        "avg_like_count": 1.41,
+        "total_likes": 667
+      },
+      "Negatif": {
+        "count": 4431,
+        "pct": 77.34,
+        "avg_like_count": 1.32,
+        "total_likes": 5833
+      },
+      "Netral": {
+        "count": 824,
+        "pct": 14.38,
+        "avg_like_count": 1.9,
+        "total_likes": 1569
+      }
+    },
+    "confidence_stats": {
+      "overall_confident_rate": 0.9988,
+      "by_sentiment": {
+        "Positif": 1.0,
+        "Negatif": 0.9986,
+        "Netral": 0.9988
+      }
+    }
+  },
+  "topic_analysis": {
+    "Positif": {
+      "total_categories": 4,
+      "total_comments": 474,
+      "categories": [
+        {
+          "rank": 1,
+          "name": "Apresiasi Pendidikan Damai",
+          "threat_domain": "Apresiasi Pendidikan Damai",
+          "business_category": "Apresiasi Pendidikan Damai",
+          "sub_issue": "Dukungan kampus bebas provokasi politik separatis",
+          "example_sub_issues": "Dukungan kampus bebas provokasi politik separatis",
+          "comment_count": 249,
+          "total_likes": 87,
+          "total_replies": 35,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Bkn bikin rusuh,, tp takut terbuka masalah yg sebenarnya terjadi,,",
+            "Kami di Maluku berjuang antara mati n hidup utk pemekaran dob dlm rangka percepatan pembangunan n kesejahteraan masyarakat Maluku tidak ditanggapi pempus. Ngapaian pempus memaksakan sbh kebaikan KPD mereka yg tidak berknaan n tidak menghargai. Alihkan saja itu ke Maluku pak presiden...",
+            "Sangat sedih mahasiswa digunakan.  Ormas dan oknum yang terbukti melakukan ini harus di tuntutan dan di penjara"
+          ]
+        },
+        {
+          "rank": 2,
+          "name": "Nasionalisme NKRI Harga Mati",
+          "threat_domain": "Nasionalisme NKRI Harga Mati",
+          "business_category": "Nasionalisme NKRI Harga Mati",
+          "sub_issue": "Penegasan kesatuan wilayah dan penolakan separatisme",
+          "example_sub_issues": "Penegasan kesatuan wilayah dan penolakan separatisme",
+          "comment_count": 128,
+          "total_likes": 422,
+          "total_replies": 93,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "\"Bahwa sesungguhnya kemerdekaan itu ialah hak segala bangsa.\" *)\n\n*) Syarat dan ketentuan berlaku.",
+            "Gw heran aja.. Ko PERKATAAN/RASIS Bisa segila ini dampak nya... Apa jauhh jauhhh lebih BERHARGA \"perasaan\" Yg di dpt dr segelintir Kalimat Dengan NYAWA PULUHAN ORG? Ini sudah di luar akal manusia, ini tidak lbih baik dr hewan. Maaf gw bkan ngatain org papua, tpi gw ngatain PRILAKU nya yg brutal.\nDi era skrg.. Saling MAKI Itu sudah biasa yg biasa kita sebut TOXIC dan RASIS, mau di GAME, SOSMED atupun LINGKUNGAN. Tapi kami tdak mempedulikan nya, klau pun kita sakit hati, kita balas dengan MAKIAN lagi.\nDamailah kita INDONESIA.",
+            "Papua damai ketika Papua lepas dari NKRI titik."
+          ]
+        },
+        {
+          "rank": 3,
+          "name": "Apresiasi Tokoh Publik",
+          "threat_domain": "Apresiasi Tokoh Publik",
+          "business_category": "Apresiasi Tokoh Publik",
+          "sub_issue": "Dukungan terhadap pandangan Usman Hamid dan Yoel",
+          "example_sub_issues": "Dukungan terhadap pandangan Usman Hamid dan Yoel",
+          "comment_count": 66,
+          "total_likes": 103,
+          "total_replies": 18,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Terimakasih Pak Yoel. Sangat terstruktural bpk yoel, sangat paham undang-undang otsus. Sehat selalu Bpk.",
+            "Papua itu basis prabowo... berarti masyarakat Papua inginkan keberlanjutan... nikmati aja...oke gas",
+            "Apa yg pak Usman sampaikan itu adalah isi hati org Papua yg paling mendasar."
+          ]
+        },
+        {
+          "rank": 4,
+          "name": "Apresiasi Konten Edukasi",
+          "threat_domain": "Apresiasi Konten Edukasi",
+          "business_category": "Apresiasi Konten Edukasi",
+          "sub_issue": "Ungkapan terima kasih atas penyajian informasi narasi",
+          "example_sub_issues": "Ungkapan terima kasih atas penyajian informasi narasi",
+          "comment_count": 31,
+          "total_likes": 55,
+          "total_replies": 2,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "jujur merinding sedih setelah tau ini semua. Terima kasih Narasi sudah membeberkan ini semua kepada kami Gen Z yang selama ini cuma tau dari 'kurikulum' yang sangat sarat kepentingan sana sini. Sepertinya ini lebih cocok untuk dimasukkan dalam segmen Buka Mata, karena pasti banyak orang dari luar Papua yang masih buta dan tuli dengan kenyataan ini.",
+            "Terimakasi Narasi",
+            "Disuguhkan dengan rapi tanpa tendensi Politik dan Forced Nationalism. Terimakasih Narasi, Kalian Hebat"
+          ]
+        }
+      ],
+      "concentration": {
+        "top_3_pct": 93.46
+      }
+    },
+    "Negatif": {
+      "total_categories": 10,
+      "total_comments": 4431,
+      "categories": [
+        {
+          "rank": 1,
+          "name": "Provokasi Separatisme Papua",
+          "threat_domain": "Provokasi Separatisme Papua",
+          "business_category": "Provokasi Separatisme Papua",
+          "sub_issue": "Narasi ketidakadilan aparat dan dukungan kemerdekaan",
+          "example_sub_issues": "Narasi ketidakadilan aparat dan dukungan kemerdekaan",
+          "comment_count": 3205,
+          "total_likes": 4521,
+          "total_replies": 1186,
+          "share_confident": 0.9984,
+          "sample_comments": [
+            "Warga papua takut SDA papua dikuasai oleh pemerintah dengan aparat polri sebagai kaki tangan pemerintah bekerjasama dengan para konglomerat oligarki yang bermodalkan uang dan izin dari pemerintah pusat dan daerah merebut tanah masyarakat adat papua dengan dalih investasi, seperti yang dialami oleh masyarakat di sumatra, kalimantan, dan sulawesi...",
+            "Narasi membuka mata rakyat Indonesia yang kerap sok tahu soal konflik Papua. Good job 👍👍",
+            "Secara kultur dan ras papua sudah berbeda. Ini udah disinggung founding father kita Bung Hatta pada saat membahas papua bersama Bung Karno. Sekarang tendensinya bukan lagi soal kesejahteraan masyarakat papua, tapi lebih kepada potensi cuan bagi para tuan besar Indonesia yang ada di sana, melalui tambang dan SDA lainnya. Jadi pasukan akan tetap dikirim meski secara status Papua bukan lagi Daerah Operasi Militer."
+          ]
+        },
+        {
+          "rank": 2,
+          "name": "Delegitimasi Kedaulatan Negara",
+          "threat_domain": "Delegitimasi Kedaulatan Negara",
+          "business_category": "Delegitimasi Kedaulatan Negara",
+          "sub_issue": "Seruan pemisahan diri dan kritik pendekatan keamanan",
+          "example_sub_issues": "Seruan pemisahan diri dan kritik pendekatan keamanan",
+          "comment_count": 516,
+          "total_likes": 630,
+          "total_replies": 227,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "22 pendatang tewas terpanggang didalam rumah, yg rasis siapa sekarang? mau lo gimana?",
+            "Indonesia yang malu bukan ache Maluku dan PAPUA 🤣🤣🤣",
+            "Papua Ace dan Maluku Tetap merdeka, Indonesia kembali miskin sedunia"
+          ]
+        },
+        {
+          "rank": 3,
+          "name": "Penolakan Kebijakan Pemekaran",
+          "threat_domain": "Penolakan Kebijakan Pemekaran",
+          "business_category": "Penolakan Kebijakan Pemekaran",
+          "sub_issue": "Sentimen negatif terhadap wacana pemekaran wilayah",
+          "example_sub_issues": "Sentimen negatif terhadap wacana pemekaran wilayah",
+          "comment_count": 360,
+          "total_likes": 203,
+          "total_replies": 25,
+          "share_confident": 0.9972,
+          "sample_comments": [
+            "@rakyatbiasa837  ini sejara yg di gali , makanya IQ jgn jongkok",
+            "Pemerintah tlol",
+            "BBC mencurigakan...."
+          ]
+        },
+        {
+          "rank": 4,
+          "name": "Advokasi Hak Merdeka",
+          "threat_domain": "Advokasi Hak Merdeka",
+          "business_category": "Advokasi Hak Merdeka",
+          "sub_issue": "Tuntutan hak menentukan nasib sendiri secara tegas",
+          "example_sub_issues": "Tuntutan hak menentukan nasib sendiri secara tegas",
+          "comment_count": 171,
+          "total_likes": 316,
+          "total_replies": 62,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Panjang Umur Jurnalistik Investigasi",
+            "Solusinya: BASMI HABIS KINGKONG KINGKONG OPM,  finish!!",
+            "Pemerintah harus tanggung jawab"
+          ]
+        },
+        {
+          "rank": 5,
+          "name": "Stigmatisasi Provokator",
+          "threat_domain": "Stigmatisasi Provokator",
+          "business_category": "Stigmatisasi Provokator",
+          "sub_issue": "Pelabelan pihak tertentu sebagai penghasut rasial",
+          "example_sub_issues": "Pelabelan pihak tertentu sebagai penghasut rasial",
+          "comment_count": 45,
+          "total_likes": 110,
+          "total_replies": 20,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Bicara rasis tapi kau sendiri rasis bahkan biadab,..manusia kau bakar krn dia pendatang, ..sungguh tragis..",
+            "biadab itu rasis sesungguhnya",
+            "Irian Jaya dahulu tidak seperti ini. Provokator mana yang mengompori ini ?"
+          ]
+        },
+        {
+          "rank": 6,
+          "name": "Polarisasi Isu Keamanan",
+          "threat_domain": "Polarisasi Isu Keamanan",
+          "business_category": "Polarisasi Isu Keamanan",
+          "sub_issue": "Perbedaan persepsi status KKB antara kriminal atau pejuang",
+          "example_sub_issues": "Perbedaan persepsi status KKB antara kriminal atau pejuang",
+          "comment_count": 37,
+          "total_likes": 10,
+          "total_replies": 1,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "KKB membunuh orang yg ga berdosa ..kok dibela",
+            "Basis KKB itu di daerah gunung bukan pesisir 🙏",
+            "Kalao ingin jajak pendapat yang afil jangan curang rakyat papua masih cinta Indonesia."
+          ]
+        },
+        {
+          "rank": 7,
+          "name": "Provokasi SARA & Separatisme",
+          "threat_domain": "Provokasi SARA & Separatisme",
+          "business_category": "Provokasi SARA & Separatisme",
+          "sub_issue": "Narasi konflik lintas negara dan dehumanisasi etnis, Ujaran kebencian rasis terhadap masyarakat Papua",
+          "example_sub_issues": "Narasi konflik lintas negara dan dehumanisasi etnis, Ujaran kebencian rasis terhadap masyarakat Papua",
+          "comment_count": 31,
+          "total_likes": 10,
+          "total_replies": 0,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "@ustadgaming5197  Ingat lagi apa yg kalian laungkan iaitu GANYANG MALAYSIA...ingatkan.kami di sini menerima warga indon di Msia dgn hati terbuka..mereka aman dan damai di sini..kenapa masalah negara kamu..kamu kaitkan dgn negara aku...",
+            "@ustadgaming5197  Negara kamu yg rusuh dan musnah...negara aku yg kamu sebut2....masih tak takut dgn azab Allah ke?",
+            "Apa kah Papua bisa sejahtera jika pisa"
+          ]
+        },
+        {
+          "rank": 8,
+          "name": "Disinformasi Internasional",
+          "threat_domain": "Disinformasi Internasional",
+          "business_category": "Disinformasi Internasional",
+          "sub_issue": "Narasi rasis dan klaim kedaulatan dalam bahasa Inggris",
+          "example_sub_issues": "Narasi rasis dan klaim kedaulatan dalam bahasa Inggris",
+          "comment_count": 27,
+          "total_likes": 10,
+          "total_replies": 4,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "THE WINNER OF ECONOMY WIN THIS. ANTEK ASING, LUHUT CS YANG DAPAT",
+            "@DOG WITH GOD percuma lah gw ngmg, org hidup mrk udh 'dibeli' ama tuannya. Such a bunch of slaves!",
+            "@TaufikErawan  YES.. BECAUSE INDONESIA HAS NO ADDRESS.. AND OF COURSE YOU ARE IN A FAIRY TALE WORLD, BECAUSE THERE IS NO NAME OF INDONESIA ON ANY ISLAND OR LAND ON THE FACE OF THIS EARTH,.. I ASK YOU TO OPEN THE MAP AND LOOK AT IT"
+          ]
+        },
+        {
+          "rank": 9,
+          "name": "Delegitimasi Pemerintah Daerah",
+          "threat_domain": "Delegitimasi Pemerintah Daerah",
+          "business_category": "Delegitimasi Pemerintah Daerah",
+          "sub_issue": "Kritik korupsi dan kemiskinan daerah dengan bahasa kasar",
+          "example_sub_issues": "Kritik korupsi dan kemiskinan daerah dengan bahasa kasar",
+          "comment_count": 25,
+          "total_likes": 11,
+          "total_replies": 3,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Saya orng kalimantan.sedih melihat.lebih baik pulang aja.jgn ditempati.it sama seperti timor timur",
+            "Guoblok! Miskin itu rakyat daerah dikorupsi putra daerah masing2! Makin nyungsep spt Timor Timur! Bego dipiara!",
+            "Guoblok! Miskin itu rakyat daerah dikorupsi putra daerah masing2! Makin nyungsep spt Timor Timur! Bego dipiara!"
+          ]
+        },
+        {
+          "rank": 10,
+          "name": "Delegitimasi Institusi",
+          "threat_domain": "Delegitimasi Institusi",
+          "business_category": "Delegitimasi Institusi",
+          "sub_issue": "Kritik rezim dengan narasi politik dan keagamaan",
+          "example_sub_issues": "Kritik rezim dengan narasi politik dan keagamaan",
+          "comment_count": 14,
+          "total_likes": 12,
+          "total_replies": 1,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Ya Allah astagfirullah aku ikut nangis baangg 😭",
+            "@ustadgaming5197  Aku doakan yg buruk2 dan jelek2 agar kamu mengerti erti dosa dan pembalasan dari Allah.Ingat kota MADIAN yg Allah  terbaliknya buminya....ingat Firaun yg mati di Laut Merah..itu apa?Itu adalah doa2 dari manusia yg inginkan kebenaran.Kenapa kamu sering campurkan urusan negara mu dgn negara ku...kenapa....PAPUA rusuh,,,tak ada kena mengena dgn negara ku.....Allah menguji kamu semua..tapi kamu semua bego..ngak sedar diri akan peringatan dari Allah",
+            "TUHAN MEMBERKATI SAUDARA"
+          ]
+        }
+      ],
+      "concentration": {
+        "top_3_pct": 92.1
+      }
+    },
+    "Netral": {
+      "total_categories": 7,
+      "total_comments": 824,
+      "categories": [
+        {
+          "rank": 1,
+          "name": "Kritik Media Asing",
+          "threat_domain": "Kritik Media Asing",
+          "business_category": "Kritik Media Asing",
+          "sub_issue": "Dugaan bias pemberitaan BBC terhadap isu Papua",
+          "example_sub_issues": "Dugaan bias pemberitaan BBC terhadap isu Papua",
+          "comment_count": 396,
+          "total_likes": 276,
+          "total_replies": 84,
+          "share_confident": 0.9975,
+          "sample_comments": [
+            "@mfa_10  narasi dari pihak sebelah kan sudah sering kita dengar. justru malah kita pengen denger suara pihak TPN atau OPM. gituloh",
+            "Harap berimbang pemberitaan mengenai konflik papua, liput dan paparkan juga sejauh mana kondisi pembangunan dipapua jadi bisa Mengedukasi.",
+            "segitu banget pemahamannya, miris"
+          ]
+        },
+        {
+          "rank": 2,
+          "name": "Solidaritas Kemanusiaan",
+          "threat_domain": "Solidaritas Kemanusiaan",
+          "business_category": "Solidaritas Kemanusiaan",
+          "sub_issue": "Doa dan harapan kesejahteraan bagi masyarakat Papua",
+          "example_sub_issues": "Doa dan harapan kesejahteraan bagi masyarakat Papua",
+          "comment_count": 237,
+          "total_likes": 969,
+          "total_replies": 187,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Apresiasi sebesar besarnya kepada tim Narasi . Independensi kalian luar bisa . Salam dari Papua 😢",
+            "Terima Kasih Narasi Tv.\nSudah bantu menyuarakan tentang Papua.\n❤😢😢",
+            "satu-satunya yang bisa mendamaikan tanah papua adalah kemerdekaan.\nJika di buat refrendum, saya yakin pasti tidak semua rakyat papua menginginkan kemerdekaan.\nSaya yakin pasti ada rakyat yang pro integrasi indonesia.\nYang ingin merdeka hanya papua barat, bukan semuanya.\nIni semua karena tidak adanya keadilan disana. Coba saja pemerintah indonesia mengajak untuk duduk bersama dengan para pemberontak, para pemimpin pemberontak dikasih jabatan, bawahannya juga dikasih jabatan. Buat hidup mereka nyaman, keluarganya juga berkecukupan.\nIntinya semua pemberontakan ini terjadi karena tidak adanya keadilan, cobalah biarkan orang papua sendiri yang menikmati hasil bumi alamnya sendiri. Dari setiap video kekerasan yang dilakukan oleh para pemberontak ini mereka selalu mengatakan \" kalian orang jakarta jangan ambil makan lagi di tanah papua, kalian pulang ke jakarta sana, ini tanah papua\"\nIni bukti kecemburuan mereka karena bukan mereka yang menikmati hasil tanah mereka"
+          ]
+        },
+        {
+          "rank": 3,
+          "name": "Kritik Netralitas Media",
+          "threat_domain": "Kritik Netralitas Media",
+          "business_category": "Kritik Netralitas Media",
+          "sub_issue": "Perdebatan mengenai keberimbangan narasi media asing",
+          "example_sub_issues": "Perdebatan mengenai keberimbangan narasi media asing",
+          "comment_count": 57,
+          "total_likes": 187,
+          "total_replies": 34,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Media seperti BBC ini seringkali menjadi kompornya..",
+            "Ini konten kritik.. yang anda sebut itu konten memuji dan beda tema..",
+            "Ini berita seakan membalik cerita yg salah pendatang yang ingin membela diri"
+          ]
+        },
+        {
+          "rank": 4,
+          "name": "Refleksi Konflik Sosial",
+          "threat_domain": "Refleksi Konflik Sosial",
+          "business_category": "Refleksi Konflik Sosial",
+          "sub_issue": "Diskusi filosofis tentang perang saudara dan hukum",
+          "example_sub_issues": "Diskusi filosofis tentang perang saudara dan hukum",
+          "comment_count": 57,
+          "total_likes": 49,
+          "total_replies": 14,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Indonesia lebih Aman di era zaman SUHARTO berbanding zaman NOW",
+            "Yg minta tdk di kasih, \nYg menolak paksa di kasih.",
+            "Itu fakta , dan tak bisah terbantahkan"
+          ]
+        },
+        {
+          "rank": 5,
+          "name": "Kritik Kebijakan Publik",
+          "threat_domain": "Kritik Kebijakan Publik",
+          "business_category": "Kritik Kebijakan Publik",
+          "sub_issue": "Tuntutan penegakan hukum atas kekerasan dan intimidasi, Narasi keadilan sosial dan anti propaganda separatis, Debat efektivitas MRP dalam penyelesaian konflik Papua",
+          "example_sub_issues": "Tuntutan penegakan hukum atas kekerasan dan intimidasi, Narasi keadilan sosial dan anti propaganda separatis, Debat efektivitas MRP dalam penyelesaian konflik Papua",
+          "comment_count": 49,
+          "total_likes": 56,
+          "total_replies": 10,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "udah referedum aja lah, adil dan ga konflik terus",
+            "Karena disitu tidak ada kepentingan, dan tidak ada yang bisa dijadikan duit oleh para penghianat bangsa",
+            "@mfa_10  🤣🤣🤣 emang faktanya begitu. Wahai antek kapitalisme, Colonialis dan oligarki!"
+          ]
+        },
+        {
+          "rank": 6,
+          "name": "Narasi Perdamaian & Dialog",
+          "threat_domain": "Narasi Perdamaian & Dialog",
+          "business_category": "Narasi Perdamaian & Dialog",
+          "sub_issue": "Ajakan menjaga persahabatan dan dialog amidst perbedaan pandangan",
+          "example_sub_issues": "Ajakan menjaga persahabatan dan dialog amidst perbedaan pandangan",
+          "comment_count": 17,
+          "total_likes": 22,
+          "total_replies": 4,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "jangan saling menyalahkan, tapi harus cari solusi yang terbaik untuk kedua belah pihak",
+            "Satu  jln keluar terbaik bagi negara Indonesia  adalah  biarkan Papua urus diri sendiri ,bahwa negara sd tdk mampu menjamin kehidupan  masyarakat Papua jd cara  terbaik bagi kedua belah pihak iala berpisah. Sebap yg sebenarnya yg miskin itu Indonesia BKN Papua kenapa  terbalik.",
+            "Tidak perlu saling menyalahkan... Melihat kesalahan org lain lebih mudah, daripada melihat kesalahan diri sendiri.. ingat kita bersaudara"
+          ]
+        },
+        {
+          "rank": 7,
+          "name": "Provokasi SARA & Separatisme",
+          "threat_domain": "Provokasi SARA & Separatisme",
+          "business_category": "Provokasi SARA & Separatisme",
+          "sub_issue": "Ejekan terhadap pola pikir sempit tokoh Papua",
+          "example_sub_issues": "Ejekan terhadap pola pikir sempit tokoh Papua",
+          "comment_count": 11,
+          "total_likes": 10,
+          "total_replies": 0,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Anda mendukung disintegrasi ?",
+            "ANDA SALAH MASUK KAMAR 😂😂",
+            "berfikir jernih sebelum bertindak"
+          ]
+        }
+      ],
+      "concentration": {
+        "top_3_pct": 83.74
+      }
+    }
+  },
+  "official_response": {
+    "global_distribution": {
+      "official_comments": 0,
+      "user_comments": 5729,
+      "hearted_comments": 9,
+      "official_ratio": 0.0
+    },
+    "reply_gap_top_5": [
+      {
+        "topic_id": 0,
+        "threat_domain": "Provokasi Separatisme Papua",
+        "business_category": "Provokasi Separatisme Papua",
+        "sub_issue": "Narasi ketidakadilan aparat dan dukungan kemerdekaan",
+        "ai_sentiment": "Negatif",
+        "total_comments": 3205,
+        "total_likes": 4521,
+        "engagement_score": 0.37
+      },
+      {
+        "topic_id": 1,
+        "threat_domain": "Delegitimasi Kedaulatan Negara",
+        "business_category": "Delegitimasi Kedaulatan Negara",
+        "sub_issue": "Seruan pemisahan diri dan kritik pendekatan keamanan",
+        "ai_sentiment": "Negatif",
+        "total_comments": 516,
+        "total_likes": 630,
+        "engagement_score": 0.44
+      },
+      {
+        "topic_id": 2,
+        "threat_domain": "Kritik Media Asing",
+        "business_category": "Kritik Media Asing",
+        "sub_issue": "Dugaan bias pemberitaan BBC terhadap isu Papua",
+        "ai_sentiment": "Netral",
+        "total_comments": 396,
+        "total_likes": 276,
+        "engagement_score": 0.21
+      },
+      {
+        "topic_id": 3,
+        "threat_domain": "Penolakan Kebijakan Pemekaran",
+        "business_category": "Penolakan Kebijakan Pemekaran",
+        "sub_issue": "Sentimen negatif terhadap wacana pemekaran wilayah",
+        "ai_sentiment": "Negatif",
+        "total_comments": 360,
+        "total_likes": 203,
+        "engagement_score": 0.07
+      },
+      {
+        "topic_id": 4,
+        "threat_domain": "Apresiasi Pendidikan Damai",
+        "business_category": "Apresiasi Pendidikan Damai",
+        "sub_issue": "Dukungan kampus bebas provokasi politik separatis",
+        "ai_sentiment": "Positif",
+        "total_comments": 249,
+        "total_likes": 87,
+        "engagement_score": 0.14
+      }
+    ]
+  },
+  "engagement_analysis": {
+    "top_engaging_topics": [
+      {
+        "threat_domain": "Solidaritas Kemanusiaan",
+        "business_category": "Solidaritas Kemanusiaan",
+        "sub_issue": "Doa dan harapan kesejahteraan bagi masyarakat Papua",
+        "ai_sentiment": "Netral",
+        "engagement_score": 0.79,
+        "total_comments": 237,
+        "total_replies": 187,
+        "total_likes": 969
+      },
+      {
+        "threat_domain": "Nasionalisme NKRI Harga Mati",
+        "business_category": "Nasionalisme NKRI Harga Mati",
+        "sub_issue": "Penegasan kesatuan wilayah dan penolakan separatisme",
+        "ai_sentiment": "Positif",
+        "engagement_score": 0.73,
+        "total_comments": 128,
+        "total_replies": 93,
+        "total_likes": 422
+      },
+      {
+        "threat_domain": "Kritik Netralitas Media",
+        "business_category": "Kritik Netralitas Media",
+        "sub_issue": "Perdebatan mengenai keberimbangan narasi media asing",
+        "ai_sentiment": "Netral",
+        "engagement_score": 0.6,
+        "total_comments": 57,
+        "total_replies": 34,
+        "total_likes": 187
+      },
+      {
+        "threat_domain": "Kritik Kebijakan Publik",
+        "business_category": "Kritik Kebijakan Publik",
+        "sub_issue": "Tuntutan penegakan hukum atas kekerasan dan intimidasi",
+        "ai_sentiment": "Netral",
+        "engagement_score": 0.5,
+        "total_comments": 20,
+        "total_replies": 10,
+        "total_likes": 36
+      },
+      {
+        "threat_domain": "Delegitimasi Kedaulatan Negara",
+        "business_category": "Delegitimasi Kedaulatan Negara",
+        "sub_issue": "Seruan pemisahan diri dan kritik pendekatan keamanan",
+        "ai_sentiment": "Negatif",
+        "engagement_score": 0.44,
+        "total_comments": 516,
+        "total_replies": 227,
+        "total_likes": 630
+      }
+    ]
+  },
+  "trends": [
+    {
+      "month": "2018-11",
+      "positif": 2,
+      "negatif": 30,
+      "netral": 4,
+      "total": 36,
+      "net_sentiment_ratio": -0.7778
+    },
+    {
+      "month": "2019-11",
+      "positif": 43,
+      "negatif": 1150,
+      "netral": 234,
+      "total": 1427,
+      "net_sentiment_ratio": -0.7758
+    },
+    {
+      "month": "2020-11",
+      "positif": 8,
+      "negatif": 130,
+      "netral": 15,
+      "total": 153,
+      "net_sentiment_ratio": -0.7974
+    },
+    {
+      "month": "2021-11",
+      "positif": 0,
+      "negatif": 93,
+      "netral": 12,
+      "total": 105,
+      "net_sentiment_ratio": -0.8857
+    },
+    {
+      "month": "2022-11",
+      "positif": 75,
+      "negatif": 800,
+      "netral": 84,
+      "total": 959,
+      "net_sentiment_ratio": -0.756
+    },
+    {
+      "month": "2023-11",
+      "positif": 10,
+      "negatif": 138,
+      "netral": 14,
+      "total": 162,
+      "net_sentiment_ratio": -0.7901
+    },
+    {
+      "month": "2024-11",
+      "positif": 90,
+      "negatif": 1150,
+      "netral": 233,
+      "total": 1473,
+      "net_sentiment_ratio": -0.7196
+    },
+    {
+      "month": "2025-11",
+      "positif": 12,
+      "negatif": 493,
+      "netral": 70,
+      "total": 575,
+      "net_sentiment_ratio": -0.8365
+    },
+    {
+      "month": "2025-12",
+      "positif": 1,
+      "negatif": 44,
+      "netral": 9,
+      "total": 54,
+      "net_sentiment_ratio": -0.7963
+    },
+    {
+      "month": "2026-01",
+      "positif": 1,
+      "negatif": 2,
+      "netral": 1,
+      "total": 4,
+      "net_sentiment_ratio": -0.25
+    },
+    {
+      "month": "2026-02",
+      "positif": 0,
+      "negatif": 3,
+      "netral": 1,
+      "total": 4,
+      "net_sentiment_ratio": -0.75
+    },
+    {
+      "month": "2026-03",
+      "positif": 0,
+      "negatif": 1,
+      "netral": 0,
+      "total": 1,
+      "net_sentiment_ratio": -1.0
+    },
+    {
+      "month": "2026-05",
+      "positif": 1,
+      "negatif": 21,
+      "netral": 0,
+      "total": 22,
+      "net_sentiment_ratio": -0.9091
+    },
+    {
+      "month": "2026-06",
+      "positif": 3,
+      "negatif": 86,
+      "netral": 11,
+      "total": 100,
+      "net_sentiment_ratio": -0.83
+    },
+    {
+      "month": "2026-07",
+      "positif": 2,
+      "negatif": 6,
+      "netral": 1,
+      "total": 9,
+      "net_sentiment_ratio": -0.4444
+    },
+    {
+      "month": "2026-08",
+      "positif": 1,
+      "negatif": 7,
+      "netral": 0,
+      "total": 8,
+      "net_sentiment_ratio": -0.75
+    },
+    {
+      "month": "2026-09",
+      "positif": 2,
+      "negatif": 45,
+      "netral": 7,
+      "total": 54,
+      "net_sentiment_ratio": -0.7963
+    },
+    {
+      "month": "2026-10",
+      "positif": 174,
+      "negatif": 116,
+      "netral": 49,
+      "total": 339,
+      "net_sentiment_ratio": 0.1711
+    },
+    {
+      "month": "2026-11",
+      "positif": 49,
+      "negatif": 116,
+      "netral": 79,
+      "total": 244,
+      "net_sentiment_ratio": -0.2746
+    }
+  ],
+  "spike_detection": {
+    "threshold": 108.95,
+    "spikes": [
+      {
+        "date": "2024-11-08",
+        "comment_count": 1473,
+        "top_topics": [
+          "Narasi ketidakadilan aparat dan dukungan kemerdekaan",
+          "Seruan pemisahan diri dan kritik pendekatan keamanan",
+          "Dugaan bias pemberitaan BBC terhadap isu Papua"
+        ]
+      },
+      {
+        "date": "2019-11-08",
+        "comment_count": 1427,
+        "top_topics": [
+          "Narasi ketidakadilan aparat dan dukungan kemerdekaan",
+          "Dugaan bias pemberitaan BBC terhadap isu Papua",
+          "Seruan pemisahan diri dan kritik pendekatan keamanan"
+        ]
+      },
+      {
+        "date": "2022-11-08",
+        "comment_count": 951,
+        "top_topics": [
+          "Narasi ketidakadilan aparat dan dukungan kemerdekaan",
+          "Seruan pemisahan diri dan kritik pendekatan keamanan",
+          "Sentimen negatif terhadap wacana pemekaran wilayah"
+        ]
+      },
+      {
+        "date": "2025-11-08",
+        "comment_count": 575,
+        "top_topics": [
+          "Narasi ketidakadilan aparat dan dukungan kemerdekaan",
+          "Seruan pemisahan diri dan kritik pendekatan keamanan",
+          "Dugaan bias pemberitaan BBC terhadap isu Papua"
+        ]
+      },
+      {
+        "date": "2023-11-08",
+        "comment_count": 162,
+        "top_topics": [
+          "Narasi ketidakadilan aparat dan dukungan kemerdekaan",
+          "Seruan pemisahan diri dan kritik pendekatan keamanan",
+          "Sentimen negatif terhadap wacana pemekaran wilayah"
+        ]
+      }
+    ]
+  },
+  "keyword_analysis": {
+    "Positif": [
+      {
+        "keyword": "kampus",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "mahasiswa",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "pendidikan",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "ustj",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "mahasiswa papua",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "generasi",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "ruang",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "belajar",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "muda",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "generasi muda",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "republik",
+        "topic_count": 1,
+        "weighted_comment_count": 128
+      },
+      {
+        "keyword": "republik indonesia",
+        "topic_count": 1,
+        "weighted_comment_count": 128
+      },
+      {
+        "keyword": "kesatuan",
+        "topic_count": 1,
+        "weighted_comment_count": 128
+      },
+      {
+        "keyword": "indonesia",
+        "topic_count": 1,
+        "weighted_comment_count": 128
+      },
+      {
+        "keyword": "negara kesatuan",
+        "topic_count": 1,
+        "weighted_comment_count": 128
+      },
+      {
+        "keyword": "kesatuan republik",
+        "topic_count": 1,
+        "weighted_comment_count": 128
+      },
+      {
+        "keyword": "negara",
+        "topic_count": 1,
+        "weighted_comment_count": 128
+      },
+      {
+        "keyword": "harga",
+        "topic_count": 1,
+        "weighted_comment_count": 128
+      },
+      {
+        "keyword": "harga mati",
+        "topic_count": 1,
+        "weighted_comment_count": 128
+      },
+      {
+        "keyword": "indonesia harga",
+        "topic_count": 1,
+        "weighted_comment_count": 128
+      },
+      {
+        "keyword": "usman",
+        "topic_count": 1,
+        "weighted_comment_count": 66
+      },
+      {
+        "keyword": "yoel",
+        "topic_count": 1,
+        "weighted_comment_count": 66
+      },
+      {
+        "keyword": "usman hamid",
+        "topic_count": 1,
+        "weighted_comment_count": 66
+      },
+      {
+        "keyword": "hamid",
+        "topic_count": 1,
+        "weighted_comment_count": 66
+      },
+      {
+        "keyword": "prabowo",
+        "topic_count": 1,
+        "weighted_comment_count": 66
+      },
+      {
+        "keyword": "salut",
+        "topic_count": 1,
+        "weighted_comment_count": 66
+      },
+      {
+        "keyword": "usman usman",
+        "topic_count": 1,
+        "weighted_comment_count": 66
+      },
+      {
+        "keyword": "yoel usman",
+        "topic_count": 1,
+        "weighted_comment_count": 66
+      },
+      {
+        "keyword": "syamsurizal",
+        "topic_count": 1,
+        "weighted_comment_count": 66
+      },
+      {
+        "keyword": "samsu",
+        "topic_count": 1,
+        "weighted_comment_count": 66
+      },
+      {
+        "keyword": "terima kasih",
+        "topic_count": 1,
+        "weighted_comment_count": 31
+      },
+      {
+        "keyword": "terima",
+        "topic_count": 1,
+        "weighted_comment_count": 31
+      },
+      {
+        "keyword": "narasi",
+        "topic_count": 1,
+        "weighted_comment_count": 31
+      },
+      {
+        "keyword": "kasih",
+        "topic_count": 1,
+        "weighted_comment_count": 31
+      },
+      {
+        "keyword": "tim",
+        "topic_count": 1,
+        "weighted_comment_count": 31
+      },
+      {
+        "keyword": "narasi terima",
+        "topic_count": 1,
+        "weighted_comment_count": 31
+      },
+      {
+        "keyword": "thanks",
+        "topic_count": 1,
+        "weighted_comment_count": 31
+      },
+      {
+        "keyword": "terimakasih",
+        "topic_count": 1,
+        "weighted_comment_count": 31
+      },
+      {
+        "keyword": "pndatang",
+        "topic_count": 1,
+        "weighted_comment_count": 31
+      },
+      {
+        "keyword": "tim narasi",
+        "topic_count": 1,
+        "weighted_comment_count": 31
+      }
+    ],
+    "Negatif": [
+      {
+        "keyword": "papua",
+        "topic_count": 4,
+        "weighted_comment_count": 4252
+      },
+      {
+        "keyword": "indonesia",
+        "topic_count": 3,
+        "weighted_comment_count": 3892
+      },
+      {
+        "keyword": "merdeka",
+        "topic_count": 3,
+        "weighted_comment_count": 3892
+      },
+      {
+        "keyword": "papua merdeka",
+        "topic_count": 3,
+        "weighted_comment_count": 3892
+      },
+      {
+        "keyword": "orang",
+        "topic_count": 3,
+        "weighted_comment_count": 3758
+      },
+      {
+        "keyword": "orang papua",
+        "topic_count": 2,
+        "weighted_comment_count": 3721
+      },
+      {
+        "keyword": "negara",
+        "topic_count": 2,
+        "weighted_comment_count": 3221
+      },
+      {
+        "keyword": "bangsa",
+        "topic_count": 1,
+        "weighted_comment_count": 3205
+      },
+      {
+        "keyword": "republik",
+        "topic_count": 1,
+        "weighted_comment_count": 3205
+      },
+      {
+        "keyword": "republik indonesia",
+        "topic_count": 1,
+        "weighted_comment_count": 3205
+      },
+      {
+        "keyword": "pemekaran",
+        "topic_count": 2,
+        "weighted_comment_count": 876
+      },
+      {
+        "keyword": "manusia",
+        "topic_count": 2,
+        "weighted_comment_count": 561
+      },
+      {
+        "keyword": "penjajah",
+        "topic_count": 1,
+        "weighted_comment_count": 516
+      },
+      {
+        "keyword": "tanah",
+        "topic_count": 1,
+        "weighted_comment_count": 516
+      },
+      {
+        "keyword": "tolak",
+        "topic_count": 1,
+        "weighted_comment_count": 360
+      },
+      {
+        "keyword": "setuju",
+        "topic_count": 1,
+        "weighted_comment_count": 360
+      },
+      {
+        "keyword": "mantap",
+        "topic_count": 1,
+        "weighted_comment_count": 360
+      },
+      {
+        "keyword": "diskusi",
+        "topic_count": 1,
+        "weighted_comment_count": 360
+      },
+      {
+        "keyword": "tahi",
+        "topic_count": 1,
+        "weighted_comment_count": 360
+      },
+      {
+        "keyword": "omong kosong",
+        "topic_count": 1,
+        "weighted_comment_count": 360
+      },
+      {
+        "keyword": "otak",
+        "topic_count": 1,
+        "weighted_comment_count": 360
+      },
+      {
+        "keyword": "wow",
+        "topic_count": 1,
+        "weighted_comment_count": 360
+      },
+      {
+        "keyword": "free",
+        "topic_count": 1,
+        "weighted_comment_count": 171
+      },
+      {
+        "keyword": "merdeka papua",
+        "topic_count": 1,
+        "weighted_comment_count": 171
+      },
+      {
+        "keyword": "berhak",
+        "topic_count": 1,
+        "weighted_comment_count": 171
+      },
+      {
+        "keyword": "papua berhak",
+        "topic_count": 1,
+        "weighted_comment_count": 171
+      },
+      {
+        "keyword": "organisasi papua",
+        "topic_count": 1,
+        "weighted_comment_count": 171
+      },
+      {
+        "keyword": "organisasi",
+        "topic_count": 1,
+        "weighted_comment_count": 171
+      },
+      {
+        "keyword": "provokator",
+        "topic_count": 1,
+        "weighted_comment_count": 45
+      },
+      {
+        "keyword": "rasis",
+        "topic_count": 1,
+        "weighted_comment_count": 45
+      },
+      {
+        "keyword": "biadab",
+        "topic_count": 1,
+        "weighted_comment_count": 45
+      },
+      {
+        "keyword": "rasis rasis",
+        "topic_count": 1,
+        "weighted_comment_count": 45
+      },
+      {
+        "keyword": "biadab rasis",
+        "topic_count": 1,
+        "weighted_comment_count": 45
+      },
+      {
+        "keyword": "rasis teriak",
+        "topic_count": 1,
+        "weighted_comment_count": 45
+      },
+      {
+        "keyword": "teriak rasis",
+        "topic_count": 1,
+        "weighted_comment_count": 45
+      },
+      {
+        "keyword": "provokator provokator",
+        "topic_count": 1,
+        "weighted_comment_count": 45
+      },
+      {
+        "keyword": "manusia biadab",
+        "topic_count": 1,
+        "weighted_comment_count": 45
+      },
+      {
+        "keyword": "bersenjata",
+        "topic_count": 1,
+        "weighted_comment_count": 37
+      },
+      {
+        "keyword": "kriminal bersenjata",
+        "topic_count": 1,
+        "weighted_comment_count": 37
+      },
+      {
+        "keyword": "kelompok kriminal",
+        "topic_count": 1,
+        "weighted_comment_count": 37
+      },
+      {
+        "keyword": "kriminal",
+        "topic_count": 1,
+        "weighted_comment_count": 37
+      },
+      {
+        "keyword": "kelompok",
+        "topic_count": 1,
+        "weighted_comment_count": 37
+      },
+      {
+        "keyword": "bersenjata kelompok",
+        "topic_count": 1,
+        "weighted_comment_count": 37
+      },
+      {
+        "keyword": "kera",
+        "topic_count": 1,
+        "weighted_comment_count": 37
+      },
+      {
+        "keyword": "korban",
+        "topic_count": 1,
+        "weighted_comment_count": 37
+      },
+      {
+        "keyword": "dprd",
+        "topic_count": 1,
+        "weighted_comment_count": 37
+      },
+      {
+        "keyword": "the",
+        "topic_count": 1,
+        "weighted_comment_count": 27
+      },
+      {
+        "keyword": "and",
+        "topic_count": 1,
+        "weighted_comment_count": 27
+      },
+      {
+        "keyword": "of",
+        "topic_count": 1,
+        "weighted_comment_count": 27
+      },
+      {
+        "keyword": "is",
+        "topic_count": 1,
+        "weighted_comment_count": 27
+      },
+      {
+        "keyword": "for",
+        "topic_count": 1,
+        "weighted_comment_count": 27
+      },
+      {
+        "keyword": "west",
+        "topic_count": 1,
+        "weighted_comment_count": 27
+      },
+      {
+        "keyword": "dutch",
+        "topic_count": 1,
+        "weighted_comment_count": 27
+      },
+      {
+        "keyword": "west papua",
+        "topic_count": 1,
+        "weighted_comment_count": 27
+      },
+      {
+        "keyword": "by",
+        "topic_count": 1,
+        "weighted_comment_count": 27
+      },
+      {
+        "keyword": "from",
+        "topic_count": 1,
+        "weighted_comment_count": 27
+      },
+      {
+        "keyword": "timor timur",
+        "topic_count": 1,
+        "weighted_comment_count": 25
+      },
+      {
+        "keyword": "daerah",
+        "topic_count": 1,
+        "weighted_comment_count": 25
+      },
+      {
+        "keyword": "bego",
+        "topic_count": 1,
+        "weighted_comment_count": 25
+      },
+      {
+        "keyword": "rakyat daerah",
+        "topic_count": 1,
+        "weighted_comment_count": 25
+      },
+      {
+        "keyword": "daerah nyungsep",
+        "topic_count": 1,
+        "weighted_comment_count": 25
+      },
+      {
+        "keyword": "dikorupsi putra",
+        "topic_count": 1,
+        "weighted_comment_count": 25
+      },
+      {
+        "keyword": "daerah dikorupsi",
+        "topic_count": 1,
+        "weighted_comment_count": 25
+      },
+      {
+        "keyword": "bego dipiara",
+        "topic_count": 1,
+        "weighted_comment_count": 25
+      },
+      {
+        "keyword": "miskin rakyat",
+        "topic_count": 1,
+        "weighted_comment_count": 25
+      },
+      {
+        "keyword": "nyungsep timor",
+        "topic_count": 1,
+        "weighted_comment_count": 25
+      },
+      {
+        "keyword": "malaysia",
+        "topic_count": 1,
+        "weighted_comment_count": 16
+      },
+      {
+        "keyword": "konfik",
+        "topic_count": 1,
+        "weighted_comment_count": 16
+      },
+      {
+        "keyword": "nak",
+        "topic_count": 1,
+        "weighted_comment_count": 16
+      },
+      {
+        "keyword": "duit",
+        "topic_count": 1,
+        "weighted_comment_count": 16
+      },
+      {
+        "keyword": "andekan pemeritah",
+        "topic_count": 1,
+        "weighted_comment_count": 16
+      },
+      {
+        "keyword": "bunuh2 sulu",
+        "topic_count": 1,
+        "weighted_comment_count": 16
+      },
+      {
+        "keyword": "bentar milik",
+        "topic_count": 1,
+        "weighted_comment_count": 16
+      },
+      {
+        "keyword": "andekan",
+        "topic_count": 1,
+        "weighted_comment_count": 16
+      },
+      {
+        "keyword": "campur sbenanya",
+        "topic_count": 1,
+        "weighted_comment_count": 16
+      },
+      {
+        "keyword": "pisa",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "cok",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "halata",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "panyak",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "oe",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "jancuk",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "luit",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "patei",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "yanna den",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "yanna",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "allah",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "rezim",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "astagfirullah",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "astaghfirullah",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "jokodok",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "jelek",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "doa",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "allah menguji",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "allah innalilahi",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "allah damaikanlah",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      }
+    ],
+    "Netral": [
+      {
+        "keyword": "bbc",
+        "topic_count": 2,
+        "weighted_comment_count": 453
+      },
+      {
+        "keyword": "narasi",
+        "topic_count": 2,
+        "weighted_comment_count": 453
+      },
+      {
+        "keyword": "berita",
+        "topic_count": 1,
+        "weighted_comment_count": 396
+      },
+      {
+        "keyword": "monyet",
+        "topic_count": 1,
+        "weighted_comment_count": 396
+      },
+      {
+        "keyword": "sebelah",
+        "topic_count": 1,
+        "weighted_comment_count": 396
+      },
+      {
+        "keyword": "banget",
+        "topic_count": 1,
+        "weighted_comment_count": 396
+      },
+      {
+        "keyword": "mengomong",
+        "topic_count": 1,
+        "weighted_comment_count": 396
+      },
+      {
+        "keyword": "berat sebelah",
+        "topic_count": 1,
+        "weighted_comment_count": 396
+      },
+      {
+        "keyword": "merdeka",
+        "topic_count": 1,
+        "weighted_comment_count": 396
+      },
+      {
+        "keyword": "berat",
+        "topic_count": 1,
+        "weighted_comment_count": 396
+      },
+      {
+        "keyword": "tuhan",
+        "topic_count": 2,
+        "weighted_comment_count": 294
+      },
+      {
+        "keyword": "semoga",
+        "topic_count": 1,
+        "weighted_comment_count": 237
+      },
+      {
+        "keyword": "papua",
+        "topic_count": 1,
+        "weighted_comment_count": 237
+      },
+      {
+        "keyword": "listrik",
+        "topic_count": 1,
+        "weighted_comment_count": 237
+      },
+      {
+        "keyword": "yesus",
+        "topic_count": 1,
+        "weighted_comment_count": 237
+      },
+      {
+        "keyword": "tuhan yesus",
+        "topic_count": 1,
+        "weighted_comment_count": 237
+      },
+      {
+        "keyword": "semoga papua",
+        "topic_count": 1,
+        "weighted_comment_count": 237
+      },
+      {
+        "keyword": "salam",
+        "topic_count": 1,
+        "weighted_comment_count": 237
+      },
+      {
+        "keyword": "masyarakat",
+        "topic_count": 1,
+        "weighted_comment_count": 237
+      },
+      {
+        "keyword": "papua semoga",
+        "topic_count": 1,
+        "weighted_comment_count": 237
+      },
+      {
+        "keyword": "media",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "sisi",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "penguasa",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "admin",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "admin narasi",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "netral",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "konten",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "berimbang",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "perang",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "hukum",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "perang saudara",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "bu",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "menolak",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "tuhan hukum",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "hukum tuhan",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "menguasai",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "kebenaran",
+        "topic_count": 1,
+        "weighted_comment_count": 57
+      },
+      {
+        "keyword": "laporan",
+        "topic_count": 1,
+        "weighted_comment_count": 20
+      },
+      {
+        "keyword": "dihentikan",
+        "topic_count": 1,
+        "weighted_comment_count": 20
+      },
+      {
+        "keyword": "kekerasan",
+        "topic_count": 1,
+        "weighted_comment_count": 20
+      },
+      {
+        "keyword": "mari periksa",
+        "topic_count": 1,
+        "weighted_comment_count": 20
+      },
+      {
+        "keyword": "periksa",
+        "topic_count": 1,
+        "weighted_comment_count": 20
+      },
+      {
+        "keyword": "laporan utuh",
+        "topic_count": 1,
+        "weighted_comment_count": 20
+      },
+      {
+        "keyword": "dugaan",
+        "topic_count": 1,
+        "weighted_comment_count": 20
+      },
+      {
+        "keyword": "kekerasan dihentikan",
+        "topic_count": 1,
+        "weighted_comment_count": 20
+      },
+      {
+        "keyword": "aksi kekerasan",
+        "topic_count": 1,
+        "weighted_comment_count": 20
+      },
+      {
+        "keyword": "mari",
+        "topic_count": 1,
+        "weighted_comment_count": 20
+      },
+      {
+        "keyword": "perbedaan",
+        "topic_count": 1,
+        "weighted_comment_count": 17
+      },
+      {
+        "keyword": "pandangan",
+        "topic_count": 1,
+        "weighted_comment_count": 17
+      },
+      {
+        "keyword": "perbedaan pandangan",
+        "topic_count": 1,
+        "weighted_comment_count": 17
+      },
+      {
+        "keyword": "terbaik",
+        "topic_count": 1,
+        "weighted_comment_count": 17
+      },
+      {
+        "keyword": "persahabatan",
+        "topic_count": 1,
+        "weighted_comment_count": 17
+      },
+      {
+        "keyword": "tarap hidup",
+        "topic_count": 1,
+        "weighted_comment_count": 17
+      },
+      {
+        "keyword": "tarap",
+        "topic_count": 1,
+        "weighted_comment_count": 17
+      },
+      {
+        "keyword": "terbaik belah",
+        "topic_count": 1,
+        "weighted_comment_count": 17
+      },
+      {
+        "keyword": "dialog",
+        "topic_count": 1,
+        "weighted_comment_count": 17
+      },
+      {
+        "keyword": "kesalahan",
+        "topic_count": 1,
+        "weighted_comment_count": 17
+      },
+      {
+        "keyword": "mewujudkan",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "keadilan",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "mewujudkan keadilan",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "kapitalis",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "sosial",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "keadilan sosial",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "kesejahteraan sejati",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "belahan dunia",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "negara mewujudkan",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "budaya korup",
+        "topic_count": 1,
+        "weighted_comment_count": 15
+      },
+      {
+        "keyword": "mrp",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "udang",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "amit",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "otak udang",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "mrp mrp",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "undang",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "minggu",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "bakar",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "enak pulang",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "ghaib",
+        "topic_count": 1,
+        "weighted_comment_count": 14
+      },
+      {
+        "keyword": "salah masuk",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "singa",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "berpikir",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "kamar",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "masuk kamar",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "sempit",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "masuk",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "salah",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "kamar salah",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "kandang singa",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      }
+    ]
+  },
+  "video_analysis": {
+    "total_videos": 34,
+    "total_views": 1208696,
+    "average_views": 35549,
+    "video_likes": 0,
+    "video_title": "Kata Kunci Pencarian: \"PAPUA Propaganda Separatis Separatisme KKB\" (34 Video)",
+    "channel_name": "34 Video Lintas 26 Kanal (CNN Indonesia, The Papua Darkside, BBC News Indonesia, +23 kanal lainnya)",
+    "video_url": "https://www.youtube.com/watch?v=sXIhpQeFnI4",
+    "published_at": "2026-11-06",
+    "video_list": [
+      {
+        "video_id": "sXIhpQeFnI4",
+        "video_url": "https://www.youtube.com/watch?v=sXIhpQeFnI4",
+        "caption": "DARURAT HOAKS SEPARATIS OPM: MENYIBAK FAKTA DI BALIK PROPAGANDA PENGUNGSIAN PANIAI",
+        "video_title": "DARURAT HOAKS SEPARATIS OPM: MENYIBAK FAKTA DI BALIK PROPAGANDA PENGUNGSIAN PANIAI",
+        "channel_name": "The Papua Darkside",
+        "published_at": "2026-11-06",
+        "views": "100",
+        "views_int": 100,
+        "video_likes": 0,
+        "comment_count": 72,
+        "total_likes": 15,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "QpftBjCAXTk",
+        "video_url": "https://www.youtube.com/watch?v=QpftBjCAXTk",
+        "caption": "Satgas ODC Ingatkan Publik Hati-hati Propaganda KKB",
+        "video_title": "Satgas ODC Ingatkan Publik Hati-hati Propaganda KKB",
+        "channel_name": "POS KUPANG",
+        "published_at": "2026-11-04",
+        "views": "1,367",
+        "views_int": 1367,
+        "video_likes": 0,
+        "comment_count": 1,
+        "total_likes": 0,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "QKjp_T3KU5g",
+        "video_url": "https://www.youtube.com/watch?v=QKjp_T3KU5g",
+        "caption": "Cara Propaganda Asing untuk Memecah Belah Papua dan Indonesia Telah Berlangsung Sejak Lama",
+        "video_title": "Cara Propaganda Asing untuk Memecah Belah Papua dan Indonesia Telah Berlangsung Sejak Lama",
+        "channel_name": "Papua Channel",
+        "published_at": "2026-10-11",
+        "views": "2,851",
+        "views_int": 2851,
+        "video_likes": 0,
+        "comment_count": 2,
+        "total_likes": 0,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "sLWH6Ac1rmg",
+        "video_url": "https://www.youtube.com/watch?v=sLWH6Ac1rmg",
+        "caption": "Hati2 dengan Propaganda Separatis OPM/KKB Papua dengan tujuan utk menggagalkan pembangunan di Papua",
+        "video_title": "Hati2 dengan Propaganda Separatis OPM/KKB Papua dengan tujuan utk menggagalkan pembangunan di Papua",
+        "channel_name": "Truth Seekers_91",
+        "published_at": "2026-05-19",
+        "views": "1,299",
+        "views_int": 1299,
+        "video_likes": 0,
+        "comment_count": 1,
+        "total_likes": 1,
+        "dominant_sentiment": "Netral"
+      },
+      {
+        "video_id": "pAHopvtmiyQ",
+        "video_url": "https://www.youtube.com/watch?v=pAHopvtmiyQ",
+        "caption": "Papua Terang Benderang! Listrik Pelosok Bungkam Propaganda Separatis",
+        "video_title": "Papua Terang Benderang! Listrik Pelosok Bungkam Propaganda Separatis",
+        "channel_name": "The Papua Darkside",
+        "published_at": "2026-11-01",
+        "views": "183",
+        "views_int": 183,
+        "video_likes": 0,
+        "comment_count": 92,
+        "total_likes": 10,
+        "dominant_sentiment": "Netral"
+      },
+      {
+        "video_id": "YoFj-QDP1n4",
+        "video_url": "https://www.youtube.com/watch?v=YoFj-QDP1n4",
+        "caption": "Pendekatan Soft Power Masih Relevan Terhadap Kelompok Separatis Papua? | Public Diplomacy",
+        "video_title": "Pendekatan Soft Power Masih Relevan Terhadap Kelompok Separatis Papua? | Public Diplomacy",
+        "channel_name": "MMI TV - Mata Milenial Indonesia TV",
+        "published_at": "2022-08-11",
+        "views": "1,419",
+        "views_int": 1419,
+        "video_likes": 0,
+        "comment_count": 8,
+        "total_likes": 1,
+        "dominant_sentiment": "Netral"
+      },
+      {
+        "video_id": "OLCKxNLk5bM",
+        "video_url": "https://www.youtube.com/watch?v=OLCKxNLk5bM",
+        "caption": "Gubernur Tegaskan Tidak ada Tempat bagi Kelompok Separatis | Liputan 6 Papua",
+        "video_title": "Gubernur Tegaskan Tidak ada Tempat bagi Kelompok Separatis | Liputan 6 Papua",
+        "channel_name": "Liputan6",
+        "published_at": "2025-04-23",
+        "views": "2,575",
+        "views_int": 2575,
+        "video_likes": 0,
+        "comment_count": 28,
+        "total_likes": 7,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "_dGz6-oyaSU",
+        "video_url": "https://www.youtube.com/watch?v=_dGz6-oyaSU",
+        "caption": "STOP INDOKTRINASI DAN PROPAGANDA SEPARATISME DI ASRAMA MAHASISWA PAPUA!",
+        "video_title": "STOP INDOKTRINASI DAN PROPAGANDA SEPARATISME DI ASRAMA MAHASISWA PAPUA!",
+        "channel_name": "Nafas Bumi",
+        "published_at": "2026-10-22",
+        "views": "191",
+        "views_int": 191,
+        "video_likes": 0,
+        "comment_count": 12,
+        "total_likes": 0,
+        "dominant_sentiment": "Positif"
+      },
+      {
+        "video_id": "0NsLiVfIYSE",
+        "video_url": "https://www.youtube.com/watch?v=0NsLiVfIYSE",
+        "caption": "STOP INDOKTRINASI DAN PROPAGANDA SEPARATISME DI ASRAMA MAHASISWA",
+        "video_title": "STOP INDOKTRINASI DAN PROPAGANDA SEPARATISME DI ASRAMA MAHASISWA",
+        "channel_name": "Sekedarnya",
+        "published_at": "2026-10-22",
+        "views": "90",
+        "views_int": 90,
+        "video_likes": 0,
+        "comment_count": 10,
+        "total_likes": 0,
+        "dominant_sentiment": "Positif"
+      },
+      {
+        "video_id": "-zy8_4cl37s",
+        "video_url": "https://www.youtube.com/watch?v=-zy8_4cl37s",
+        "caption": "Kelompok Separatis Papua Merdeka Bikin Rusuh di Forum PBB!",
+        "video_title": "Kelompok Separatis Papua Merdeka Bikin Rusuh di Forum PBB!",
+        "channel_name": "Gerakanpis",
+        "published_at": "2025-04-25",
+        "views": "15,403",
+        "views_int": 15403,
+        "video_likes": 0,
+        "comment_count": 425,
+        "total_likes": 545,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "ouziZ0_HHyY",
+        "video_url": "https://www.youtube.com/watch?v=ouziZ0_HHyY",
+        "caption": "Papuan civilians are not safe under Indonesian occupation",
+        "video_title": "Papuan civilians are not safe under Indonesian occupation",
+        "channel_name": "Counterpart",
+        "published_at": "2026-10-28",
+        "views": "82",
+        "views_int": 82,
+        "video_likes": 0,
+        "comment_count": 1,
+        "total_likes": 0,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "sHmRtyt7Yu8",
+        "video_url": "https://www.youtube.com/watch?v=sHmRtyt7Yu8",
+        "caption": "Papua Damai Tanpa Provokasi: Tolak Pengibaran Simbol Separatis",
+        "video_title": "Papua Damai Tanpa Provokasi: Tolak Pengibaran Simbol Separatis",
+        "channel_name": "Humanism Society",
+        "published_at": "2026-05-07",
+        "views": "822",
+        "views_int": 822,
+        "video_likes": 0,
+        "comment_count": 1,
+        "total_likes": 0,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "PZBK3jjdv1s",
+        "video_url": "https://www.youtube.com/watch?v=PZBK3jjdv1s",
+        "caption": "Episode 18 — Kalender yang Mengatur Aula",
+        "video_title": "Episode 18 — Kalender yang Mengatur Aula",
+        "channel_name": "Jaki Waipon",
+        "published_at": "2026-10-25",
+        "views": "103",
+        "views_int": 103,
+        "video_likes": 0,
+        "comment_count": 62,
+        "total_likes": 11,
+        "dominant_sentiment": "Positif"
+      },
+      {
+        "video_id": "nLQMw5dO0K8",
+        "video_url": "https://www.youtube.com/watch?v=nLQMw5dO0K8",
+        "caption": "TOLAK PROPAGANDA SEPARATISME, BERSAMA WUJUDKAN PERDAMAIAN PAPUA!",
+        "video_title": "TOLAK PROPAGANDA SEPARATISME, BERSAMA WUJUDKAN PERDAMAIAN PAPUA!",
+        "channel_name": "KhalayakRamai",
+        "published_at": "2026-11-03",
+        "views": "1,550",
+        "views_int": 1550,
+        "video_likes": 0,
+        "comment_count": 10,
+        "total_likes": 0,
+        "dominant_sentiment": "Netral"
+      },
+      {
+        "video_id": "nmuDDt1CEws",
+        "video_url": "https://www.youtube.com/watch?v=nmuDDt1CEws",
+        "caption": "“Bukan Hanya KKB! Inilah 6 Kelompok Separatis Papua Yang Ingin Memisahkan Diri\"",
+        "video_title": "“Bukan Hanya KKB! Inilah 6 Kelompok Separatis Papua Yang Ingin Memisahkan Diri\"",
+        "channel_name": "Redzone",
+        "published_at": "2025-11-17",
+        "views": "16,695",
+        "views_int": 16695,
+        "video_likes": 0,
+        "comment_count": 57,
+        "total_likes": 52,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "EiUZ0xGv3l8",
+        "video_url": "https://www.youtube.com/watch?v=EiUZ0xGv3l8",
+        "caption": "Kenapa Konflik Terus Meletus di Papua? | Narasi Explains",
+        "video_title": "Kenapa Konflik Terus Meletus di Papua? | Narasi Explains",
+        "channel_name": "Narasi Newsroom",
+        "published_at": "2024-05-24",
+        "views": "333,592",
+        "views_int": 333592,
+        "video_likes": 0,
+        "comment_count": 1500,
+        "total_likes": 3711,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "_ymPWE1nhds",
+        "video_url": "https://www.youtube.com/watch?v=_ymPWE1nhds",
+        "caption": "MAHASISWA UNIMUTU TOLAK INDOKTRINASI DAN PROPAGANDA SEPARATISME DI ASRAMA MAHASISWA!",
+        "video_title": "MAHASISWA UNIMUTU TOLAK INDOKTRINASI DAN PROPAGANDA SEPARATISME DI ASRAMA MAHASISWA!",
+        "channel_name": "KhalayakRamai",
+        "published_at": "2026-10-22",
+        "views": "284",
+        "views_int": 284,
+        "video_likes": 0,
+        "comment_count": 20,
+        "total_likes": 0,
+        "dominant_sentiment": "Positif"
+      },
+      {
+        "video_id": "vSf1cc5Kz0U",
+        "video_url": "https://www.youtube.com/watch?v=vSf1cc5Kz0U",
+        "caption": "Menteri HAM Bicara Sejarah Konflik Papua, Pernyataannya Jadi Sorotan Warganet",
+        "video_title": "Menteri HAM Bicara Sejarah Konflik Papua, Pernyataannya Jadi Sorotan Warganet",
+        "channel_name": "CENDERAWASIH POS TV",
+        "published_at": "2026-09-19",
+        "views": "4,950",
+        "views_int": 4950,
+        "video_likes": 0,
+        "comment_count": 27,
+        "total_likes": 4,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "w5VIqoDFmMo",
+        "video_url": "https://www.youtube.com/watch?v=w5VIqoDFmMo",
+        "caption": "Satgas ODC Ingatkan Publik Hati-hati Propaganda KKB",
+        "video_title": "Satgas ODC Ingatkan Publik Hati-hati Propaganda KKB",
+        "channel_name": "POS KUPANG",
+        "published_at": "2026-11-03",
+        "views": "766",
+        "views_int": 766,
+        "video_likes": 0,
+        "comment_count": 2,
+        "total_likes": 1,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "WTT5weOKPP0",
+        "video_url": "https://www.youtube.com/watch?v=WTT5weOKPP0",
+        "caption": "Dalam Berbagai Sektor, Warga Papua Benar-benar Tak Dilibatkan - Part 2 | RUANG TEMU",
+        "video_title": "Dalam Berbagai Sektor, Warga Papua Benar-benar Tak Dilibatkan - Part 2 | RUANG TEMU",
+        "channel_name": "TV Tempo",
+        "published_at": "2023-05-19",
+        "views": "7,083",
+        "views_int": 7083,
+        "video_likes": 0,
+        "comment_count": 63,
+        "total_likes": 22,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "8_UEb6aAQ2Y",
+        "video_url": "https://www.youtube.com/watch?v=8_UEb6aAQ2Y",
+        "caption": "Masyarakat Adat Papua Marah Kepada Pemerintah Karena Hutan Mereka Habis Terbakar",
+        "video_title": "Masyarakat Adat Papua Marah Kepada Pemerintah Karena Hutan Mereka Habis Terbakar",
+        "channel_name": "Watchdoc Documentary",
+        "published_at": "2026-11-05",
+        "views": "10,246",
+        "views_int": 10246,
+        "video_likes": 0,
+        "comment_count": 63,
+        "total_likes": 151,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "Vf0au2-qN3I",
+        "video_url": "https://www.youtube.com/watch?v=Vf0au2-qN3I",
+        "caption": "Ikhtiar Damai untuk Papua - Bedah Editorial MI",
+        "video_title": "Ikhtiar Damai untuk Papua - Bedah Editorial MI",
+        "channel_name": "METRO TV",
+        "published_at": "2026-08-12",
+        "views": "12,409",
+        "views_int": 12409,
+        "video_likes": 0,
+        "comment_count": 49,
+        "total_likes": 104,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "qmOoISpv9Hw",
+        "video_url": "https://www.youtube.com/watch?v=qmOoISpv9Hw",
+        "caption": "Papua Dikepung, Rakyat Disingkirkan | 2 Tahun Rezim Prabowo-Gibran",
+        "video_title": "Papua Dikepung, Rakyat Disingkirkan | 2 Tahun Rezim Prabowo-Gibran",
+        "channel_name": "Yayasan LBH Indonesia",
+        "published_at": "2026-10-19",
+        "views": "17,631",
+        "views_int": 17631,
+        "video_likes": 0,
+        "comment_count": 54,
+        "total_likes": 44,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "-vHIyzu0HCA",
+        "video_url": "https://www.youtube.com/watch?v=-vHIyzu0HCA",
+        "caption": "Kelima Tersangka Teroris Berperan Aktif Sebar Propaganda ISIS di Media Sosial",
+        "video_title": "Kelima Tersangka Teroris Berperan Aktif Sebar Propaganda ISIS di Media Sosial",
+        "channel_name": "KOMPASTV",
+        "published_at": "2022-03-25",
+        "views": "2,030",
+        "views_int": 2030,
+        "video_likes": 0,
+        "comment_count": 1,
+        "total_likes": 0,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "h9-aCr0l19M",
+        "video_url": "https://www.youtube.com/watch?v=h9-aCr0l19M",
+        "caption": "Kampus Harusnya Terbuka! BEM USTJ Tolak Edukasi SKK Migas, Ruang Dialog Terancam",
+        "video_title": "Kampus Harusnya Terbuka! BEM USTJ Tolak Edukasi SKK Migas, Ruang Dialog Terancam",
+        "channel_name": "The Papua Darkside",
+        "published_at": "2026-10-26",
+        "views": "97",
+        "views_int": 97,
+        "video_likes": 0,
+        "comment_count": 65,
+        "total_likes": 11,
+        "dominant_sentiment": "Positif"
+      },
+      {
+        "video_id": "_7w9JiXxlTQ",
+        "video_url": "https://www.youtube.com/watch?v=_7w9JiXxlTQ",
+        "caption": "Mencari solusi kerusuhan terkait isu rasialisme di bumi Papua - BBC News Indonesia",
+        "video_title": "Mencari solusi kerusuhan terkait isu rasialisme di bumi Papua - BBC News Indonesia",
+        "channel_name": "BBC News Indonesia",
+        "published_at": "2019-09-23",
+        "views": "543,609",
+        "views_int": 543609,
+        "video_likes": 0,
+        "comment_count": 1753,
+        "total_likes": 2296,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "IScbzcprbo0",
+        "video_url": "https://www.youtube.com/watch?v=IScbzcprbo0",
+        "caption": "Demonstrasi Menolak Militerisme",
+        "video_title": "Demonstrasi Menolak Militerisme",
+        "channel_name": "CNN Indonesia",
+        "published_at": "2026-04-28",
+        "views": "3,709",
+        "views_int": 3709,
+        "video_likes": 0,
+        "comment_count": 19,
+        "total_likes": 12,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "t9DgtiDBOk8",
+        "video_url": "https://www.youtube.com/watch?v=t9DgtiDBOk8",
+        "caption": "Penanganan Konflik di Papua Belum Selesai, Komisi I DPR: Perlu Pendekatan Humanis",
+        "video_title": "Penanganan Konflik di Papua Belum Selesai, Komisi I DPR: Perlu Pendekatan Humanis",
+        "channel_name": "KOMPASTV",
+        "published_at": "2021-06-06",
+        "views": "10,255",
+        "views_int": 10255,
+        "video_likes": 0,
+        "comment_count": 52,
+        "total_likes": 16,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "Z5vWAdOq9Hw",
+        "video_url": "https://www.youtube.com/watch?v=Z5vWAdOq9Hw",
+        "caption": "MASSA BUBARKAN SEMINAR INVESTASI PAPUA DI JAKARTA",
+        "video_title": "MASSA BUBARKAN SEMINAR INVESTASI PAPUA DI JAKARTA",
+        "channel_name": "Newsroom RuaiTV",
+        "published_at": "2026-10-22",
+        "views": "1,432",
+        "views_int": 1432,
+        "video_likes": 0,
+        "comment_count": 4,
+        "total_likes": 4,
+        "dominant_sentiment": "Netral"
+      },
+      {
+        "video_id": "dSh_mbNcXRw",
+        "video_url": "https://www.youtube.com/watch?v=dSh_mbNcXRw",
+        "caption": "Ada Apa Di Balik Konflik Papua? - Insight With Desi Anwar",
+        "video_title": "Ada Apa Di Balik Konflik Papua? - Insight With Desi Anwar",
+        "channel_name": "CNN Indonesia",
+        "published_at": "2017-12-13",
+        "views": "12,428",
+        "views_int": 12428,
+        "video_likes": 0,
+        "comment_count": 42,
+        "total_likes": 35,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "s47IRqjYUN4",
+        "video_url": "https://www.youtube.com/watch?v=s47IRqjYUN4",
+        "caption": "Aktivis memprotes PSN: “Tanah Papua bukan tanah kosong” - BBC News Indonesia",
+        "video_title": "Aktivis memprotes PSN: “Tanah Papua bukan tanah kosong” - BBC News Indonesia",
+        "channel_name": "BBC News Indonesia",
+        "published_at": "2026-05-30",
+        "views": "8,473",
+        "views_int": 8473,
+        "video_likes": 0,
+        "comment_count": 71,
+        "total_likes": 112,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "VfUvGGPa-P4",
+        "video_url": "https://www.youtube.com/watch?v=VfUvGGPa-P4",
+        "caption": "Majelis Rakyat Papua soal Pemekaran: Kami Tidak Pernah Diajak Bicara",
+        "video_title": "Majelis Rakyat Papua soal Pemekaran: Kami Tidak Pernah Diajak Bicara",
+        "channel_name": "CNN Indonesia",
+        "published_at": "2022-03-24",
+        "views": "179,627",
+        "views_int": 179627,
+        "video_likes": 0,
+        "comment_count": 1051,
+        "total_likes": 818,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "NqYwSS0HNOs",
+        "video_url": "https://www.youtube.com/watch?v=NqYwSS0HNOs",
+        "caption": "KEDOK SEPARATISME DI KAMPUS. BONGKAR MANIPULASI SIMBOL BINTANG KEJORA DAN DESAKAN EVALUASI",
+        "video_title": "KEDOK SEPARATISME DI KAMPUS. BONGKAR MANIPULASI SIMBOL BINTANG KEJORA DAN DESAKAN EVALUASI",
+        "channel_name": "Laarus",
+        "published_at": "2026-10-26",
+        "views": "134",
+        "views_int": 134,
+        "video_likes": 0,
+        "comment_count": 68,
+        "total_likes": 11,
+        "dominant_sentiment": "Positif"
+      },
+      {
+        "video_id": "CdtMR63BzTA",
+        "video_url": "https://www.youtube.com/watch?v=CdtMR63BzTA",
+        "caption": "#PernyataanTPNPB untuk #WargaIndonesia Yang Mendukung #PapuaMerdeka",
+        "video_title": "#PernyataanTPNPB untuk #WargaIndonesia Yang Mendukung #PapuaMerdeka",
+        "channel_name": "ManusKrip: Papua",
+        "published_at": "2026-05-27",
+        "views": "15,211",
+        "views_int": 15211,
+        "video_likes": 0,
+        "comment_count": 43,
+        "total_likes": 75,
+        "dominant_sentiment": "Negatif"
+      }
+    ],
+    "top_videos": [
+      {
+        "video_id": "_7w9JiXxlTQ",
+        "video_url": "https://www.youtube.com/watch?v=_7w9JiXxlTQ",
+        "caption": "Mencari solusi kerusuhan terkait isu rasialisme di bumi Papua - BBC News Indonesia",
+        "video_title": "Mencari solusi kerusuhan terkait isu rasialisme di bumi Papua - BBC News Indonesia",
+        "channel_name": "BBC News Indonesia",
+        "published_at": "2019-09-23",
+        "views": "543,609",
+        "views_int": 543609,
+        "video_likes": 0,
+        "comment_count": 1753,
+        "total_likes": 2296,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "EiUZ0xGv3l8",
+        "video_url": "https://www.youtube.com/watch?v=EiUZ0xGv3l8",
+        "caption": "Kenapa Konflik Terus Meletus di Papua? | Narasi Explains",
+        "video_title": "Kenapa Konflik Terus Meletus di Papua? | Narasi Explains",
+        "channel_name": "Narasi Newsroom",
+        "published_at": "2024-05-24",
+        "views": "333,592",
+        "views_int": 333592,
+        "video_likes": 0,
+        "comment_count": 1500,
+        "total_likes": 3711,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "VfUvGGPa-P4",
+        "video_url": "https://www.youtube.com/watch?v=VfUvGGPa-P4",
+        "caption": "Majelis Rakyat Papua soal Pemekaran: Kami Tidak Pernah Diajak Bicara",
+        "video_title": "Majelis Rakyat Papua soal Pemekaran: Kami Tidak Pernah Diajak Bicara",
+        "channel_name": "CNN Indonesia",
+        "published_at": "2022-03-24",
+        "views": "179,627",
+        "views_int": 179627,
+        "video_likes": 0,
+        "comment_count": 1051,
+        "total_likes": 818,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "qmOoISpv9Hw",
+        "video_url": "https://www.youtube.com/watch?v=qmOoISpv9Hw",
+        "caption": "Papua Dikepung, Rakyat Disingkirkan | 2 Tahun Rezim Prabowo-Gibran",
+        "video_title": "Papua Dikepung, Rakyat Disingkirkan | 2 Tahun Rezim Prabowo-Gibran",
+        "channel_name": "Yayasan LBH Indonesia",
+        "published_at": "2026-10-19",
+        "views": "17,631",
+        "views_int": 17631,
+        "video_likes": 0,
+        "comment_count": 54,
+        "total_likes": 44,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "nmuDDt1CEws",
+        "video_url": "https://www.youtube.com/watch?v=nmuDDt1CEws",
+        "caption": "“Bukan Hanya KKB! Inilah 6 Kelompok Separatis Papua Yang Ingin Memisahkan Diri\"",
+        "video_title": "“Bukan Hanya KKB! Inilah 6 Kelompok Separatis Papua Yang Ingin Memisahkan Diri\"",
+        "channel_name": "Redzone",
+        "published_at": "2025-11-17",
+        "views": "16,695",
+        "views_int": 16695,
+        "video_likes": 0,
+        "comment_count": 57,
+        "total_likes": 52,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "-zy8_4cl37s",
+        "video_url": "https://www.youtube.com/watch?v=-zy8_4cl37s",
+        "caption": "Kelompok Separatis Papua Merdeka Bikin Rusuh di Forum PBB!",
+        "video_title": "Kelompok Separatis Papua Merdeka Bikin Rusuh di Forum PBB!",
+        "channel_name": "Gerakanpis",
+        "published_at": "2025-04-25",
+        "views": "15,403",
+        "views_int": 15403,
+        "video_likes": 0,
+        "comment_count": 425,
+        "total_likes": 545,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "CdtMR63BzTA",
+        "video_url": "https://www.youtube.com/watch?v=CdtMR63BzTA",
+        "caption": "#PernyataanTPNPB untuk #WargaIndonesia Yang Mendukung #PapuaMerdeka",
+        "video_title": "#PernyataanTPNPB untuk #WargaIndonesia Yang Mendukung #PapuaMerdeka",
+        "channel_name": "ManusKrip: Papua",
+        "published_at": "2026-05-27",
+        "views": "15,211",
+        "views_int": 15211,
+        "video_likes": 0,
+        "comment_count": 43,
+        "total_likes": 75,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "dSh_mbNcXRw",
+        "video_url": "https://www.youtube.com/watch?v=dSh_mbNcXRw",
+        "caption": "Ada Apa Di Balik Konflik Papua? - Insight With Desi Anwar",
+        "video_title": "Ada Apa Di Balik Konflik Papua? - Insight With Desi Anwar",
+        "channel_name": "CNN Indonesia",
+        "published_at": "2017-12-13",
+        "views": "12,428",
+        "views_int": 12428,
+        "video_likes": 0,
+        "comment_count": 42,
+        "total_likes": 35,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "Vf0au2-qN3I",
+        "video_url": "https://www.youtube.com/watch?v=Vf0au2-qN3I",
+        "caption": "Ikhtiar Damai untuk Papua - Bedah Editorial MI",
+        "video_title": "Ikhtiar Damai untuk Papua - Bedah Editorial MI",
+        "channel_name": "METRO TV",
+        "published_at": "2026-08-12",
+        "views": "12,409",
+        "views_int": 12409,
+        "video_likes": 0,
+        "comment_count": 49,
+        "total_likes": 104,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "t9DgtiDBOk8",
+        "video_url": "https://www.youtube.com/watch?v=t9DgtiDBOk8",
+        "caption": "Penanganan Konflik di Papua Belum Selesai, Komisi I DPR: Perlu Pendekatan Humanis",
+        "video_title": "Penanganan Konflik di Papua Belum Selesai, Komisi I DPR: Perlu Pendekatan Humanis",
+        "channel_name": "KOMPASTV",
+        "published_at": "2021-06-06",
+        "views": "10,255",
+        "views_int": 10255,
+        "video_likes": 0,
+        "comment_count": 52,
+        "total_likes": 16,
+        "dominant_sentiment": "Negatif"
+      }
+    ],
+    "top_comments": [
+      {
+        "comment_id": "UgxmSp4b95yZ_RPoKwF4AaABAg",
+        "username": "@Poloolovers",
+        "comment_text": "Apresiasi sebesar besarnya kepada tim Narasi . Independensi kalian luar bisa . Salam dari Papua 😢",
+        "like_count": 560,
+        "reply_count": 95,
+        "ai_sentiment": "Netral",
+        "threat_domain": "Solidaritas Kemanusiaan",
+        "business_category": "Solidaritas Kemanusiaan",
+        "is_hearted": false,
+        "video_title": "Kenapa Konflik Terus Meletus di Papua? | Narasi Explains"
+      },
+      {
+        "comment_id": "UgxuJpkMUc0ItX8q3M54AaABAg",
+        "username": "@blackboxsda7853",
+        "comment_text": "\"Bahwa sesungguhnya kemerdekaan itu ialah hak segala bangsa.\" *)\n\n*) Syarat dan ketentuan berlaku.",
+        "like_count": 327,
+        "reply_count": 53,
+        "ai_sentiment": "Positif",
+        "threat_domain": "Nasionalisme NKRI Harga Mati",
+        "business_category": "Nasionalisme NKRI Harga Mati",
+        "is_hearted": false,
+        "video_title": "Kenapa Konflik Terus Meletus di Papua? | Narasi Explains"
+      },
+      {
+        "comment_id": "UgwmuhSH0AyVzT7DJ0F4AaABAg",
+        "username": "@TengkuPangeran",
+        "comment_text": "Warga papua takut SDA papua dikuasai oleh pemerintah dengan aparat polri sebagai kaki tangan pemerintah bekerjasama dengan para konglomerat oligarki yang bermodalkan uang dan izin dari pemerintah pusat dan daerah merebut",
+        "like_count": 179,
+        "reply_count": 32,
+        "ai_sentiment": "Negatif",
+        "threat_domain": "Provokasi Separatisme Papua",
+        "business_category": "Provokasi Separatisme Papua",
+        "is_hearted": false,
+        "video_title": "Kenapa Konflik Terus Meletus di Papua? | Narasi Explains"
+      },
+      {
+        "comment_id": "UgyLNE8tDjsd20icisp4AaABAg",
+        "username": "@galeripapua",
+        "comment_text": "Narasi membuka mata rakyat Indonesia yang kerap sok tahu soal konflik Papua. Good job 👍👍",
+        "like_count": 159,
+        "reply_count": 13,
+        "ai_sentiment": "Negatif",
+        "threat_domain": "Provokasi Separatisme Papua",
+        "business_category": "Provokasi Separatisme Papua",
+        "is_hearted": false,
+        "video_title": "Kenapa Konflik Terus Meletus di Papua? | Narasi Explains"
+      },
+      {
+        "comment_id": "Ugzy4GtbB6FfX9hpy1F4AaABAg",
+        "username": "@LabibShaqr",
+        "comment_text": "Panjang Umur Jurnalistik Investigasi",
+        "like_count": 145,
+        "reply_count": 3,
+        "ai_sentiment": "Negatif",
+        "threat_domain": "Advokasi Hak Merdeka",
+        "business_category": "Advokasi Hak Merdeka",
+        "is_hearted": false,
+        "video_title": "Kenapa Konflik Terus Meletus di Papua? | Narasi Explains"
+      },
+      {
+        "comment_id": "UgwIBl1Kp3h4USZwa0p4AaABAg",
+        "username": "@kosakata8632",
+        "comment_text": "22 pendatang tewas terpanggang didalam rumah, yg rasis siapa sekarang? mau lo gimana?",
+        "like_count": 135,
+        "reply_count": 110,
+        "ai_sentiment": "Negatif",
+        "threat_domain": "Delegitimasi Kedaulatan Negara",
+        "business_category": "Delegitimasi Kedaulatan Negara",
+        "is_hearted": false,
+        "video_title": "Mencari solusi kerusuhan terkait isu rasialisme di bumi Papua - BBC News Indonesia"
+      },
+      {
+        "comment_id": "UgwWdPcnD1cx5SLevIN4AaABAg",
+        "username": "@wahyurusnanto4772",
+        "comment_text": "Secara kultur dan ras papua sudah berbeda. Ini udah disinggung founding father kita Bung Hatta pada saat membahas papua bersama Bung Karno. Sekarang tendensinya bukan lagi soal kesejahteraan masyarakat papua, tapi lebih ",
+        "like_count": 103,
+        "reply_count": 30,
+        "ai_sentiment": "Negatif",
+        "threat_domain": "Provokasi Separatisme Papua",
+        "business_category": "Provokasi Separatisme Papua",
+        "is_hearted": false,
+        "video_title": "Kenapa Konflik Terus Meletus di Papua? | Narasi Explains"
+      },
+      {
+        "comment_id": "UgyHhThhm9Ei2Qfw-Ip4AaABAg",
+        "username": "@ZainalAbidin-jg9zh",
+        "comment_text": "Kenapa Papua ?? Karena \n\"PAPUA HIDUP DI ATAS EMAS, TAPI BERJALAN TANPA ALAS\"\n  Semoga Papua menjadi lebih sejahtera, selalu menjadi bagian Indonesia.",
+        "like_count": 95,
+        "reply_count": 11,
+        "ai_sentiment": "Negatif",
+        "threat_domain": "Provokasi Separatisme Papua",
+        "business_category": "Provokasi Separatisme Papua",
+        "is_hearted": false,
+        "video_title": "Kenapa Konflik Terus Meletus di Papua? | Narasi Explains"
+      },
+      {
+        "comment_id": "UgxfikGCbi3XxXJCVRx4AaABAg",
+        "username": "@a51.90",
+        "comment_text": "Media seperti BBC ini seringkali menjadi kompornya..",
+        "like_count": 90,
+        "reply_count": 18,
+        "ai_sentiment": "Netral",
+        "threat_domain": "Kritik Netralitas Media",
+        "business_category": "Kritik Netralitas Media",
+        "is_hearted": false,
+        "video_title": "Mencari solusi kerusuhan terkait isu rasialisme di bumi Papua - BBC News Indonesia"
+      },
+      {
+        "comment_id": "Ugyd_-XTk09PzOnWG3N4AaABAg",
+        "username": "@siemong8808",
+        "comment_text": "Hebatnya orang papua meraka tidak pernah bilang \"ORANG\" pada suku lain, tapi mereka menyebut dengan kata \"TEMAN&SAUDARA\"",
+        "like_count": 77,
+        "reply_count": 24,
+        "ai_sentiment": "Negatif",
+        "threat_domain": "Provokasi Separatisme Papua",
+        "business_category": "Provokasi Separatisme Papua",
+        "is_hearted": false,
+        "video_title": "Mencari solusi kerusuhan terkait isu rasialisme di bumi Papua - BBC News Indonesia"
+      }
+    ]
+  },
+  "meta": {
+    "app_name": "Kata Kunci Pencarian: \"PAPUA Propaganda Separatis Separatisme KKB\" (34 Video)",
+    "video_id": "sXIhpQeFnI4",
+    "video_url": "https://www.youtube.com/watch?v=sXIhpQeFnI4",
+    "video_title": "Kata Kunci Pencarian: \"PAPUA Propaganda Separatis Separatisme KKB\" (34 Video)",
+    "channel_name": "34 Video Lintas 26 Kanal (CNN Indonesia, The Papua Darkside, BBC News Indonesia, +23 kanal lainnya)",
+    "date_range": {
+      "start": "2018-11-08",
+      "end": "2026-11-08"
+    },
+    "search_keyword": "PAPUA Propaganda Separatis Separatisme KKB"
+  }
+}

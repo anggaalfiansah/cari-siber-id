@@ -1,0 +1,22 @@
+﻿ai_sentiment,threat_domain,total_likes,total_replies,hearted_count,example_sub_issues,comment_count_all,comment_count_confident,share_confident
+Negatif,Provokasi Separatisme Papua,4521,1186,2,Narasi ketidakadilan aparat dan dukungan kemerdekaan,3205,3200,0.9984
+Negatif,Delegitimasi Kedaulatan Negara,630,227,0,Seruan pemisahan diri dan kritik pendekatan keamanan,516,516,1.0
+Negatif,Penolakan Kebijakan Pemekaran,203,25,0,Sentimen negatif terhadap wacana pemekaran wilayah,360,359,0.9972
+Negatif,Advokasi Hak Merdeka,316,62,1,Tuntutan hak menentukan nasib sendiri secara tegas,171,171,1.0
+Negatif,Stigmatisasi Provokator,110,20,0,Pelabelan pihak tertentu sebagai penghasut rasial,45,45,1.0
+Negatif,Polarisasi Isu Keamanan,10,1,0,Perbedaan persepsi status KKB antara kriminal atau pejuang,37,37,1.0
+Negatif,Provokasi SARA & Separatisme,10,0,0,"Narasi konflik lintas negara dan dehumanisasi etnis, Ujaran kebencian rasis terhadap masyarakat Papua",31,31,1.0
+Negatif,Disinformasi Internasional,10,4,0,Narasi rasis dan klaim kedaulatan dalam bahasa Inggris,27,27,1.0
+Negatif,Delegitimasi Pemerintah Daerah,11,3,0,Kritik korupsi dan kemiskinan daerah dengan bahasa kasar,25,25,1.0
+Negatif,Delegitimasi Institusi,12,1,0,Kritik rezim dengan narasi politik dan keagamaan,14,14,1.0
+Netral,Kritik Media Asing,276,84,0,Dugaan bias pemberitaan BBC terhadap isu Papua,396,395,0.9975
+Netral,Solidaritas Kemanusiaan,969,187,6,Doa dan harapan kesejahteraan bagi masyarakat Papua,237,237,1.0
+Netral,Kritik Netralitas Media,187,34,0,Perdebatan mengenai keberimbangan narasi media asing,57,57,1.0
+Netral,Refleksi Konflik Sosial,49,14,0,Diskusi filosofis tentang perang saudara dan hukum,57,57,1.0
+Netral,Kritik Kebijakan Publik,56,10,0,"Tuntutan penegakan hukum atas kekerasan dan intimidasi, Narasi keadilan sosial dan anti propaganda separatis, Debat efektivitas MRP dalam penyelesaian konflik Papua",49,49,1.0
+Netral,Narasi Perdamaian & Dialog,22,4,0,Ajakan menjaga persahabatan dan dialog amidst perbedaan pandangan,17,17,1.0
+Netral,Provokasi SARA & Separatisme,10,0,0,Ejekan terhadap pola pikir sempit tokoh Papua,11,11,1.0
+Positif,Apresiasi Pendidikan Damai,87,35,0,Dukungan kampus bebas provokasi politik separatis,249,249,1.0
+Positif,Nasionalisme NKRI Harga Mati,422,93,0,Penegasan kesatuan wilayah dan penolakan separatisme,128,128,1.0
+Positif,Apresiasi Tokoh Publik,103,18,0,Dukungan terhadap pandangan Usman Hamid dan Yoel,66,66,1.0
+Positif,Apresiasi Konten Edukasi,55,2,0,Ungkapan terima kasih atas penyajian informasi narasi,31,31,1.0

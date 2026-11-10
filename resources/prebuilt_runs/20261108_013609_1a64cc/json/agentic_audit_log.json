@@ -1,0 +1,246 @@
+{
+  "updated_at": "2026-11-08T01:49:41",
+  "gates": [
+    {
+      "timestamp": "2026-11-08T01:42:35",
+      "gate": "QualityGate",
+      "segment": "youtube_all",
+      "status": "PASSED",
+      "total_attempts": 2,
+      "attempts": [
+        {
+          "attempt": 1,
+          "stats": {
+            "total_docs": 5729,
+            "empty_or_short_count": 315,
+            "empty_or_short_ratio": 0.055,
+            "duplicate_ratio": 0.0218,
+            "avg_word_count": 13.7,
+            "suspicious_tokens": [
+              "hak (342x)",
+              "oap (163x)",
+              "mrp (147x)",
+              "dob (96x)",
+              "sdm (88x)",
+              "sda (88x)",
+              "bbc (83x)"
+            ]
+          },
+          "passed": false,
+          "quality_score": 0.65,
+          "new_slang_added": 2,
+          "new_stopwords_added": 3,
+          "learned_slang": {
+            "kkarena": "karena",
+            "sudadibangun": "sudah dibangun"
+          },
+          "learned_stopwords": [
+            "hehe",
+            "omg",
+            "astaga"
+          ],
+          "audit_notes": "Hasil cleaning belum memenuhi standar untuk IndoBERT karena masih banyak singkatan informal (kalo, ga, bs, tdk) dan typo (kkarena, sudadibangun) yang tidak dinormalisasi ke kata baku. Selain itu, partikel percakapan seperti 'bro' dan 'kan' masih tersisa dalam teks bersih, yang dapat mengganggu fokus topik model. Disarankan melakukan retry dengan update dictionary slang dan stopwords."
+        },
+        {
+          "attempt": 2,
+          "stats": {
+            "total_docs": 5729,
+            "empty_or_short_count": 317,
+            "empty_or_short_ratio": 0.0553,
+            "duplicate_ratio": 0.023,
+            "avg_word_count": 13.69,
+            "suspicious_tokens": [
+              "hak (342x)",
+              "oap (163x)",
+              "mrp (147x)",
+              "dob (96x)",
+              "sdm (88x)",
+              "sda (88x)",
+              "bbc (83x)"
+            ]
+          },
+          "passed": true,
+          "quality_score": 0.85,
+          "new_slang_added": 0,
+          "new_stopwords_added": 0,
+          "learned_slang": {},
+          "learned_stopwords": [],
+          "audit_notes": "Statistik lolos evaluasi deterministik."
+        }
+      ]
+    },
+    {
+      "timestamp": "2026-11-08T01:48:47",
+      "gate": "TopicGate",
+      "segment": "youtube_all",
+      "status": "PASSED",
+      "total_attempts": 3,
+      "attempts": [
+        {
+          "attempt": 1,
+          "hdbscan_params": {
+            "min_cluster_size": 10,
+            "metric": "euclidean",
+            "cluster_selection_method": "leaf",
+            "prediction_data": true
+          },
+          "num_topics": 24,
+          "outlier_ratio": 0.0105,
+          "mean_cohesion": 0.7194,
+          "merged_duplicates": false,
+          "llm_checks_completed": 2,
+          "llm_checks": [
+            {
+              "pass_number": 1,
+              "passed": false,
+              "coherence_score": 0.683,
+              "incoherent_topic_ids": [
+                0,
+                3,
+                4,
+                7,
+                9,
+                11,
+                12,
+                15,
+                21,
+                22
+              ],
+              "incoherent_ratio": 0.4167,
+              "duplicate_pairs": [
+                {
+                  "topic_id_1": 1,
+                  "topic_id_2": 8
+                },
+                {
+                  "topic_id_1": 0,
+                  "topic_id_2": 15
+                }
+              ],
+              "recommended_action": "decrease_min_cluster_size",
+              "audit_notes": "Topic ID 0 dan 3 menunjukkan inkohesi yang signifikan. Topic 0 mencampurkan isu pemekaran wilayah (DOB), kerusakan lingkungan/hutan, dan kritik terhadap media asing/NGO dalam satu klaster besar (1993 anggota). Topic 3 sangat tidak koheren karena berisi campuran antara komentar kasar/rasis ('goblok', 'tembak mati'), opini tentang pendatang vs pribumi, dan debat politik umum tanpa fokus topik spesif"
+            },
+            {
+              "pass_number": 2,
+              "passed": false,
+              "coherence_score": 0.45,
+              "incoherent_topic_ids": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23
+              ],
+              "incoherent_ratio": 0.875,
+              "duplicate_pairs": [],
+              "recommended_action": "decrease_min_cluster_size",
+              "audit_notes": "Keempat topik yang diaudit menunjukkan inkohesi internal yang parah. Topic 0 mencampurkan isu pemekaran, kritik HAM, dan rasisme ekstrem. Topic 1 menggabungkan narasi pro-kemerdekaan OPM dengan dukungan terhadap pemekaran (pro-NKRI) serta komentar acak. Topic 2 berisi sentimen anti-TNI/pemerintah pusat sekaligus pernyataan pro-NKRI/anti-teroris yang bertolak belakang. Topic 3 adalah 'noise bucket'"
+            }
+          ],
+          "recommended_action": "decrease_min_cluster_size",
+          "passed": false,
+          "audit_notes": "Gagal verifikasi 2x Cek LLM (Topik tidak identik/campur aduk konsisten: [0, 3, 4, 7, 9, 11, 12, 15, 21, 22]). Wajib kalkulasi ulang parameter klaster."
+        },
+        {
+          "attempt": 2,
+          "hdbscan_params": {
+            "min_cluster_size": 7,
+            "metric": "euclidean",
+            "cluster_selection_method": "leaf",
+            "prediction_data": true,
+            "min_samples": 2
+          },
+          "num_topics": 24,
+          "outlier_ratio": 0.0056,
+          "mean_cohesion": 0.7338,
+          "merged_duplicates": false,
+          "llm_checks_completed": 0,
+          "llm_checks": [],
+          "recommended_action": "switch_to_leaf_or_decrease",
+          "passed": false,
+          "audit_notes": "Distribusi klaster tidak seimbang [klaster terbesar menggelembung (2882/5729 = 50.3%)]. Wajib kalkulasi ulang dengan parameter lebih granular."
+        },
+        {
+          "attempt": 3,
+          "hdbscan_params": {
+            "min_cluster_size": 5,
+            "metric": "euclidean",
+            "cluster_selection_method": "leaf",
+            "prediction_data": true,
+            "min_samples": 1
+          },
+          "num_topics": 24,
+          "outlier_ratio": 0.008,
+          "mean_cohesion": 0.7376,
+          "merged_duplicates": false,
+          "llm_checks_completed": 0,
+          "llm_checks": [],
+          "recommended_action": "switch_to_leaf_or_decrease",
+          "passed": false,
+          "audit_notes": "Distribusi klaster tidak seimbang [klaster terbesar menggelembung (3226/5729 = 56.3%)]. Wajib kalkulasi ulang dengan parameter lebih granular."
+        }
+      ]
+    },
+    {
+      "timestamp": "2026-11-08T01:49:09",
+      "gate": "VerificationGate",
+      "segment": "youtube_all",
+      "label_audit": {
+        "file": "master_topic_youtube_agregasi.csv",
+        "checked": 24,
+        "deterministic_flags": 1,
+        "relabeled": 1
+      },
+      "confidence_reroute": {
+        "total_records": 5729,
+        "initial_confident_rate": 0.9735,
+        "final_confident_rate": 0.9988,
+        "rerouted_via_alt_topic": 145,
+        "rerouted_via_llm": 0
+      }
+    },
+    {
+      "timestamp": "2026-11-08T01:49:41",
+      "gate": "ReportGate",
+      "segment": "narrative_vs_eda_json",
+      "status": "PASSED",
+      "total_attempts": 1,
+      "attempts": [
+        {
+          "attempt": 1,
+          "passed": true,
+          "accuracy_score": 0.95,
+          "deterministic_check": {
+            "total_ground_truth": 5729,
+            "raw_topic_name_leaks": [],
+            "unmatched_number_tokens": []
+          },
+          "discrepancies": [],
+          "audit_summary": "Lolos pemeriksaan deterministik."
+        }
+      ]
+    }
+  ],
+  "token_usage": {
+    "calls": 17,
+    "prompt_tokens": 36259,
+    "completion_tokens": 6798,
+    "total_tokens": 43057
+  }
+}

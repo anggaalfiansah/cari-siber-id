@@ -855,15 +855,15 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                           {corp.is_demo && (
                             <span style={{
-                              background: 'rgba(245, 158, 11, 0.2)',
-                              border: '1px solid rgba(245, 158, 11, 0.5)',
-                              color: '#fbbf24',
+                              background: corp.run_id.startsWith('demo:') ? 'rgba(245, 158, 11, 0.2)' : 'rgba(56, 189, 248, 0.2)',
+                              border: `1px solid ${corp.run_id.startsWith('demo:') ? 'rgba(245, 158, 11, 0.5)' : 'rgba(56, 189, 248, 0.5)'}`,
+                              color: corp.run_id.startsWith('demo:') ? '#fbbf24' : '#38bdf8',
                               fontSize: '0.66rem',
                               fontWeight: 800,
                               padding: '2px 7px',
                               borderRadius: '6px',
                             }}>
-                              DATASET SIMULASI BAWAAN
+                              {corp.run_id.startsWith('demo:') ? 'DATASET SIMULASI BAWAAN' : 'CONTOH PREBUILT BAWAAN'}
                             </span>
                           )}
                           <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc' }}>

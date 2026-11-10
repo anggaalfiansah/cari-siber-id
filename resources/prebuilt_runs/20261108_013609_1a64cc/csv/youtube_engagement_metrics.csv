@@ -1,0 +1,25 @@
+﻿topic_id,threat_domain,sub_issue,ai_sentiment,total_comments,sum_reply_count,total_likes,hearted_comments,official_comments,user_comments,engagement_score
+5,Solidaritas Kemanusiaan,Doa dan harapan kesejahteraan bagi masyarakat Papua,Netral,237,187,969,6,0,237,0.79
+7,Nasionalisme NKRI Harga Mati,Penegasan kesatuan wilayah dan penolakan separatisme,Positif,128,93,422,0,0,128,0.73
+9,Kritik Netralitas Media,Perdebatan mengenai keberimbangan narasi media asing,Netral,57,34,187,0,0,57,0.6
+16,Kritik Kebijakan Publik,Tuntutan penegakan hukum atas kekerasan dan intimidasi,Netral,20,10,36,0,0,20,0.5
+1,Delegitimasi Kedaulatan Negara,Seruan pemisahan diri dan kritik pendekatan keamanan,Negatif,516,227,630,0,0,516,0.44
+11,Stigmatisasi Provokator,Pelabelan pihak tertentu sebagai penghasut rasial,Negatif,45,20,110,0,0,45,0.44
+0,Provokasi Separatisme Papua,Narasi ketidakadilan aparat dan dukungan kemerdekaan,Negatif,3205,1186,4521,2,0,3205,0.37
+6,Advokasi Hak Merdeka,Tuntutan hak menentukan nasib sendiri secara tegas,Negatif,171,62,316,1,0,171,0.36
+8,Apresiasi Tokoh Publik,Dukungan terhadap pandangan Usman Hamid dan Yoel,Positif,66,18,103,0,0,66,0.27
+10,Refleksi Konflik Sosial,Diskusi filosofis tentang perang saudara dan hukum,Netral,57,14,49,0,0,57,0.25
+17,Narasi Perdamaian & Dialog,Ajakan menjaga persahabatan dan dialog amidst perbedaan pandangan,Netral,17,4,22,0,0,17,0.24
+2,Kritik Media Asing,Dugaan bias pemberitaan BBC terhadap isu Papua,Netral,396,84,276,0,0,396,0.21
+14,Disinformasi Internasional,Narasi rasis dan klaim kedaulatan dalam bahasa Inggris,Negatif,27,4,10,0,0,27,0.15
+4,Apresiasi Pendidikan Damai,Dukungan kampus bebas provokasi politik separatis,Positif,249,35,87,0,0,249,0.14
+15,Delegitimasi Pemerintah Daerah,Kritik korupsi dan kemiskinan daerah dengan bahasa kasar,Negatif,25,3,11,0,0,25,0.12
+3,Penolakan Kebijakan Pemekaran,Sentimen negatif terhadap wacana pemekaran wilayah,Negatif,360,25,203,0,0,360,0.07
+21,Delegitimasi Institusi,Kritik rezim dengan narasi politik dan keagamaan,Negatif,14,1,12,0,0,14,0.07
+13,Apresiasi Konten Edukasi,Ungkapan terima kasih atas penyajian informasi narasi,Positif,31,2,55,0,0,31,0.06
+12,Polarisasi Isu Keamanan,Perbedaan persepsi status KKB antara kriminal atau pejuang,Negatif,37,1,10,0,0,37,0.03
+18,Kritik Kebijakan Publik,Narasi keadilan sosial dan anti propaganda separatis,Netral,15,0,19,0,0,15,0.0
+19,Provokasi SARA & Separatisme,Ujaran kebencian rasis terhadap masyarakat Papua,Negatif,15,0,3,0,0,15,0.0
+20,Provokasi SARA & Separatisme,Narasi konflik lintas negara dan dehumanisasi etnis,Negatif,16,0,7,0,0,16,0.0
+22,Kritik Kebijakan Publik,Debat efektivitas MRP dalam penyelesaian konflik Papua,Netral,14,0,1,0,0,14,0.0
+23,Provokasi SARA & Separatisme,Ejekan terhadap pola pikir sempit tokoh Papua,Netral,11,0,10,0,0,11,0.0

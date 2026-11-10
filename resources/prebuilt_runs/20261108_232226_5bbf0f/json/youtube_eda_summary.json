@@ -1,0 +1,3345 @@
+{
+  "overview": {
+    "total_comments": 46183,
+    "top_level_comments": 38393,
+    "reply_comments": 7790,
+    "total_hearted": 103,
+    "total_official_replies": 8,
+    "sentiment_distribution": {
+      "Positif": {
+        "count": 11155,
+        "pct": 24.15,
+        "avg_like_count": 1.24,
+        "total_likes": 13780
+      },
+      "Negatif": {
+        "count": 34353,
+        "pct": 74.38,
+        "avg_like_count": 1.78,
+        "total_likes": 61286
+      },
+      "Netral": {
+        "count": 675,
+        "pct": 1.46,
+        "avg_like_count": 0.24,
+        "total_likes": 159
+      }
+    },
+    "confidence_stats": {
+      "overall_confident_rate": 0.9979,
+      "by_sentiment": {
+        "Positif": 0.9983,
+        "Negatif": 0.9978,
+        "Netral": 0.9985
+      }
+    }
+  },
+  "topic_analysis": {
+    "Positif": {
+      "total_categories": 3,
+      "total_comments": 11155,
+      "categories": [
+        {
+          "rank": 1,
+          "name": "Apresiasi & Dukungan Publik",
+          "threat_domain": "Apresiasi & Dukungan Publik",
+          "business_category": "Apresiasi & Dukungan Publik",
+          "sub_issue": "Dukungan terhadap tindakan tegas Presiden Prabowo, Doa keselamatan untuk Presiden Prabowo Subianto, Respons doa dan dukungan terhadap konten",
+          "example_sub_issues": "Dukungan terhadap tindakan tegas Presiden Prabowo, Doa keselamatan untuk Presiden Prabowo Subianto, Respons doa dan dukungan terhadap konten",
+          "comment_count": 10661,
+          "total_likes": 13114,
+          "total_replies": 1019,
+          "share_confident": 0.9984,
+          "sample_comments": [
+            "Ini jadi bukti Tuhan masih menjaga bangsa kita🙏🏻🙏🏻",
+            "Rapatkan barisan temen2 🇮🇩 indonesia, jangan sampai di adu domba.",
+            "Sejak Gema di undang istana,. sejak itu juga dia gak ada bedanya dengan gerung,.. \nSesederhana kasus karhutla, MBG, dan KOPDES yang jelas-jelas hasil korupsi berjamaah koloni dan afiliasi prabowo akibat politik balas budi.. eh tiba2 sok kasus sadap ini diUP! ngakak!"
+          ]
+        },
+        {
+          "rank": 2,
+          "name": "Kritik Kebijakan Publik",
+          "threat_domain": "Kritik Kebijakan Publik",
+          "business_category": "Kritik Kebijakan Publik",
+          "sub_issue": "Tuntutan usut tuntas hingga akar masalah",
+          "example_sub_issues": "Tuntutan usut tuntas hingga akar masalah",
+          "comment_count": 475,
+          "total_likes": 665,
+          "total_replies": 26,
+          "share_confident": 0.9979,
+          "sample_comments": [
+            "Ini boss judol akhirnya tersandung juga",
+            "Jangan berhanti usut tuntas sampek keakar akar2 nya",
+            "Hrs dihukum mati biar kejahatan berhenti sampai akar akarnya."
+          ]
+        },
+        {
+          "rank": 3,
+          "name": "Apresiasi Sistem Pemilu",
+          "threat_domain": "Apresiasi Sistem Pemilu",
+          "business_category": "Apresiasi Sistem Pemilu",
+          "sub_issue": "Argumen berkas C1 mencegah kecurangan",
+          "example_sub_issues": "Argumen berkas C1 mencegah kecurangan",
+          "comment_count": 19,
+          "total_likes": 1,
+          "total_replies": 0,
+          "share_confident": 0.9474,
+          "sample_comments": [
+            "Jadikan Singapore sebagai provinsi Indonesia ke 39",
+            "Dalam kondisi seperti ini tetap gunakan akal sehat, data valid dan selalu tunggu informasi resmi pemerintah...",
+            "​ @prisonbreak2617 jelaskan apanya yang gak jelas, coba pastikan dengan statement lu cocokan dengan data yang valid jangan cuma katanya, hayo coba malu lu udah comment begini harus bisa nunjukin datanya"
+          ]
+        }
+      ],
+      "concentration": {
+        "top_3_pct": 100.0
+      }
+    },
+    "Negatif": {
+      "total_categories": 8,
+      "total_comments": 34353,
+      "categories": [
+        {
+          "rank": 1,
+          "name": "Provokasi SARA & Separatisme",
+          "threat_domain": "Provokasi SARA & Separatisme",
+          "business_category": "Provokasi SARA & Separatisme",
+          "sub_issue": "Seruan hukum mati bagi pengkhianat negara, Hashtag tersembunyi menyerang Jokowi dan pendukungnya",
+          "example_sub_issues": "Seruan hukum mati bagi pengkhianat negara, Hashtag tersembunyi menyerang Jokowi dan pendukungnya",
+          "comment_count": 33570,
+          "total_likes": 59274,
+          "total_replies": 6053,
+          "share_confident": 0.9977,
+          "sample_comments": [
+            "Mulai detik ini.. Saya rakyat jelata.. Dukung penuh prabowo.dari lubuk hati nasionalisme bukan bayaran",
+            "Pak bennix \nProf gema G\nAnda semua adalah pahlawan ekonomi\nDalam melawan A3 antek-antek asing .",
+            "Doa dan dukungan setinggi langit untuk presiden kita!!"
+          ]
+        },
+        {
+          "rank": 2,
+          "name": "Delegitimasi Institusi",
+          "threat_domain": "Delegitimasi Institusi",
+          "business_category": "Delegitimasi Institusi",
+          "sub_issue": "Cemoohan terhadap pejabat yang haus kekuasaan, Seruan hukum mati bagi Lembaga Sertifikasi Profesi, Analogi tupai jatuh untuk kritik pejabat",
+          "example_sub_issues": "Cemoohan terhadap pejabat yang haus kekuasaan, Seruan hukum mati bagi Lembaga Sertifikasi Profesi, Analogi tupai jatuh untuk kritik pejabat",
+          "comment_count": 390,
+          "total_likes": 333,
+          "total_replies": 55,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "setelah LSP, jokowi target selanjutnya",
+            "Alhamdulillah pak Prabowo dilindungi Gusti Allah",
+            "PERTAHANKAN NKRI!!!"
+          ]
+        },
+        {
+          "rank": 3,
+          "name": "Disinformasi Pertahanan",
+          "threat_domain": "Disinformasi Pertahanan",
+          "business_category": "Disinformasi Pertahanan",
+          "sub_issue": "Narasi musuh dalam selimut di lingkaran istana, Spam emoji dan narasi konspirasi makar termul",
+          "example_sub_issues": "Narasi musuh dalam selimut di lingkaran istana, Spam emoji dan narasi konspirasi makar termul",
+          "comment_count": 280,
+          "total_likes": 1537,
+          "total_replies": 1013,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Selamat Menonton!\r\n\r\nDapatkan rekomendasi trading dari Master Gema di sini: https://astronacci.org/perangcognitive\r\n\r\nPEMBAHASAN VIDEO:\r\n00:00 SIAPA YANG SURUH SADAP PRESIDEN??\r\n01:07 UANG MUKA 25 TRILIUN BUAT SADAP PRESIDENT\r\n02:45 Sabotase Presiden Prabowo\r\n07:27 Penyadapan Presiden Pengalihan Isu??\r\n08:20 Siapa Yang Jadi Presiden Baru? \r\n11:30 Dugaan Pelaku Utama Penyadapan yang belum dibongkar!\r\n16:33 Bagi Hasil Penyadapan Presiden Prabowo\r\n20:17 MUSUH INDONESIA DAN PRESIDEN\r\n22:02 INFO A1 DATA YANG BOCOR DARI SADAP PRESIDEN\r\n24:26 Ajakan Bersatu dan Saran Untuk Pemerintah\r\n27:02 Siapa Boss Penyadapannya? \r\n28:00 CLOSING",
+            "Selamat Menonton!\r\n\r\nDapatkan rekomendasi trading dari Master Gema di sini: https://astronacci.org/perangcognitive\r\n\r\nPEMBAHASAN VIDEO:\r\n00:00 SIAPA YANG SURUH SADAP PRESIDEN??\r\n01:07 UANG MUKA 25 TRILIUN BUAT SADAP PRESIDENT\r\n02:45 Sabotase Presiden Prabowo\r\n07:27 Penyadapan Presiden Pengalihan Isu??\r\n08:20 Siapa Yang Jadi Presiden Baru? \r\n11:30 Dugaan Pelaku Utama Penyadapan yang belum dibongkar!\r\n16:33 Bagi Hasil Penyadapan Presiden Prabowo\r\n20:17 MUSUH INDONESIA DAN PRESIDEN\r\n22:02 INFO A1 DATA YANG BOCOR DARI SADAP PRESIDEN\r\n24:26 Ajakan Bersatu dan Saran Untuk Pemerintah\r\n27:02 Siapa Boss Penyadapannya? \r\n28:00 CLOSING",
+            "Musuh dalam selimut. Diseret adili ,hukum seberat2nya."
+          ]
+        },
+        {
+          "rank": 4,
+          "name": "Disinformasi Anggaran Negara",
+          "threat_domain": "Disinformasi Anggaran Negara",
+          "business_category": "Disinformasi Anggaran Negara",
+          "sub_issue": "Pertanyaan sumber dana 25 triliun",
+          "example_sub_issues": "Pertanyaan sumber dana 25 triliun",
+          "comment_count": 34,
+          "total_likes": 9,
+          "total_replies": 1,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "​ @tonimaryadi kan di turunkan satu paket,nyimak ga lo😂,makanya banyakin asupan protein dan omega 3 biar besar memori otak lo,ga goblok😂",
+            "Simpan bareng2 vidio ini dan tunggu dia terpeleset..gak lama lagi kok.krna dia bicara isinya dusta 😂",
+            "Fufupapa jadinya siapa kak?"
+          ]
+        },
+        {
+          "rank": 5,
+          "name": "Provokasi Agama & Politik",
+          "threat_domain": "Provokasi Agama & Politik",
+          "business_category": "Provokasi Agama & Politik",
+          "sub_issue": "Ayat tipu daya Allah untuk lawan politik",
+          "example_sub_issues": "Ayat tipu daya Allah untuk lawan politik",
+          "comment_count": 26,
+          "total_likes": 105,
+          "total_replies": 3,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Ketika Allah membuka sesuatu tiada suatu mahlukpun yang dapat menutupinya",
+            "QS. Ibrahim: 42-43 - ALLAH TIDAK LALAI, CUMA DITUNDA\nDan janganlah sekali-kali kamu mengira bahwa Allah lalai dari apa yang diperbuat oleh orang-orang yang zalim. Sesungguhnya Allah memberi tangguh kepada mereka sampai hari yang pada waktu itu mata mereka terbelalak.",
+            "Wamakaru wamakarallah Wallahu Khairul makiriin,Mereka membuat makar,tapi makar Allah  sesungguhnya lebih hebat dari makar mereka"
+          ]
+        },
+        {
+          "rank": 6,
+          "name": "Narasi Fitnah Penyadapan",
+          "threat_domain": "Narasi Fitnah Penyadapan",
+          "business_category": "Narasi Fitnah Penyadapan",
+          "sub_issue": "Tuduhan penyadapan untuk kontrol politik",
+          "example_sub_issues": "Tuduhan penyadapan untuk kontrol politik",
+          "comment_count": 21,
+          "total_likes": 1,
+          "total_replies": 0,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "sama aku juga gitu, kalau ada dudung terus ingat KM 50",
+            "@iqbaltheblack98  iye zer iyeeee, atur dah atur.",
+            "​@pardameanpanangian1130maka dari itu rajin menyadap, selain kepo hasilnya bisa di pakai apa saja"
+          ]
+        },
+        {
+          "rank": 7,
+          "name": "Kritik Kebijakan Ekonomi",
+          "threat_domain": "Kritik Kebijakan Ekonomi",
+          "business_category": "Kritik Kebijakan Ekonomi",
+          "sub_issue": "Keluhan rupiah anjlok dan isu pengalihan",
+          "example_sub_issues": "Keluhan rupiah anjlok dan isu pengalihan",
+          "comment_count": 19,
+          "total_likes": 27,
+          "total_replies": 3,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "AIR BAKAL MENGALIR SAMPE KE SOLO",
+            "Prnjahat yg merugikan bnyk org karena salah prediksi ihsg",
+            "Rupiah menguat❤"
+          ]
+        },
+        {
+          "rank": 8,
+          "name": "Delegitimasi Influencer Publik",
+          "threat_domain": "Delegitimasi Influencer Publik",
+          "business_category": "Delegitimasi Influencer Publik",
+          "sub_issue": "Tuduhan artis dibayar penghianat bangsa",
+          "example_sub_issues": "Tuduhan artis dibayar penghianat bangsa",
+          "comment_count": 13,
+          "total_likes": 0,
+          "total_replies": 0,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Betul dan memang betul. Sayang sekali influencer banyak yang bodoh dan miskin makanya mudah sekali dibayar",
+            "Mahasiswa sekarang dibayar untuk demo😂",
+            "​ @AryowibawaBermuli .. Idola ku Kiayi yang waktu referendum papua berani menuntut kerajaan Inggris"
+          ]
+        }
+      ],
+      "concentration": {
+        "top_3_pct": 99.67
+      }
+    },
+    "Netral": {
+      "total_categories": 6,
+      "total_comments": 675,
+      "categories": [
+        {
+          "rank": 1,
+          "name": "Delegitimasi Institusi",
+          "threat_domain": "Delegitimasi Institusi",
+          "business_category": "Delegitimasi Institusi",
+          "sub_issue": "Spekulasi identitas dalang penyadapan ilegal",
+          "example_sub_issues": "Spekulasi identitas dalang penyadapan ilegal",
+          "comment_count": 504,
+          "total_likes": 138,
+          "total_replies": 105,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Waktunya tunjukan isi kepala bung rocky, jangan kecewakan kaum yg sllu mmakai otak",
+            "Lebih kurang 300jt rakyat indonesia menduga penyadapan persiden dan ormas ketua partai secara akal sehat ara nya jokowi terlibat",
+            "Lurah Barat / Jawa Barat ahh siapa lagi kalau bukan beliau 😁🤫"
+          ]
+        },
+        {
+          "rank": 2,
+          "name": "Spam Komentar Bot",
+          "threat_domain": "Spam Komentar Bot",
+          "business_category": "Spam Komentar Bot",
+          "sub_issue": "Aktivitas spam komentar pujian otomatis oleh bot",
+          "example_sub_issues": "Aktivitas spam komentar pujian otomatis oleh bot",
+          "comment_count": 79,
+          "total_likes": 7,
+          "total_replies": 0,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Dalam menit 23:22 \"Jadwal lewat ajudan\". Jadi Sis Teddy ada main belakang gk nih? awokwokwokwok",
+            "​ @ArdiKasep-l4m buzzer menghilang dr line",
+            "​ @omtalus7218  BM yg paling abal² 🤣🤣🤣🤣"
+          ]
+        },
+        {
+          "rank": 3,
+          "name": "Spam & Noise Komentar",
+          "threat_domain": "Spam & Noise Komentar",
+          "business_category": "Spam & Noise Komentar",
+          "sub_issue": "Komentar tidak relevan dan repetitif",
+          "example_sub_issues": "Komentar tidak relevan dan repetitif",
+          "comment_count": 44,
+          "total_likes": 4,
+          "total_replies": 1,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Kacang goreng kacang goreng",
+            "Itu ketum si bolu ketan anak buahnya jadi KOMDIGI yg mengendalikan platform media dibulan kemarin citra-nya dibuat tinggi oleh robot TikTok-nya karna senjata mereka disana",
+            "bisa aja mas ganteng bolu ketan ini 😁😁"
+          ]
+        },
+        {
+          "rank": 4,
+          "name": "Kritik Kebijakan Publik",
+          "threat_domain": "Kritik Kebijakan Publik",
+          "business_category": "Kritik Kebijakan Publik",
+          "sub_issue": "Pengalihan isu dari karhutla ke penyadapan presiden",
+          "example_sub_issues": "Pengalihan isu dari karhutla ke penyadapan presiden",
+          "comment_count": 36,
+          "total_likes": 10,
+          "total_replies": 0,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Karhutla spring.",
+            "JANGAN LUPAKAN KARHUTLA!!!!!!!",
+            "Jangan lupakan bossman juga bang bayangkan kalo ke empatnya bersatu"
+          ]
+        },
+        {
+          "rank": 5,
+          "name": "Spam Simbol Keagamaan",
+          "threat_domain": "Spam Simbol Keagamaan",
+          "business_category": "Spam Simbol Keagamaan",
+          "sub_issue": "Repetisi takbir tanpa konteks substansi",
+          "example_sub_issues": "Repetisi takbir tanpa konteks substansi",
+          "comment_count": 11,
+          "total_likes": 0,
+          "total_replies": 0,
+          "share_confident": 1.0,
+          "sample_comments": [
+            "Allahuakbar",
+            "Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allah huakbar Allah huakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahukbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar ⁶",
+            "Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar Allahuakbar"
+          ]
+        },
+        {
+          "rank": 6,
+          "name": "Lain-lain / Noise",
+          "threat_domain": "Lain-lain / Noise",
+          "business_category": "Lain-lain / Noise",
+          "sub_issue": "Komentar umum/noise",
+          "example_sub_issues": "Komentar umum/noise",
+          "comment_count": 1,
+          "total_likes": 0,
+          "total_replies": 0,
+          "share_confident": 0.0,
+          "sample_comments": [
+            "Orangbermasarakathiduplahdimasarakatpemerintahbiyarlahpemerintah"
+          ]
+        }
+      ],
+      "concentration": {
+        "top_3_pct": 92.89
+      }
+    }
+  },
+  "official_response": {
+    "global_distribution": {
+      "official_comments": 8,
+      "user_comments": 46175,
+      "hearted_comments": 103,
+      "official_ratio": 0.02
+    },
+    "reply_gap_top_5": [
+      {
+        "topic_id": 2,
+        "threat_domain": "Delegitimasi Institusi",
+        "business_category": "Delegitimasi Institusi",
+        "sub_issue": "Spekulasi identitas dalang penyadapan ilegal",
+        "ai_sentiment": "Netral",
+        "total_comments": 504,
+        "total_likes": 138,
+        "engagement_score": 0.21
+      },
+      {
+        "topic_id": 3,
+        "threat_domain": "Kritik Kebijakan Publik",
+        "business_category": "Kritik Kebijakan Publik",
+        "sub_issue": "Tuntutan usut tuntas hingga akar masalah",
+        "ai_sentiment": "Positif",
+        "total_comments": 475,
+        "total_likes": 665,
+        "engagement_score": 0.05
+      },
+      {
+        "topic_id": 4,
+        "threat_domain": "Apresiasi & Dukungan Publik",
+        "business_category": "Apresiasi & Dukungan Publik",
+        "sub_issue": "Doa keselamatan untuk Presiden Prabowo Subianto",
+        "ai_sentiment": "Positif",
+        "total_comments": 425,
+        "total_likes": 1707,
+        "engagement_score": 0.22
+      },
+      {
+        "topic_id": 5,
+        "threat_domain": "Apresiasi & Dukungan Publik",
+        "business_category": "Apresiasi & Dukungan Publik",
+        "sub_issue": "Respons doa dan dukungan terhadap konten",
+        "ai_sentiment": "Positif",
+        "total_comments": 382,
+        "total_likes": 639,
+        "engagement_score": 0.02
+      },
+      {
+        "topic_id": 6,
+        "threat_domain": "Delegitimasi Institusi",
+        "business_category": "Delegitimasi Institusi",
+        "sub_issue": "Cemoohan terhadap pejabat yang haus kekuasaan",
+        "ai_sentiment": "Negatif",
+        "total_comments": 249,
+        "total_likes": 87,
+        "engagement_score": 0.05
+      }
+    ]
+  },
+  "engagement_analysis": {
+    "top_engaging_topics": [
+      {
+        "threat_domain": "Disinformasi Pertahanan",
+        "business_category": "Disinformasi Pertahanan",
+        "sub_issue": "Spam emoji dan narasi konspirasi makar termul",
+        "ai_sentiment": "Negatif",
+        "engagement_score": 17.84,
+        "total_comments": 55,
+        "total_replies": 981,
+        "total_likes": 1178
+      },
+      {
+        "threat_domain": "Delegitimasi Institusi",
+        "business_category": "Delegitimasi Institusi",
+        "sub_issue": "Seruan hukum mati bagi Lembaga Sertifikasi Profesi",
+        "ai_sentiment": "Negatif",
+        "engagement_score": 0.35,
+        "total_comments": 120,
+        "total_replies": 42,
+        "total_likes": 239
+      },
+      {
+        "threat_domain": "Apresiasi & Dukungan Publik",
+        "business_category": "Apresiasi & Dukungan Publik",
+        "sub_issue": "Doa keselamatan untuk Presiden Prabowo Subianto",
+        "ai_sentiment": "Positif",
+        "engagement_score": 0.22,
+        "total_comments": 425,
+        "total_replies": 94,
+        "total_likes": 1707
+      },
+      {
+        "threat_domain": "Delegitimasi Institusi",
+        "business_category": "Delegitimasi Institusi",
+        "sub_issue": "Spekulasi identitas dalang penyadapan ilegal",
+        "ai_sentiment": "Netral",
+        "engagement_score": 0.21,
+        "total_comments": 504,
+        "total_replies": 105,
+        "total_likes": 138
+      },
+      {
+        "threat_domain": "Provokasi SARA & Separatisme",
+        "business_category": "Provokasi SARA & Separatisme",
+        "sub_issue": "Seruan hukum mati bagi pengkhianat negara",
+        "ai_sentiment": "Negatif",
+        "engagement_score": 0.18,
+        "total_comments": 33492,
+        "total_replies": 6048,
+        "total_likes": 59251
+      }
+    ]
+  },
+  "trends": [
+    {
+      "month": "2026-10",
+      "positif": 2,
+      "negatif": 18,
+      "netral": 0,
+      "total": 20,
+      "net_sentiment_ratio": -0.8
+    },
+    {
+      "month": "2026-11",
+      "positif": 11153,
+      "negatif": 34335,
+      "netral": 675,
+      "total": 46163,
+      "net_sentiment_ratio": -0.5022
+    }
+  ],
+  "spike_detection": {
+    "threshold": 12641.09,
+    "spikes": [
+      {
+        "date": "2026-11-08",
+        "comment_count": 15067,
+        "top_topics": [
+          "Seruan hukum mati bagi pengkhianat negara",
+          "Dukungan terhadap tindakan tegas Presiden Prabowo",
+          "Spekulasi identitas dalang penyadapan ilegal"
+        ]
+      },
+      {
+        "date": "2026-11-07",
+        "comment_count": 14037,
+        "top_topics": [
+          "Seruan hukum mati bagi pengkhianat negara",
+          "Dukungan terhadap tindakan tegas Presiden Prabowo",
+          "Spekulasi identitas dalang penyadapan ilegal"
+        ]
+      }
+    ]
+  },
+  "keyword_analysis": {
+    "Positif": [
+      {
+        "keyword": "prof",
+        "topic_count": 2,
+        "weighted_comment_count": 9765
+      },
+      {
+        "keyword": "gema",
+        "topic_count": 2,
+        "weighted_comment_count": 9765
+      },
+      {
+        "keyword": "prabowo",
+        "topic_count": 2,
+        "weighted_comment_count": 9634
+      },
+      {
+        "keyword": "setuju",
+        "topic_count": 1,
+        "weighted_comment_count": 9545
+      },
+      {
+        "keyword": "hukum",
+        "topic_count": 1,
+        "weighted_comment_count": 9545
+      },
+      {
+        "keyword": "mati",
+        "topic_count": 1,
+        "weighted_comment_count": 9545
+      },
+      {
+        "keyword": "mantap",
+        "topic_count": 1,
+        "weighted_comment_count": 9545
+      },
+      {
+        "keyword": "hukum mati",
+        "topic_count": 1,
+        "weighted_comment_count": 9545
+      },
+      {
+        "keyword": "jokowi",
+        "topic_count": 1,
+        "weighted_comment_count": 9545
+      },
+      {
+        "keyword": "bang",
+        "topic_count": 1,
+        "weighted_comment_count": 9545
+      },
+      {
+        "keyword": "semoga",
+        "topic_count": 2,
+        "weighted_comment_count": 900
+      },
+      {
+        "keyword": "tunggu",
+        "topic_count": 1,
+        "weighted_comment_count": 475
+      },
+      {
+        "keyword": "tuntas",
+        "topic_count": 1,
+        "weighted_comment_count": 475
+      },
+      {
+        "keyword": "akar",
+        "topic_count": 1,
+        "weighted_comment_count": 475
+      },
+      {
+        "keyword": "akarnya",
+        "topic_count": 1,
+        "weighted_comment_count": 475
+      },
+      {
+        "keyword": "usut",
+        "topic_count": 1,
+        "weighted_comment_count": 475
+      },
+      {
+        "keyword": "usut tuntas",
+        "topic_count": 1,
+        "weighted_comment_count": 475
+      },
+      {
+        "keyword": "akar akarnya",
+        "topic_count": 1,
+        "weighted_comment_count": 475
+      },
+      {
+        "keyword": "terbongkar",
+        "topic_count": 1,
+        "weighted_comment_count": 475
+      },
+      {
+        "keyword": "mainnya",
+        "topic_count": 1,
+        "weighted_comment_count": 475
+      },
+      {
+        "keyword": "allah",
+        "topic_count": 1,
+        "weighted_comment_count": 425
+      },
+      {
+        "keyword": "subhanahu",
+        "topic_count": 1,
+        "weighted_comment_count": 425
+      },
+      {
+        "keyword": "allah subhanahu",
+        "topic_count": 1,
+        "weighted_comment_count": 425
+      },
+      {
+        "keyword": "subhanahu taala",
+        "topic_count": 1,
+        "weighted_comment_count": 425
+      },
+      {
+        "keyword": "taala",
+        "topic_count": 1,
+        "weighted_comment_count": 425
+      },
+      {
+        "keyword": "astaghfirullah",
+        "topic_count": 1,
+        "weighted_comment_count": 425
+      },
+      {
+        "keyword": "maha",
+        "topic_count": 1,
+        "weighted_comment_count": 425
+      },
+      {
+        "keyword": "semoga allah",
+        "topic_count": 1,
+        "weighted_comment_count": 425
+      },
+      {
+        "keyword": "orang",
+        "topic_count": 1,
+        "weighted_comment_count": 425
+      },
+      {
+        "keyword": "bravo",
+        "topic_count": 1,
+        "weighted_comment_count": 382
+      },
+      {
+        "keyword": "god",
+        "topic_count": 1,
+        "weighted_comment_count": 382
+      },
+      {
+        "keyword": "god bless",
+        "topic_count": 1,
+        "weighted_comment_count": 382
+      },
+      {
+        "keyword": "bless",
+        "topic_count": 1,
+        "weighted_comment_count": 382
+      },
+      {
+        "keyword": "good",
+        "topic_count": 1,
+        "weighted_comment_count": 382
+      },
+      {
+        "keyword": "bravo kapolri",
+        "topic_count": 1,
+        "weighted_comment_count": 382
+      },
+      {
+        "keyword": "akbar",
+        "topic_count": 1,
+        "weighted_comment_count": 382
+      },
+      {
+        "keyword": "allahu akbar",
+        "topic_count": 1,
+        "weighted_comment_count": 382
+      },
+      {
+        "keyword": "allahu",
+        "topic_count": 1,
+        "weighted_comment_count": 382
+      },
+      {
+        "keyword": "alhamdulilah",
+        "topic_count": 1,
+        "weighted_comment_count": 382
+      },
+      {
+        "keyword": "terima kasih",
+        "topic_count": 1,
+        "weighted_comment_count": 220
+      },
+      {
+        "keyword": "terima",
+        "topic_count": 1,
+        "weighted_comment_count": 220
+      },
+      {
+        "keyword": "kasih",
+        "topic_count": 1,
+        "weighted_comment_count": 220
+      },
+      {
+        "keyword": "terimakasih",
+        "topic_count": 1,
+        "weighted_comment_count": 220
+      },
+      {
+        "keyword": "thanks",
+        "topic_count": 1,
+        "weighted_comment_count": 220
+      },
+      {
+        "keyword": "infonya",
+        "topic_count": 1,
+        "weighted_comment_count": 220
+      },
+      {
+        "keyword": "prof gema",
+        "topic_count": 1,
+        "weighted_comment_count": 220
+      },
+      {
+        "keyword": "berbagi",
+        "topic_count": 1,
+        "weighted_comment_count": 220
+      },
+      {
+        "keyword": "with",
+        "topic_count": 1,
+        "weighted_comment_count": 89
+      },
+      {
+        "keyword": "best",
+        "topic_count": 1,
+        "weighted_comment_count": 89
+      },
+      {
+        "keyword": "videos",
+        "topic_count": 1,
+        "weighted_comment_count": 89
+      },
+      {
+        "keyword": "stand",
+        "topic_count": 1,
+        "weighted_comment_count": 89
+      },
+      {
+        "keyword": "stand with",
+        "topic_count": 1,
+        "weighted_comment_count": 89
+      },
+      {
+        "keyword": "subscribers",
+        "topic_count": 1,
+        "weighted_comment_count": 89
+      },
+      {
+        "keyword": "will",
+        "topic_count": 1,
+        "weighted_comment_count": 89
+      },
+      {
+        "keyword": "president",
+        "topic_count": 1,
+        "weighted_comment_count": 89
+      },
+      {
+        "keyword": "this",
+        "topic_count": 1,
+        "weighted_comment_count": 89
+      },
+      {
+        "keyword": "c1",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "saksi",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "berkas",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "berkas c1",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "data valid",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "valid",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "disimpen",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "rangkap",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "dibikin rangkap",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "saksi disimpen",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      }
+    ],
+    "Negatif": [
+      {
+        "keyword": "mati",
+        "topic_count": 2,
+        "weighted_comment_count": 33612
+      },
+      {
+        "keyword": "orang",
+        "topic_count": 2,
+        "weighted_comment_count": 33518
+      },
+      {
+        "keyword": "negara",
+        "topic_count": 1,
+        "weighted_comment_count": 33492
+      },
+      {
+        "keyword": "indonesia",
+        "topic_count": 1,
+        "weighted_comment_count": 33492
+      },
+      {
+        "keyword": "prabowo",
+        "topic_count": 1,
+        "weighted_comment_count": 33492
+      },
+      {
+        "keyword": "jokowi",
+        "topic_count": 1,
+        "weighted_comment_count": 33492
+      },
+      {
+        "keyword": "rakyat",
+        "topic_count": 1,
+        "weighted_comment_count": 33492
+      },
+      {
+        "keyword": "republik",
+        "topic_count": 1,
+        "weighted_comment_count": 33492
+      },
+      {
+        "keyword": "republik indonesia",
+        "topic_count": 1,
+        "weighted_comment_count": 33492
+      },
+      {
+        "keyword": "hukum",
+        "topic_count": 1,
+        "weighted_comment_count": 33492
+      },
+      {
+        "keyword": "opo",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "iki",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "ra",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "ketitik",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "becik",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "ketoro",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "ora",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "becik ketitik",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "olo ketoro",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "olo",
+        "topic_count": 1,
+        "weighted_comment_count": 249
+      },
+      {
+        "keyword": "selimut",
+        "topic_count": 1,
+        "weighted_comment_count": 225
+      },
+      {
+        "keyword": "musuh",
+        "topic_count": 1,
+        "weighted_comment_count": 225
+      },
+      {
+        "keyword": "musuh selimut",
+        "topic_count": 1,
+        "weighted_comment_count": 225
+      },
+      {
+        "keyword": "ikan",
+        "topic_count": 1,
+        "weighted_comment_count": 225
+      },
+      {
+        "keyword": "busuk",
+        "topic_count": 1,
+        "weighted_comment_count": 225
+      },
+      {
+        "keyword": "ikan busuk",
+        "topic_count": 1,
+        "weighted_comment_count": 225
+      },
+      {
+        "keyword": "busuk kepala",
+        "topic_count": 1,
+        "weighted_comment_count": 225
+      },
+      {
+        "keyword": "tercium",
+        "topic_count": 1,
+        "weighted_comment_count": 225
+      },
+      {
+        "keyword": "bangkai",
+        "topic_count": 1,
+        "weighted_comment_count": 225
+      },
+      {
+        "keyword": "ciri",
+        "topic_count": 1,
+        "weighted_comment_count": 225
+      },
+      {
+        "keyword": "sertifikasi profesi",
+        "topic_count": 1,
+        "weighted_comment_count": 120
+      },
+      {
+        "keyword": "lembaga sertifikasi",
+        "topic_count": 1,
+        "weighted_comment_count": 120
+      },
+      {
+        "keyword": "sertifikasi",
+        "topic_count": 1,
+        "weighted_comment_count": 120
+      },
+      {
+        "keyword": "profesi",
+        "topic_count": 1,
+        "weighted_comment_count": 120
+      },
+      {
+        "keyword": "lembaga",
+        "topic_count": 1,
+        "weighted_comment_count": 120
+      },
+      {
+        "keyword": "profesi lembaga",
+        "topic_count": 1,
+        "weighted_comment_count": 120
+      },
+      {
+        "keyword": "mati lembaga",
+        "topic_count": 1,
+        "weighted_comment_count": 120
+      },
+      {
+        "keyword": "listyo sapa",
+        "topic_count": 1,
+        "weighted_comment_count": 120
+      },
+      {
+        "keyword": "hukum mati",
+        "topic_count": 1,
+        "weighted_comment_count": 120
+      },
+      {
+        "keyword": "ال",
+        "topic_count": 1,
+        "weighted_comment_count": 78
+      },
+      {
+        "keyword": "الله",
+        "topic_count": 1,
+        "weighted_comment_count": 78
+      },
+      {
+        "keyword": "𝚓𝚘𝚔𝚘𝚠𝚒",
+        "topic_count": 1,
+        "weighted_comment_count": 78
+      },
+      {
+        "keyword": "ال ال",
+        "topic_count": 1,
+        "weighted_comment_count": 78
+      },
+      {
+        "keyword": "𝚙𝚊𝚔",
+        "topic_count": 1,
+        "weighted_comment_count": 78
+      },
+      {
+        "keyword": "محمد",
+        "topic_count": 1,
+        "weighted_comment_count": 78
+      },
+      {
+        "keyword": "𝚙𝚊𝚔 𝚓𝚘𝚔𝚘𝚠𝚒",
+        "topic_count": 1,
+        "weighted_comment_count": 78
+      },
+      {
+        "keyword": "ｈｏ",
+        "topic_count": 1,
+        "weighted_comment_count": 78
+      },
+      {
+        "keyword": "𝚍𝚒",
+        "topic_count": 1,
+        "weighted_comment_count": 78
+      },
+      {
+        "keyword": "ｇａ",
+        "topic_count": 1,
+        "weighted_comment_count": 78
+      },
+      {
+        "keyword": "face",
+        "topic_count": 1,
+        "weighted_comment_count": 55
+      },
+      {
+        "keyword": "smiling",
+        "topic_count": 1,
+        "weighted_comment_count": 55
+      },
+      {
+        "keyword": "blue",
+        "topic_count": 1,
+        "weighted_comment_count": 55
+      },
+      {
+        "keyword": "watch",
+        "topic_count": 1,
+        "weighted_comment_count": 55
+      },
+      {
+        "keyword": "face blue",
+        "topic_count": 1,
+        "weighted_comment_count": 55
+      },
+      {
+        "keyword": "blue smiling",
+        "topic_count": 1,
+        "weighted_comment_count": 55
+      },
+      {
+        "keyword": "smiling face",
+        "topic_count": 1,
+        "weighted_comment_count": 55
+      },
+      {
+        "keyword": "orange",
+        "topic_count": 1,
+        "weighted_comment_count": 55
+      },
+      {
+        "keyword": "face orange",
+        "topic_count": 1,
+        "weighted_comment_count": 55
+      },
+      {
+        "keyword": "vdo",
+        "topic_count": 1,
+        "weighted_comment_count": 55
+      },
+      {
+        "keyword": "dibayar",
+        "topic_count": 2,
+        "weighted_comment_count": 47
+      },
+      {
+        "keyword": "cil",
+        "topic_count": 1,
+        "weighted_comment_count": 34
+      },
+      {
+        "keyword": "simpan",
+        "topic_count": 1,
+        "weighted_comment_count": 34
+      },
+      {
+        "keyword": "25t",
+        "topic_count": 1,
+        "weighted_comment_count": 34
+      },
+      {
+        "keyword": "cil data",
+        "topic_count": 1,
+        "weighted_comment_count": 34
+      },
+      {
+        "keyword": "protein",
+        "topic_count": 1,
+        "weighted_comment_count": 34
+      },
+      {
+        "keyword": "data",
+        "topic_count": 1,
+        "weighted_comment_count": 34
+      },
+      {
+        "keyword": "60t",
+        "topic_count": 1,
+        "weighted_comment_count": 34
+      },
+      {
+        "keyword": "beli telor",
+        "topic_count": 1,
+        "weighted_comment_count": 34
+      },
+      {
+        "keyword": "25 triliyun",
+        "topic_count": 1,
+        "weighted_comment_count": 34
+      },
+      {
+        "keyword": "tipu daya",
+        "topic_count": 1,
+        "weighted_comment_count": 26
+      },
+      {
+        "keyword": "tipu",
+        "topic_count": 1,
+        "weighted_comment_count": 26
+      },
+      {
+        "keyword": "daya",
+        "topic_count": 1,
+        "weighted_comment_count": 26
+      },
+      {
+        "keyword": "ayat",
+        "topic_count": 1,
+        "weighted_comment_count": 26
+      },
+      {
+        "keyword": "qs",
+        "topic_count": 1,
+        "weighted_comment_count": 26
+      },
+      {
+        "keyword": "daya allah",
+        "topic_count": 1,
+        "weighted_comment_count": 26
+      },
+      {
+        "keyword": "allah",
+        "topic_count": 1,
+        "weighted_comment_count": 26
+      },
+      {
+        "keyword": "pembalas",
+        "topic_count": 1,
+        "weighted_comment_count": 26
+      },
+      {
+        "keyword": "membalas",
+        "topic_count": 1,
+        "weighted_comment_count": 26
+      },
+      {
+        "keyword": "jatuh",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "tupai",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "melompat",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "tupai melompat",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "sepandai",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "melompat jatuh",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "pandainya",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "sepandai pandainya",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "pandai",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "pandainya tupai",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "atur",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "pacar",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "pakai sadap",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "kepo",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "menyadap",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "hasilnya pakai",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "kepo hasilnya",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "atur rajin",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "menyadap kepo",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "rajin menyadap",
+        "topic_count": 1,
+        "weighted_comment_count": 21
+      },
+      {
+        "keyword": "rupiah",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "ihsg",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "anjlok",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "rupiah menguat",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "prediksi ihsg",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "rupiah melemah",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "menguat",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "melemah",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "prediksi",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "bbm rupiah",
+        "topic_count": 1,
+        "weighted_comment_count": 19
+      },
+      {
+        "keyword": "idola",
+        "topic_count": 1,
+        "weighted_comment_count": 13
+      },
+      {
+        "keyword": "bagikan",
+        "topic_count": 1,
+        "weighted_comment_count": 13
+      },
+      {
+        "keyword": "berbagi bagikan",
+        "topic_count": 1,
+        "weighted_comment_count": 13
+      },
+      {
+        "keyword": "bagikan informasi",
+        "topic_count": 1,
+        "weighted_comment_count": 13
+      },
+      {
+        "keyword": "informasi artis",
+        "topic_count": 1,
+        "weighted_comment_count": 13
+      },
+      {
+        "keyword": "idola dibayar",
+        "topic_count": 1,
+        "weighted_comment_count": 13
+      },
+      {
+        "keyword": "artis idola",
+        "topic_count": 1,
+        "weighted_comment_count": 13
+      },
+      {
+        "keyword": "dibayar penghianat",
+        "topic_count": 1,
+        "weighted_comment_count": 13
+      },
+      {
+        "keyword": "informasi",
+        "topic_count": 1,
+        "weighted_comment_count": 13
+      }
+    ],
+    "Netral": [
+      {
+        "keyword": "barat",
+        "topic_count": 1,
+        "weighted_comment_count": 504
+      },
+      {
+        "keyword": "lurah",
+        "topic_count": 1,
+        "weighted_comment_count": 504
+      },
+      {
+        "keyword": "lurah barat",
+        "topic_count": 1,
+        "weighted_comment_count": 504
+      },
+      {
+        "keyword": "binsar",
+        "topic_count": 1,
+        "weighted_comment_count": 504
+      },
+      {
+        "keyword": "barat lurah",
+        "topic_count": 1,
+        "weighted_comment_count": 504
+      },
+      {
+        "keyword": "luhut binsar",
+        "topic_count": 1,
+        "weighted_comment_count": 504
+      },
+      {
+        "keyword": "luhut",
+        "topic_count": 1,
+        "weighted_comment_count": 504
+      },
+      {
+        "keyword": "barat luhut",
+        "topic_count": 1,
+        "weighted_comment_count": 504
+      },
+      {
+        "keyword": "lb",
+        "topic_count": 1,
+        "weighted_comment_count": 504
+      },
+      {
+        "keyword": "kdm",
+        "topic_count": 1,
+        "weighted_comment_count": 504
+      },
+      {
+        "keyword": "𝗕𝗘𝗥𝗞𝗔𝗛𝟵𝟵",
+        "topic_count": 1,
+        "weighted_comment_count": 79
+      },
+      {
+        "keyword": "𝗦𝗜𝗔𝗣𝟰𝟲",
+        "topic_count": 1,
+        "weighted_comment_count": 79
+      },
+      {
+        "keyword": "02",
+        "topic_count": 1,
+        "weighted_comment_count": 79
+      },
+      {
+        "keyword": "19",
+        "topic_count": 1,
+        "weighted_comment_count": 79
+      },
+      {
+        "keyword": "22",
+        "topic_count": 1,
+        "weighted_comment_count": 79
+      },
+      {
+        "keyword": "09",
+        "topic_count": 1,
+        "weighted_comment_count": 79
+      },
+      {
+        "keyword": "𝘽𝙀𝙍𝙆𝘼𝙃99",
+        "topic_count": 1,
+        "weighted_comment_count": 79
+      },
+      {
+        "keyword": "17",
+        "topic_count": 1,
+        "weighted_comment_count": 79
+      },
+      {
+        "keyword": "20",
+        "topic_count": 1,
+        "weighted_comment_count": 79
+      },
+      {
+        "keyword": "23",
+        "topic_count": 1,
+        "weighted_comment_count": 79
+      },
+      {
+        "keyword": "jeruk",
+        "topic_count": 1,
+        "weighted_comment_count": 44
+      },
+      {
+        "keyword": "jeruk makan",
+        "topic_count": 1,
+        "weighted_comment_count": 44
+      },
+      {
+        "keyword": "makan jeruk",
+        "topic_count": 1,
+        "weighted_comment_count": 44
+      },
+      {
+        "keyword": "bolu",
+        "topic_count": 1,
+        "weighted_comment_count": 44
+      },
+      {
+        "keyword": "ketan",
+        "topic_count": 1,
+        "weighted_comment_count": 44
+      },
+      {
+        "keyword": "bolu ketan",
+        "topic_count": 1,
+        "weighted_comment_count": 44
+      },
+      {
+        "keyword": "makan",
+        "topic_count": 1,
+        "weighted_comment_count": 44
+      },
+      {
+        "keyword": "jeruk jeruk",
+        "topic_count": 1,
+        "weighted_comment_count": 44
+      },
+      {
+        "keyword": "ketan jeruk",
+        "topic_count": 1,
+        "weighted_comment_count": 44
+      },
+      {
+        "keyword": "minum",
+        "topic_count": 1,
+        "weighted_comment_count": 44
+      },
+      {
+        "keyword": "karhutla",
+        "topic_count": 1,
+        "weighted_comment_count": 36
+      },
+      {
+        "keyword": "lupakan",
+        "topic_count": 1,
+        "weighted_comment_count": 36
+      },
+      {
+        "keyword": "karhutla lupakan",
+        "topic_count": 1,
+        "weighted_comment_count": 36
+      },
+      {
+        "keyword": "lupakan karhutla",
+        "topic_count": 1,
+        "weighted_comment_count": 36
+      },
+      {
+        "keyword": "lupa karhutla",
+        "topic_count": 1,
+        "weighted_comment_count": 36
+      },
+      {
+        "keyword": "lupa",
+        "topic_count": 1,
+        "weighted_comment_count": 36
+      },
+      {
+        "keyword": "urus",
+        "topic_count": 1,
+        "weighted_comment_count": 36
+      },
+      {
+        "keyword": "karhutla karhutla",
+        "topic_count": 1,
+        "weighted_comment_count": 36
+      },
+      {
+        "keyword": "karhutla lupa",
+        "topic_count": 1,
+        "weighted_comment_count": 36
+      },
+      {
+        "keyword": "ora urus",
+        "topic_count": 1,
+        "weighted_comment_count": 36
+      },
+      {
+        "keyword": "allahuakbar",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "allahuakbar allahuakbar",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "allah huakbar",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "huakbar",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "huakbar allahuakbar",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "akbar allah",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "allahuakbar allahu",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "allah",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "allahu akbar",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      },
+      {
+        "keyword": "allahu",
+        "topic_count": 1,
+        "weighted_comment_count": 11
+      }
+    ]
+  },
+  "video_analysis": {
+    "total_videos": 98,
+    "total_views": 17948037,
+    "average_views": 183143,
+    "video_likes": 0,
+    "video_title": "Kata Kunci Pencarian: \"Penyadapan Presiden\" (98 Video)",
+    "channel_name": "98 Video Lintas 35 Kanal (KOMPASTV, SINDOnews, METRO TV, +32 kanal lainnya)",
+    "search_keyword": "Penyadapan Presiden",
+    "unique_channels_count": 35,
+    "video_url": "https://www.youtube.com/watch?v=1PAinblAcjg",
+    "published_at": "2026-11-07",
+    "video_list": [
+      {
+        "video_id": "1PAinblAcjg",
+        "video_url": "https://www.youtube.com/watch?v=1PAinblAcjg",
+        "caption": "JEJAK SIBER! Listyo Sigit Tersangka Penyadapan Presiden & Penghilangan Bukti | Sindo Sore",
+        "video_title": "JEJAK SIBER! Listyo Sigit Tersangka Penyadapan Presiden & Penghilangan Bukti | Sindo Sore",
+        "channel_name": "SINDOnews",
+        "published_at": "2026-11-07",
+        "views": "211,596",
+        "views_int": 211596,
+        "video_likes": 0,
+        "comment_count": 273,
+        "total_likes": 186,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "1CrqVZWfhFo",
+        "video_url": "https://www.youtube.com/watch?v=1CrqVZWfhFo",
+        "caption": "Jokowi Tanggapi Secara Singkat Kasus Penyadapan Presiden Prabowo | Kabar Siang",
+        "video_title": "Jokowi Tanggapi Secara Singkat Kasus Penyadapan Presiden Prabowo | Kabar Siang",
+        "channel_name": "tvOneNews",
+        "published_at": "2026-11-07",
+        "views": "30,902",
+        "views_int": 30902,
+        "video_likes": 0,
+        "comment_count": 58,
+        "total_likes": 39,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "8UYkaLY495c",
+        "video_url": "https://www.youtube.com/watch?v=8UYkaLY495c",
+        "caption": "Kapten Jack Resmi Jadi Tersangka Baru Penyadapan Presiden! | Sindo Prime | 07/11",
+        "video_title": "Kapten Jack Resmi Jadi Tersangka Baru Penyadapan Presiden! | Sindo Prime | 07/11",
+        "channel_name": "SINDOnews",
+        "published_at": "2026-11-07",
+        "views": "1,596,035",
+        "views_int": 1596035,
+        "video_likes": 0,
+        "comment_count": 2133,
+        "total_likes": 2605,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "mANMtfCn0OE",
+        "video_url": "https://www.youtube.com/watch?v=mANMtfCn0OE",
+        "caption": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "channel_name": "Astronacci",
+        "published_at": "2026-11-06",
+        "views": "2,044,411",
+        "views_int": 2044411,
+        "video_likes": 0,
+        "comment_count": 16052,
+        "total_likes": 25811,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "vUS17XBJIOk",
+        "video_url": "https://www.youtube.com/watch?v=vUS17XBJIOk",
+        "caption": "Siapa di Balik Penyadapan Presiden Prabowo? - [Selamat Pagi Indonesia]",
+        "video_title": "Siapa di Balik Penyadapan Presiden Prabowo? - [Selamat Pagi Indonesia]",
+        "channel_name": "METRO TV",
+        "published_at": "2026-11-07",
+        "views": "52,835",
+        "views_int": 52835,
+        "video_likes": 0,
+        "comment_count": 85,
+        "total_likes": 56,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "cb0cT_smN8A",
+        "video_url": "https://www.youtube.com/watch?v=cb0cT_smN8A",
+        "caption": "Soal Kasus Penyadapan Presiden, Puluhan Eks Dankorps Brimob Temui Kapolri",
+        "video_title": "Soal Kasus Penyadapan Presiden, Puluhan Eks Dankorps Brimob Temui Kapolri",
+        "channel_name": "Kompas.com",
+        "published_at": "2026-11-08",
+        "views": "47,922",
+        "views_int": 47922,
+        "video_likes": 0,
+        "comment_count": 57,
+        "total_likes": 76,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "jQbBzImZHmo",
+        "video_url": "https://www.youtube.com/watch?v=jQbBzImZHmo",
+        "caption": "Polri Bentuk Timsus Telusuri Dalang Penyadapan Presiden Prabowo",
+        "video_title": "Polri Bentuk Timsus Telusuri Dalang Penyadapan Presiden Prabowo",
+        "channel_name": "Tribun Jateng",
+        "published_at": "2026-11-07",
+        "views": "33,559",
+        "views_int": 33559,
+        "video_likes": 0,
+        "comment_count": 48,
+        "total_likes": 39,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "IDB7O9Hp4ss",
+        "video_url": "https://www.youtube.com/watch?v=IDB7O9Hp4ss",
+        "caption": "Pengusutan Kasus Penyadapan Presiden Prabowo, Listyo Sigit dan 3 Jenderal Polri Tersangka",
+        "video_title": "Pengusutan Kasus Penyadapan Presiden Prabowo, Listyo Sigit dan 3 Jenderal Polri Tersangka",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-08",
+        "views": "60,848",
+        "views_int": 60848,
+        "video_likes": 0,
+        "comment_count": 68,
+        "total_likes": 52,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "gsOlehLnU8Y",
+        "video_url": "https://www.youtube.com/watch?v=gsOlehLnU8Y",
+        "caption": "Membongkar Modus Penyadapan Presiden Prabowo Pakai LIMS | MBG",
+        "video_title": "Membongkar Modus Penyadapan Presiden Prabowo Pakai LIMS | MBG",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-06",
+        "views": "22,204",
+        "views_int": 22204,
+        "video_likes": 0,
+        "comment_count": 20,
+        "total_likes": 8,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "1rxdnVvlxpM",
+        "video_url": "https://www.youtube.com/watch?v=1rxdnVvlxpM",
+        "caption": "GEMPAR!! KETUM PARTAI TERLIBAT PENYADAPAN PRESIDEN PRABOWO RESMI DITANGKAP?!",
+        "video_title": "GEMPAR!! KETUM PARTAI TERLIBAT PENYADAPAN PRESIDEN PRABOWO RESMI DITANGKAP?!",
+        "channel_name": "SUARA LANGIT",
+        "published_at": "2026-11-06",
+        "views": "227,145",
+        "views_int": 227145,
+        "video_likes": 0,
+        "comment_count": 276,
+        "total_likes": 216,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "ToFtmFOuARw",
+        "video_url": "https://www.youtube.com/watch?v=ToFtmFOuARw",
+        "caption": "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP",
+        "video_title": "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP",
+        "channel_name": "Abraham Samad SPEAK UP",
+        "published_at": "2026-11-04",
+        "views": "1,256,988",
+        "views_int": 1256988,
+        "video_likes": 0,
+        "comment_count": 4251,
+        "total_likes": 9445,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "h0pbgofGTe4",
+        "video_url": "https://www.youtube.com/watch?v=h0pbgofGTe4",
+        "caption": "Terseret Kasus Penyadapan Presiden, Irjen Pol Ahrie Sonta Akan Bersikap Kooperatif | Siang | 08/11",
+        "video_title": "Terseret Kasus Penyadapan Presiden, Irjen Pol Ahrie Sonta Akan Bersikap Kooperatif | Siang | 08/11",
+        "channel_name": "SINDOnews",
+        "published_at": "2026-11-08",
+        "views": "79,156",
+        "views_int": 79156,
+        "video_likes": 0,
+        "comment_count": 123,
+        "total_likes": 165,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "wSYMv0eH5ao",
+        "video_url": "https://www.youtube.com/watch?v=wSYMv0eH5ao",
+        "caption": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "video_title": "Rocky Gerung Singgung Penyadapan Presiden Prabowo: Menyadap Tidak Legal, Itu Kerjaan Polisi",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-06",
+        "views": "221,532",
+        "views_int": 221532,
+        "video_likes": 0,
+        "comment_count": 179,
+        "total_likes": 137,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "OWsZDjRhBpE",
+        "video_url": "https://www.youtube.com/watch?v=OWsZDjRhBpE",
+        "caption": "Saya Percaya ! Sosok Dalang Penyadapan Ilegal Presiden Prabowo !",
+        "video_title": "Saya Percaya ! Sosok Dalang Penyadapan Ilegal Presiden Prabowo !",
+        "channel_name": "KBN Nusantara",
+        "published_at": "2026-11-06",
+        "views": "91,368",
+        "views_int": 91368,
+        "video_likes": 0,
+        "comment_count": 1159,
+        "total_likes": 2185,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "D6t03bLw5I4",
+        "video_url": "https://www.youtube.com/watch?v=D6t03bLw5I4",
+        "caption": "Muncul Sosok Ketum Parpol di Balik Skandal Penyadapan Presiden Prabowo! | Sindo Prime | 06/11",
+        "video_title": "Muncul Sosok Ketum Parpol di Balik Skandal Penyadapan Presiden Prabowo! | Sindo Prime | 06/11",
+        "channel_name": "SINDOnews",
+        "published_at": "2026-11-06",
+        "views": "520,985",
+        "views_int": 520985,
+        "video_likes": 0,
+        "comment_count": 970,
+        "total_likes": 903,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "MEyj6iQ2x2I",
+        "video_url": "https://www.youtube.com/watch?v=MEyj6iQ2x2I",
+        "caption": "OPERASI SENYAP PENYADAPAN PRESIDEN TERBONGKAR, SIAPA PETINGGI DI BELAKANGNYA? | INTERUPSI | FULL",
+        "video_title": "OPERASI SENYAP PENYADAPAN PRESIDEN TERBONGKAR, SIAPA PETINGGI DI BELAKANGNYA? | INTERUPSI | FULL",
+        "channel_name": "SINDOnews",
+        "published_at": "2026-11-07",
+        "views": "163,892",
+        "views_int": 163892,
+        "video_likes": 0,
+        "comment_count": 980,
+        "total_likes": 761,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "axvOaipoV4k",
+        "video_url": "https://www.youtube.com/watch?v=axvOaipoV4k",
+        "caption": "Gemetaran❗Bantah Terlibat Skandal Penyadapan Presiden, Bahlil 'Diskakmat' Mantan Intelejen",
+        "video_title": "Gemetaran❗Bantah Terlibat Skandal Penyadapan Presiden, Bahlil 'Diskakmat' Mantan Intelejen",
+        "channel_name": "MAS Tv",
+        "published_at": "2026-11-07",
+        "views": "146,424",
+        "views_int": 146424,
+        "video_likes": 0,
+        "comment_count": 371,
+        "total_likes": 547,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "sH5HAUXdwHk",
+        "video_url": "https://www.youtube.com/watch?v=sH5HAUXdwHk",
+        "caption": "FULL! Penyadapan Presiden Memanas! Dugaan Makar, Rivalitas Politik, hingga Pemakzulan Gibran",
+        "video_title": "FULL! Penyadapan Presiden Memanas! Dugaan Makar, Rivalitas Politik, hingga Pemakzulan Gibran",
+        "channel_name": "KOMPASTV JAWA TIMUR",
+        "published_at": "2026-11-07",
+        "views": "133,095",
+        "views_int": 133095,
+        "video_likes": 0,
+        "comment_count": 476,
+        "total_likes": 565,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "zjFyzqxZiVI",
+        "video_url": "https://www.youtube.com/watch?v=zjFyzqxZiVI",
+        "caption": "TERBONGKAR DALANG PENYADAPAN PRESIDEN PRABOWO OLEH MANTAN KAPOLRI LISTYO SIGIT BUKAN JOKOWI GIBRAM 2",
+        "video_title": "TERBONGKAR DALANG PENYADAPAN PRESIDEN PRABOWO OLEH MANTAN KAPOLRI LISTYO SIGIT BUKAN JOKOWI GIBRAM 2",
+        "channel_name": "News Klenc Official",
+        "published_at": "2026-11-07",
+        "views": "1,483,203",
+        "views_int": 1483203,
+        "video_likes": 0,
+        "comment_count": 2497,
+        "total_likes": 2674,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "1vjPlHhN4l4",
+        "video_url": "https://www.youtube.com/watch?v=1vjPlHhN4l4",
+        "caption": "Relawan Prabowo Yakin Presiden Tak Lindungi Nusron Wahid",
+        "video_title": "Relawan Prabowo Yakin Presiden Tak Lindungi Nusron Wahid",
+        "channel_name": "Tribun Kaltim Official",
+        "published_at": "2026-10-24",
+        "views": "2,745",
+        "views_int": 2745,
+        "video_likes": 0,
+        "comment_count": 20,
+        "total_likes": 7,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "fAd2jHJ0zjg",
+        "video_url": "https://www.youtube.com/watch?v=fAd2jHJ0zjg",
+        "caption": "Surya Paloh Tanggapi Isu Penyadapan Presiden Prabowo, Minta Semua Pihak Tetap Kondusif",
+        "video_title": "Surya Paloh Tanggapi Isu Penyadapan Presiden Prabowo, Minta Semua Pihak Tetap Kondusif",
+        "channel_name": "TRIBUNWOW OFFICIAL",
+        "published_at": "2026-11-07",
+        "views": "8,526",
+        "views_int": 8526,
+        "video_likes": 0,
+        "comment_count": 3,
+        "total_likes": 0,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "5bduJ5NrxQQ",
+        "video_url": "https://www.youtube.com/watch?v=5bduJ5NrxQQ",
+        "caption": "Diterpa Isu Terlibat Penyadapan Presiden Prabowo, Bahlil Membela Diri",
+        "video_title": "Diterpa Isu Terlibat Penyadapan Presiden Prabowo, Bahlil Membela Diri",
+        "channel_name": "Harian Kompas",
+        "published_at": "2026-11-08",
+        "views": "7,947",
+        "views_int": 7947,
+        "video_likes": 0,
+        "comment_count": 20,
+        "total_likes": 10,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "c20PMuvUqyM",
+        "video_url": "https://www.youtube.com/watch?v=c20PMuvUqyM",
+        "caption": "Tersangka Penyadapan Presiden, Jend. A.S Janji Kooperatif Buka Fakta Baru - [Primetime News]",
+        "video_title": "Tersangka Penyadapan Presiden, Jend. A.S Janji Kooperatif Buka Fakta Baru - [Primetime News]",
+        "channel_name": "METRO TV",
+        "published_at": "2026-11-07",
+        "views": "78,636",
+        "views_int": 78636,
+        "video_likes": 0,
+        "comment_count": 61,
+        "total_likes": 43,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "KV6fomUGFJs",
+        "video_url": "https://www.youtube.com/watch?v=KV6fomUGFJs",
+        "caption": "Eks Ketua MK Jimly Asshiddiqie Duga Penyadapan Presiden Bagian dari Permainan Politik #short",
+        "video_title": "Eks Ketua MK Jimly Asshiddiqie Duga Penyadapan Presiden Bagian dari Permainan Politik #short",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-08",
+        "views": "91,350",
+        "views_int": 91350,
+        "video_likes": 0,
+        "comment_count": 83,
+        "total_likes": 59,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "O3AKzh_EyqQ",
+        "video_url": "https://www.youtube.com/watch?v=O3AKzh_EyqQ",
+        "caption": "Kabareskrim Pastikan Akan Telusuri Sosok Pemberi Perintah Penyadapan Presiden",
+        "video_title": "Kabareskrim Pastikan Akan Telusuri Sosok Pemberi Perintah Penyadapan Presiden",
+        "channel_name": "Tribunnews",
+        "published_at": "2026-11-07",
+        "views": "15,740",
+        "views_int": 15740,
+        "video_likes": 0,
+        "comment_count": 33,
+        "total_likes": 49,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "nrNCA91Evp0",
+        "video_url": "https://www.youtube.com/watch?v=nrNCA91Evp0",
+        "caption": "BAHLIL DICURIGAI Terlibat Penyadapan Presiden Prabowo Usai Listyo Jadi Tersangka",
+        "video_title": "BAHLIL DICURIGAI Terlibat Penyadapan Presiden Prabowo Usai Listyo Jadi Tersangka",
+        "channel_name": "Tribun MedanTV",
+        "published_at": "2026-11-07",
+        "views": "16,064",
+        "views_int": 16064,
+        "video_likes": 0,
+        "comment_count": 42,
+        "total_likes": 37,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "NlzzI2Rdd-0",
+        "video_url": "https://www.youtube.com/watch?v=NlzzI2Rdd-0",
+        "caption": "Mahfud MD  Pengkhianatan Terjahat! Dugaan Makar Kasus Penyadapan Presiden Prabowo",
+        "video_title": "Mahfud MD  Pengkhianatan Terjahat! Dugaan Makar Kasus Penyadapan Presiden Prabowo",
+        "channel_name": "KOMPASTV JAWA TIMUR",
+        "published_at": "2026-11-06",
+        "views": "62,488",
+        "views_int": 62488,
+        "video_likes": 0,
+        "comment_count": 196,
+        "total_likes": 138,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "ZJHg7YjxphE",
+        "video_url": "https://www.youtube.com/watch?v=ZJHg7YjxphE",
+        "caption": "Pengamat Kepolisian: Potensi Pihak Lain Terseret di Skandal Penyadapan Presiden Prabowo",
+        "video_title": "Pengamat Kepolisian: Potensi Pihak Lain Terseret di Skandal Penyadapan Presiden Prabowo",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-05",
+        "views": "16,639",
+        "views_int": 16639,
+        "video_likes": 0,
+        "comment_count": 38,
+        "total_likes": 22,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "vZEcaUFz6Ec",
+        "video_url": "https://www.youtube.com/watch?v=vZEcaUFz6Ec",
+        "caption": "Ketum Parpol yang Jadi Menteri Disebut Terlibat Penyadapan Presiden, Bahlil Buka Suara | Sindo Today",
+        "video_title": "Ketum Parpol yang Jadi Menteri Disebut Terlibat Penyadapan Presiden, Bahlil Buka Suara | Sindo Today",
+        "channel_name": "SINDOnews",
+        "published_at": "2026-11-07",
+        "views": "4,693",
+        "views_int": 4693,
+        "video_likes": 0,
+        "comment_count": 14,
+        "total_likes": 3,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "d1UuyM2avZg",
+        "video_url": "https://www.youtube.com/watch?v=d1UuyM2avZg",
+        "caption": "Kasus Penyadapan Presiden Prabowo, Kapolri: Murni Hukum! | KOMPAS PETANG",
+        "video_title": "Kasus Penyadapan Presiden Prabowo, Kapolri: Murni Hukum! | KOMPAS PETANG",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-05",
+        "views": "25,266",
+        "views_int": 25266,
+        "video_likes": 0,
+        "comment_count": 7,
+        "total_likes": 3,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "1mbgL7PXVwQ",
+        "video_url": "https://www.youtube.com/watch?v=1mbgL7PXVwQ",
+        "caption": "SBY Soroti Etika Politik Nasional dan Isu Penyadapan, Titip Harapan ke Presiden Prabowo",
+        "video_title": "SBY Soroti Etika Politik Nasional dan Isu Penyadapan, Titip Harapan ke Presiden Prabowo",
+        "channel_name": "Pacitanku",
+        "published_at": "2026-11-06",
+        "views": "157,767",
+        "views_int": 157767,
+        "video_likes": 0,
+        "comment_count": 222,
+        "total_likes": 211,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "JWnloSssIYM",
+        "video_url": "https://www.youtube.com/watch?v=JWnloSssIYM",
+        "caption": "®️🔴 JOKOWI BUKA SUARA❗TANGGAPI SOAL PENYADAPAN PRESIDEN PRABOWO OLEH LISTYO SIGIT: KITA TUNGGU SAJA",
+        "video_title": "®️🔴 JOKOWI BUKA SUARA❗TANGGAPI SOAL PENYADAPAN PRESIDEN PRABOWO OLEH LISTYO SIGIT: KITA TUNGGU SAJA",
+        "channel_name": "Tribun Singkawang",
+        "published_at": "2026-11-05",
+        "views": "8,042",
+        "views_int": 8042,
+        "video_likes": 0,
+        "comment_count": 13,
+        "total_likes": 3,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "Txc6mAFmIUE",
+        "video_url": "https://www.youtube.com/watch?v=Txc6mAFmIUE",
+        "caption": "Istana Nyatakan Penyadapan Presiden Prabowo Sebagai Makar | Kabar Pagi",
+        "video_title": "Istana Nyatakan Penyadapan Presiden Prabowo Sebagai Makar | Kabar Pagi",
+        "channel_name": "tvOneNews",
+        "published_at": "2026-11-05",
+        "views": "106,251",
+        "views_int": 106251,
+        "video_likes": 0,
+        "comment_count": 217,
+        "total_likes": 210,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "ZZni5Ln6A4c",
+        "video_url": "https://www.youtube.com/watch?v=ZZni5Ln6A4c",
+        "caption": "JOKOWI DICURIGAI Di Balik Penyadapan Prabowo? Andi Azwan: Jokowi Sudah Bukan Presiden Sejak 2024!",
+        "video_title": "JOKOWI DICURIGAI Di Balik Penyadapan Prabowo? Andi Azwan: Jokowi Sudah Bukan Presiden Sejak 2024!",
+        "channel_name": "Official iNews",
+        "published_at": "2026-11-05",
+        "views": "204,225",
+        "views_int": 204225,
+        "video_likes": 0,
+        "comment_count": 671,
+        "total_likes": 1219,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "O8MpeTPg5fU",
+        "video_url": "https://www.youtube.com/watch?v=O8MpeTPg5fU",
+        "caption": "Penyadapan Presiden: Siapa Mengawasi Pengawas? | Liputan 6",
+        "video_title": "Penyadapan Presiden: Siapa Mengawasi Pengawas? | Liputan 6",
+        "channel_name": "Liputan6",
+        "published_at": "2026-11-07",
+        "views": "34,158",
+        "views_int": 34158,
+        "video_likes": 0,
+        "comment_count": 20,
+        "total_likes": 17,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "TPZ-LcZDinU",
+        "video_url": "https://www.youtube.com/watch?v=TPZ-LcZDinU",
+        "caption": "Eksklusif! Mahfud MD Bocorkan Fakta Penyadapan Presiden, Minta Pecat Listyo Sigit!| Sindo Prime|",
+        "video_title": "Eksklusif! Mahfud MD Bocorkan Fakta Penyadapan Presiden, Minta Pecat Listyo Sigit!| Sindo Prime|",
+        "channel_name": "SINDOnews",
+        "published_at": "2026-11-05",
+        "views": "145,660",
+        "views_int": 145660,
+        "video_likes": 0,
+        "comment_count": 254,
+        "total_likes": 257,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "JN9enNREOw4",
+        "video_url": "https://www.youtube.com/watch?v=JN9enNREOw4",
+        "caption": "Video Lawas Jokowi Viral saat Kasus Penyadapan Presiden Terbongkar",
+        "video_title": "Video Lawas Jokowi Viral saat Kasus Penyadapan Presiden Terbongkar",
+        "channel_name": "POS KUPANG",
+        "published_at": "2026-11-04",
+        "views": "24,467",
+        "views_int": 24467,
+        "video_likes": 0,
+        "comment_count": 34,
+        "total_likes": 23,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "-dRydlrvkro",
+        "video_url": "https://www.youtube.com/watch?v=-dRydlrvkro",
+        "caption": "[FULL] Listyo Tersangka Penyadapan Presiden, Oegroseno: Ini Pasti Ada Orang Luar yang Pesan... | NTV",
+        "video_title": "[FULL] Listyo Tersangka Penyadapan Presiden, Oegroseno: Ini Pasti Ada Orang Luar yang Pesan... | NTV",
+        "channel_name": "Nusantara TV",
+        "published_at": "2026-11-07",
+        "views": "110,154",
+        "views_int": 110154,
+        "video_likes": 0,
+        "comment_count": 286,
+        "total_likes": 453,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "Sl_XoPmH4Gk",
+        "video_url": "https://www.youtube.com/watch?v=Sl_XoPmH4Gk",
+        "caption": "Tersangka Baru Penyadapan Presiden Prabowo | AKIM tvOne",
+        "video_title": "Tersangka Baru Penyadapan Presiden Prabowo | AKIM tvOne",
+        "channel_name": "tvOneNews",
+        "published_at": "2026-11-06",
+        "views": "396,113",
+        "views_int": 396113,
+        "video_likes": 0,
+        "comment_count": 488,
+        "total_likes": 766,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "fFZAyxniLn0",
+        "video_url": "https://www.youtube.com/watch?v=fFZAyxniLn0",
+        "caption": "Penyadapan Presiden Mengarah Makar, Apa Artinya? | BeritaSatu Utama",
+        "video_title": "Penyadapan Presiden Mengarah Makar, Apa Artinya? | BeritaSatu Utama",
+        "channel_name": "BeritaSatu",
+        "published_at": "2026-11-04",
+        "views": "14,201",
+        "views_int": 14201,
+        "video_likes": 0,
+        "comment_count": 28,
+        "total_likes": 46,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "kdd29YrFpQE",
+        "video_url": "https://www.youtube.com/watch?v=kdd29YrFpQE",
+        "caption": "Apa kata Jokowi soal penyadapan Presiden Prabowo?",
+        "video_title": "Apa kata Jokowi soal penyadapan Presiden Prabowo?",
+        "channel_name": "BBC News Indonesia",
+        "published_at": "2026-11-05",
+        "views": "113,197",
+        "views_int": 113197,
+        "video_likes": 0,
+        "comment_count": 272,
+        "total_likes": 483,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "C-0dd2_6kgU",
+        "video_url": "https://www.youtube.com/watch?v=C-0dd2_6kgU",
+        "caption": "[FULL] Listyo Sigit Jadi Tersangka Penyadapan Presiden, Yusril: Prabowo Tahu Dirinya Disadap | NTV",
+        "video_title": "[FULL] Listyo Sigit Jadi Tersangka Penyadapan Presiden, Yusril: Prabowo Tahu Dirinya Disadap | NTV",
+        "channel_name": "Nusantara TV",
+        "published_at": "2026-11-03",
+        "views": "38,391",
+        "views_int": 38391,
+        "video_likes": 0,
+        "comment_count": 51,
+        "total_likes": 17,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "i03nc2uxjbM",
+        "video_url": "https://www.youtube.com/watch?v=i03nc2uxjbM",
+        "caption": "🔴BREAKING NEWS - Polri Tetapkan Tersangka Baru Kasus Penyadapan Presiden Prabowo",
+        "video_title": "🔴BREAKING NEWS - Polri Tetapkan Tersangka Baru Kasus Penyadapan Presiden Prabowo",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-05",
+        "views": "910,530",
+        "views_int": 910530,
+        "video_likes": 0,
+        "comment_count": 1071,
+        "total_likes": 2949,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "apBLdjeDLV0",
+        "video_url": "https://www.youtube.com/watch?v=apBLdjeDLV0",
+        "caption": "Update Kasus Penyadapan Presiden oleh Jenderal Polisi | AKIS tvOne",
+        "video_title": "Update Kasus Penyadapan Presiden oleh Jenderal Polisi | AKIS tvOne",
+        "channel_name": "tvOneNews",
+        "published_at": "2026-11-03",
+        "views": "120,738",
+        "views_int": 120738,
+        "video_likes": 0,
+        "comment_count": 89,
+        "total_likes": 56,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "7X9XvDKrBH0",
+        "video_url": "https://www.youtube.com/watch?v=7X9XvDKrBH0",
+        "caption": "Kapolri Suyudi Buka Suara soal Skandal Penyadapan Presiden oleh Listyo Sigit Cs",
+        "video_title": "Kapolri Suyudi Buka Suara soal Skandal Penyadapan Presiden oleh Listyo Sigit Cs",
+        "channel_name": "Kompas.com",
+        "published_at": "2026-11-05",
+        "views": "55,935",
+        "views_int": 55935,
+        "video_likes": 0,
+        "comment_count": 55,
+        "total_likes": 52,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "w8x_NaYkLfw",
+        "video_url": "https://www.youtube.com/watch?v=w8x_NaYkLfw",
+        "caption": "Tanggapi Penyadapan Presiden, SBY: Kok Jadi Begini Negara Kita? | Kabar Merah Putih",
+        "video_title": "Tanggapi Penyadapan Presiden, SBY: Kok Jadi Begini Negara Kita? | Kabar Merah Putih",
+        "channel_name": "tvOneNews",
+        "published_at": "2026-11-04",
+        "views": "60,204",
+        "views_int": 60204,
+        "video_likes": 0,
+        "comment_count": 157,
+        "total_likes": 111,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "LnRKwqvz_10",
+        "video_url": "https://www.youtube.com/watch?v=LnRKwqvz_10",
+        "caption": "Media Asing Soroti Kasus Penyadapan Presiden Prabowo, Bukti Log Aktivitas Lenyap?",
+        "video_title": "Media Asing Soroti Kasus Penyadapan Presiden Prabowo, Bukti Log Aktivitas Lenyap?",
+        "channel_name": "Tribunnews",
+        "published_at": "2026-11-03",
+        "views": "51,761",
+        "views_int": 51761,
+        "video_likes": 0,
+        "comment_count": 46,
+        "total_likes": 79,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "WwrKf-X_roY",
+        "video_url": "https://www.youtube.com/watch?v=WwrKf-X_roY",
+        "caption": "Dugaan Makar di Kasus Penyadapan Presiden, LSP Diperintah Siapa? [Primetime News]",
+        "video_title": "Dugaan Makar di Kasus Penyadapan Presiden, LSP Diperintah Siapa? [Primetime News]",
+        "channel_name": "METRO TV",
+        "published_at": "2026-11-04",
+        "views": "41,574",
+        "views_int": 41574,
+        "video_likes": 0,
+        "comment_count": 73,
+        "total_likes": 56,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "NG8KuWJ8hCo",
+        "video_url": "https://www.youtube.com/watch?v=NG8KuWJ8hCo",
+        "caption": "Respons Dudung Abdurachman Soal LSP Jadi Tersangka Kasus Penyadapan Presiden! | Sindo Prime | 05/11",
+        "video_title": "Respons Dudung Abdurachman Soal LSP Jadi Tersangka Kasus Penyadapan Presiden! | Sindo Prime | 05/11",
+        "channel_name": "SINDOnews",
+        "published_at": "2026-11-05",
+        "views": "285,065",
+        "views_int": 285065,
+        "video_likes": 0,
+        "comment_count": 614,
+        "total_likes": 957,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "OyGRPb8D4tA",
+        "video_url": "https://www.youtube.com/watch?v=OyGRPb8D4tA",
+        "caption": "Ungkap! Motif Dibalik Siasat 3 Jendral TSK Kasus Penyadapan Presiden Prabowo | INDEPTH",
+        "video_title": "Ungkap! Motif Dibalik Siasat 3 Jendral TSK Kasus Penyadapan Presiden Prabowo | INDEPTH",
+        "channel_name": "Cumicumi",
+        "published_at": "2026-11-03",
+        "views": "383,470",
+        "views_int": 383470,
+        "video_likes": 0,
+        "comment_count": 1390,
+        "total_likes": 1621,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "2KaTMIeQf7M",
+        "video_url": "https://www.youtube.com/watch?v=2KaTMIeQf7M",
+        "caption": "KDM Sebut Penyadapan Presiden Tak Boleh untuk Kepentingan Politik, Desak Tersangka Dihukum Berat",
+        "video_title": "KDM Sebut Penyadapan Presiden Tak Boleh untuk Kepentingan Politik, Desak Tersangka Dihukum Berat",
+        "channel_name": "Tribunnews",
+        "published_at": "2026-11-05",
+        "views": "42,102",
+        "views_int": 42102,
+        "video_likes": 0,
+        "comment_count": 41,
+        "total_likes": 71,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "xBZ9_ammcDg",
+        "video_url": "https://www.youtube.com/watch?v=xBZ9_ammcDg",
+        "caption": "Ketum Golkar Bahlil Bantah Terlibat Penyadapan Presiden Prabowo #short",
+        "video_title": "Ketum Golkar Bahlil Bantah Terlibat Penyadapan Presiden Prabowo #short",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-07",
+        "views": "91,708",
+        "views_int": 91708,
+        "video_likes": 0,
+        "comment_count": 181,
+        "total_likes": 171,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "GaUNKy0_ZQY",
+        "video_url": "https://www.youtube.com/watch?v=GaUNKy0_ZQY",
+        "caption": "[FULL] BREAKING NEWS - POLRI UNGKAP KASUS PENYADAPAN ILEGAL TERHADAP PRESIDEN",
+        "video_title": "[FULL] BREAKING NEWS - POLRI UNGKAP KASUS PENYADAPAN ILEGAL TERHADAP PRESIDEN",
+        "channel_name": "METRO TV",
+        "published_at": "2026-11-03",
+        "views": "242,851",
+        "views_int": 242851,
+        "video_likes": 0,
+        "comment_count": 888,
+        "total_likes": 1944,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "qXYcLsu1JPI",
+        "video_url": "https://www.youtube.com/watch?v=qXYcLsu1JPI",
+        "caption": "Bongkar Motif Penyadapan Presiden! Apa Sebenarnya Tujuan Eks Kapolri Listyo Sigit & 2 Jenderal?",
+        "video_title": "Bongkar Motif Penyadapan Presiden! Apa Sebenarnya Tujuan Eks Kapolri Listyo Sigit & 2 Jenderal?",
+        "channel_name": "KOMPASTV JAWA TIMUR",
+        "published_at": "2026-11-04",
+        "views": "75,615",
+        "views_int": 75615,
+        "video_likes": 0,
+        "comment_count": 100,
+        "total_likes": 85,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "tdsBZIdfFAw",
+        "video_url": "https://www.youtube.com/watch?v=tdsBZIdfFAw",
+        "caption": "Usman Hamid & Islah Bahrawi Bongkar Motif Penyadapan Presiden oleh Listyo CS, Ada Apa?",
+        "video_title": "Usman Hamid & Islah Bahrawi Bongkar Motif Penyadapan Presiden oleh Listyo CS, Ada Apa?",
+        "channel_name": "KOMPASTV JAWA TIMUR",
+        "published_at": "2026-11-04",
+        "views": "45,603",
+        "views_int": 45603,
+        "video_likes": 0,
+        "comment_count": 146,
+        "total_likes": 175,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "OJhMaOAy5P0",
+        "video_url": "https://www.youtube.com/watch?v=OJhMaOAy5P0",
+        "caption": "TERKUAK! Bareskrim Ungkap Modus Penyadapan Presiden Prabowo: Tanpa Surat Penyidik dan Hapus Jejak",
+        "video_title": "TERKUAK! Bareskrim Ungkap Modus Penyadapan Presiden Prabowo: Tanpa Surat Penyidik dan Hapus Jejak",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-03",
+        "views": "26,161",
+        "views_int": 26161,
+        "video_likes": 0,
+        "comment_count": 31,
+        "total_likes": 44,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "2i5skyWCXVg",
+        "video_url": "https://www.youtube.com/watch?v=2i5skyWCXVg",
+        "caption": "Said Didu Soal Indikasi Makar di Kasus Penyadapan Presiden Prabowo oleh Listyo Sigit",
+        "video_title": "Said Didu Soal Indikasi Makar di Kasus Penyadapan Presiden Prabowo oleh Listyo Sigit",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-06",
+        "views": "264,978",
+        "views_int": 264978,
+        "video_likes": 0,
+        "comment_count": 46,
+        "total_likes": 43,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "PSucTo5KVek",
+        "video_url": "https://www.youtube.com/watch?v=PSucTo5KVek",
+        "caption": "Bahlil Bantah Terlibat Dalam Kasus Penyadapan Presiden Prabowo",
+        "video_title": "Bahlil Bantah Terlibat Dalam Kasus Penyadapan Presiden Prabowo",
+        "channel_name": "Unhas TV",
+        "published_at": "2026-11-08",
+        "views": "1,131",
+        "views_int": 1131,
+        "video_likes": 0,
+        "comment_count": 6,
+        "total_likes": 0,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "PlaHoFcDLUE",
+        "video_url": "https://www.youtube.com/watch?v=PlaHoFcDLUE",
+        "caption": "Selamat Ginting Beberkan Kronologi Awal Terbongkarnya Dugaan Penyadapan Presiden | Sindo Sore |04/11",
+        "video_title": "Selamat Ginting Beberkan Kronologi Awal Terbongkarnya Dugaan Penyadapan Presiden | Sindo Sore |04/11",
+        "channel_name": "SINDOnews",
+        "published_at": "2026-11-04",
+        "views": "54,590",
+        "views_int": 54590,
+        "video_likes": 0,
+        "comment_count": 119,
+        "total_likes": 71,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "O2bViUI-rFo",
+        "video_url": "https://www.youtube.com/watch?v=O2bViUI-rFo",
+        "caption": "Analis Kajian Intelijen Beberkan Proses Penyadapan Presiden Prabowo | AKIP tvOne",
+        "video_title": "Analis Kajian Intelijen Beberkan Proses Penyadapan Presiden Prabowo | AKIP tvOne",
+        "channel_name": "tvOneNews",
+        "published_at": "2026-11-03",
+        "views": "125,748",
+        "views_int": 125748,
+        "video_likes": 0,
+        "comment_count": 240,
+        "total_likes": 334,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "48bFyhuUnxo",
+        "video_url": "https://www.youtube.com/watch?v=48bFyhuUnxo",
+        "caption": "Kasus Penyadapan Presiden, Siapa Aktornya? #Shorts",
+        "video_title": "Kasus Penyadapan Presiden, Siapa Aktornya? #Shorts",
+        "channel_name": "METRO TV",
+        "published_at": "2026-11-05",
+        "views": "147,337",
+        "views_int": 147337,
+        "video_likes": 0,
+        "comment_count": 54,
+        "total_likes": 48,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "86-1pdFiuIM",
+        "video_url": "https://www.youtube.com/watch?v=86-1pdFiuIM",
+        "caption": "Kapolri Jenderal Suyudi Buka Suara Soal Penyadapan Presiden Prabowo: Murni Hukum!",
+        "video_title": "Kapolri Jenderal Suyudi Buka Suara Soal Penyadapan Presiden Prabowo: Murni Hukum!",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-05",
+        "views": "220,903",
+        "views_int": 220903,
+        "video_likes": 0,
+        "comment_count": 281,
+        "total_likes": 394,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "KG0OS0yEC2g",
+        "video_url": "https://www.youtube.com/watch?v=KG0OS0yEC2g",
+        "caption": "Kasus Penyadapan Presiden Memanas, Irjen Slamet Uliandi Resmi Jadi Tersangka | NTV MORNING",
+        "video_title": "Kasus Penyadapan Presiden Memanas, Irjen Slamet Uliandi Resmi Jadi Tersangka | NTV MORNING",
+        "channel_name": "Nusantara TV",
+        "published_at": "2026-11-05",
+        "views": "38,600",
+        "views_int": 38600,
+        "video_likes": 0,
+        "comment_count": 14,
+        "total_likes": 1,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "rx4_i0jXto4",
+        "video_url": "https://www.youtube.com/watch?v=rx4_i0jXto4",
+        "caption": "Kapolri Tegaskan Penangkapan Perwira Tinggi Polri Terkait Penyadapan Presiden | Liputan6",
+        "video_title": "Kapolri Tegaskan Penangkapan Perwira Tinggi Polri Terkait Penyadapan Presiden | Liputan6",
+        "channel_name": "Liputan6",
+        "published_at": "2026-11-05",
+        "views": "22,696",
+        "views_int": 22696,
+        "video_likes": 0,
+        "comment_count": 38,
+        "total_likes": 43,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "61id8c4ahO4",
+        "video_url": "https://www.youtube.com/watch?v=61id8c4ahO4",
+        "caption": "LISTYO SIGIT APES❗ Jokowi Bereaksi Soal Kasus Penyadapan Presiden Prabowo",
+        "video_title": "LISTYO SIGIT APES❗ Jokowi Bereaksi Soal Kasus Penyadapan Presiden Prabowo",
+        "channel_name": "Tribun MedanTV",
+        "published_at": "2026-11-05",
+        "views": "435,231",
+        "views_int": 435231,
+        "video_likes": 0,
+        "comment_count": 749,
+        "total_likes": 939,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "jq1J0yvQvY0",
+        "video_url": "https://www.youtube.com/watch?v=jq1J0yvQvY0",
+        "caption": "Bahlil Lahadalia Murka Dituding Terlibat Penyadapan Presiden: Jangan Main-Main, Saya Somasi!",
+        "video_title": "Bahlil Lahadalia Murka Dituding Terlibat Penyadapan Presiden: Jangan Main-Main, Saya Somasi!",
+        "channel_name": "KOMPASTV JEMBER",
+        "published_at": "2026-11-06",
+        "views": "5,980",
+        "views_int": 5980,
+        "video_likes": 0,
+        "comment_count": 33,
+        "total_likes": 12,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "2ixiTPC0BLs",
+        "video_url": "https://www.youtube.com/watch?v=2ixiTPC0BLs",
+        "caption": "🔴Penyadapan Presiden Prabowo oleh Listyo Sigit: Yusril Singgung Makar dan Peluang Jokowi Diperiksa?",
+        "video_title": "🔴Penyadapan Presiden Prabowo oleh Listyo Sigit: Yusril Singgung Makar dan Peluang Jokowi Diperiksa?",
+        "channel_name": "Tribunnews",
+        "published_at": "2026-11-04",
+        "views": "29,683",
+        "views_int": 29683,
+        "video_likes": 0,
+        "comment_count": 5,
+        "total_likes": 0,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "Fx3axZN5-vs",
+        "video_url": "https://www.youtube.com/watch?v=Fx3axZN5-vs",
+        "caption": "DUGAAN KETERLIBATAN KETUM PARPOL DI PENYADAPAN PRESIDEN, INI KATA MENSESNEG #short",
+        "video_title": "DUGAAN KETERLIBATAN KETUM PARPOL DI PENYADAPAN PRESIDEN, INI KATA MENSESNEG #short",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-06",
+        "views": "68,632",
+        "views_int": 68632,
+        "video_likes": 0,
+        "comment_count": 17,
+        "total_likes": 18,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "WoytpSLFNcw",
+        "video_url": "https://www.youtube.com/watch?v=WoytpSLFNcw",
+        "caption": "🔴LIVE - Buntut Penyadapan Presiden Prabowo, Istana Tingkatkan Kewaspadaan | KOMPAS MALAM",
+        "video_title": "🔴LIVE - Buntut Penyadapan Presiden Prabowo, Istana Tingkatkan Kewaspadaan | KOMPAS MALAM",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-06",
+        "views": "43,984",
+        "views_int": 43984,
+        "video_likes": 0,
+        "comment_count": 5,
+        "total_likes": 0,
+        "dominant_sentiment": "Positif"
+      },
+      {
+        "video_id": "zfBDjqqWSgk",
+        "video_url": "https://www.youtube.com/watch?v=zfBDjqqWSgk",
+        "caption": "Pengkhianatan Terbesar? LSP Dicopot Usai Tersangka Penyadapan Presiden #KONTROVERSI",
+        "video_title": "Pengkhianatan Terbesar? LSP Dicopot Usai Tersangka Penyadapan Presiden #KONTROVERSI",
+        "channel_name": "METRO TV",
+        "published_at": "2026-11-05",
+        "views": "37,702",
+        "views_int": 37702,
+        "video_likes": 0,
+        "comment_count": 54,
+        "total_likes": 20,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "4Dg2AIVOamE",
+        "video_url": "https://www.youtube.com/watch?v=4Dg2AIVOamE",
+        "caption": "[FULL] Update! Menko Yusril soal Indikasi Makar dalam Kasus Penyadapan Presiden Prabowo",
+        "video_title": "[FULL] Update! Menko Yusril soal Indikasi Makar dalam Kasus Penyadapan Presiden Prabowo",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-03",
+        "views": "149,403",
+        "views_int": 149403,
+        "video_likes": 0,
+        "comment_count": 134,
+        "total_likes": 263,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "OrXvmwt13Hs",
+        "video_url": "https://www.youtube.com/watch?v=OrXvmwt13Hs",
+        "caption": "POLEMIK PENYADAPAN PRESIDEN, KETUM GERAKAN CINTA PRABOWO: YANG DISADAP LAWAN POLITIKNYA #short",
+        "video_title": "POLEMIK PENYADAPAN PRESIDEN, KETUM GERAKAN CINTA PRABOWO: YANG DISADAP LAWAN POLITIKNYA #short",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-07",
+        "views": "110,995",
+        "views_int": 110995,
+        "video_likes": 0,
+        "comment_count": 41,
+        "total_likes": 21,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "NjU2xpqhjdk",
+        "video_url": "https://www.youtube.com/watch?v=NjU2xpqhjdk",
+        "caption": "Terbongkarnya Penyadapan HP Presiden Prabowo oleh Jenderal Listyo Sigit: Pakai Sistem LIMS Polri",
+        "video_title": "Terbongkarnya Penyadapan HP Presiden Prabowo oleh Jenderal Listyo Sigit: Pakai Sistem LIMS Polri",
+        "channel_name": "Tribun Timur",
+        "published_at": "2026-11-04",
+        "views": "96,576",
+        "views_int": 96576,
+        "video_likes": 0,
+        "comment_count": 59,
+        "total_likes": 48,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "FIGKEo-CtrM",
+        "video_url": "https://www.youtube.com/watch?v=FIGKEo-CtrM",
+        "caption": "Tersangka Penyadapan Presiden Bertambah | Breaking News",
+        "video_title": "Tersangka Penyadapan Presiden Bertambah | Breaking News",
+        "channel_name": "tvOneNews",
+        "published_at": "2026-11-05",
+        "views": "593,141",
+        "views_int": 593141,
+        "video_likes": 0,
+        "comment_count": 962,
+        "total_likes": 2034,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "Py5WSiReap8",
+        "video_url": "https://www.youtube.com/watch?v=Py5WSiReap8",
+        "caption": "Siapa Aktor Utama di Balik Penyadapan Presiden Prabowo?",
+        "video_title": "Siapa Aktor Utama di Balik Penyadapan Presiden Prabowo?",
+        "channel_name": "KOMPASTV JAWA TENGAH",
+        "published_at": "2026-11-03",
+        "views": "19,111",
+        "views_int": 19111,
+        "video_likes": 0,
+        "comment_count": 36,
+        "total_likes": 7,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "bPKEm7CWqv4",
+        "video_url": "https://www.youtube.com/watch?v=bPKEm7CWqv4",
+        "caption": "Kepala BIN sebut Kasus Penyadapan Presiden Mengarah ke Makar",
+        "video_title": "Kepala BIN sebut Kasus Penyadapan Presiden Mengarah ke Makar",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-06",
+        "views": "92,708",
+        "views_int": 92708,
+        "video_likes": 0,
+        "comment_count": 54,
+        "total_likes": 55,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "ZRM2TBkiXBU",
+        "video_url": "https://www.youtube.com/watch?v=ZRM2TBkiXBU",
+        "caption": "Jokowi Tanggapi Penyadapan Presiden Prabowo",
+        "video_title": "Jokowi Tanggapi Penyadapan Presiden Prabowo",
+        "channel_name": "CNN Indonesia",
+        "published_at": "2026-11-05",
+        "views": "45,539",
+        "views_int": 45539,
+        "video_likes": 0,
+        "comment_count": 64,
+        "total_likes": 44,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "0WkadEDszgI",
+        "video_url": "https://www.youtube.com/watch?v=0WkadEDszgI",
+        "caption": "LIVE REPORT: Update Kasus Penyadapan Presiden Langsung dari Mabes Polri [Selamat Pagi Indonesia]",
+        "video_title": "LIVE REPORT: Update Kasus Penyadapan Presiden Langsung dari Mabes Polri [Selamat Pagi Indonesia]",
+        "channel_name": "METRO TV",
+        "published_at": "2026-11-03",
+        "views": "43,218",
+        "views_int": 43218,
+        "video_likes": 0,
+        "comment_count": 63,
+        "total_likes": 69,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "-oDtyGP9PZ0",
+        "video_url": "https://www.youtube.com/watch?v=-oDtyGP9PZ0",
+        "caption": "Eks Kapolri Tersangka Penyadapan Presiden, Susno Duadji: Ada Kepentingan Lain! | SAPA PAGI",
+        "video_title": "Eks Kapolri Tersangka Penyadapan Presiden, Susno Duadji: Ada Kepentingan Lain! | SAPA PAGI",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-03",
+        "views": "120,521",
+        "views_int": 120521,
+        "video_likes": 0,
+        "comment_count": 51,
+        "total_likes": 66,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "94oDCaveYPs",
+        "video_url": "https://www.youtube.com/watch?v=94oDCaveYPs",
+        "caption": "Dari Kasus Ijazah Gibran, Jokowi Sampai Penyadapan Presiden Yang Dilakukan Listyo Sigit",
+        "video_title": "Dari Kasus Ijazah Gibran, Jokowi Sampai Penyadapan Presiden Yang Dilakukan Listyo Sigit",
+        "channel_name": "Abraham Samad SPEAK UP",
+        "published_at": "2026-11-07",
+        "views": "251,981",
+        "views_int": 251981,
+        "video_likes": 0,
+        "comment_count": 613,
+        "total_likes": 1336,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "VL5Jcw1WHHQ",
+        "video_url": "https://www.youtube.com/watch?v=VL5Jcw1WHHQ",
+        "caption": "🔴BREAKING NEWS - Kapolri Suyudi: Kasus Penyadapan Presiden Murni Penegakan Hukum",
+        "video_title": "🔴BREAKING NEWS - Kapolri Suyudi: Kasus Penyadapan Presiden Murni Penegakan Hukum",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-05",
+        "views": "94,847",
+        "views_int": 94847,
+        "video_likes": 0,
+        "comment_count": 94,
+        "total_likes": 108,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "yvsk6F9SASM",
+        "video_url": "https://www.youtube.com/watch?v=yvsk6F9SASM",
+        "caption": "8 Fakta Penyadapan Telepon Presiden RI, Pakai LIMS Resmi Polri hingga Data Dihapus",
+        "video_title": "8 Fakta Penyadapan Telepon Presiden RI, Pakai LIMS Resmi Polri hingga Data Dihapus",
+        "channel_name": "Kompas.com",
+        "published_at": "2026-11-03",
+        "views": "33,994",
+        "views_int": 33994,
+        "video_likes": 0,
+        "comment_count": 56,
+        "total_likes": 46,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "QWh7KpHUUxs",
+        "video_url": "https://www.youtube.com/watch?v=QWh7KpHUUxs",
+        "caption": "3 JENDRAL POLISI DITAHAN! Ini 5 Fakta Kasus Penyadapan Ilegal Presiden Prabowo | CUMI TOP V",
+        "video_title": "3 JENDRAL POLISI DITAHAN! Ini 5 Fakta Kasus Penyadapan Ilegal Presiden Prabowo | CUMI TOP V",
+        "channel_name": "Cumicumi",
+        "published_at": "2026-11-04",
+        "views": "88,337",
+        "views_int": 88337,
+        "video_likes": 0,
+        "comment_count": 123,
+        "total_likes": 102,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "yUj6NMQmOZQ",
+        "video_url": "https://www.youtube.com/watch?v=yUj6NMQmOZQ",
+        "caption": "PDIP & Demokrat Soal Kasus Penyadapan Presiden Prabowo oleh 3 Jenderal Polisi",
+        "video_title": "PDIP & Demokrat Soal Kasus Penyadapan Presiden Prabowo oleh 3 Jenderal Polisi",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-03",
+        "views": "285,926",
+        "views_int": 285926,
+        "video_likes": 0,
+        "comment_count": 374,
+        "total_likes": 896,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "0v1ZercwJYQ",
+        "video_url": "https://www.youtube.com/watch?v=0v1ZercwJYQ",
+        "caption": "PRABOWO COPOT LISTYO SIGIT DARI KEPALA KSP! Buntut Jadi Tersangka Penyadapan Presiden | (4/11)",
+        "video_title": "PRABOWO COPOT LISTYO SIGIT DARI KEPALA KSP! Buntut Jadi Tersangka Penyadapan Presiden | (4/11)",
+        "channel_name": "Official iNews",
+        "published_at": "2026-11-04",
+        "views": "40,431",
+        "views_int": 40431,
+        "video_likes": 0,
+        "comment_count": 39,
+        "total_likes": 20,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "4_EKMC3DqBs",
+        "video_url": "https://www.youtube.com/watch?v=4_EKMC3DqBs",
+        "caption": "Menko Yusril Bicara Terungkapnya 3 Jenderal Polisi Tersangka Penyadapan Presiden Prabowo",
+        "video_title": "Menko Yusril Bicara Terungkapnya 3 Jenderal Polisi Tersangka Penyadapan Presiden Prabowo",
+        "channel_name": "KOMPASTV MANADO",
+        "published_at": "2026-11-03",
+        "views": "160,533",
+        "views_int": 160533,
+        "video_likes": 0,
+        "comment_count": 484,
+        "total_likes": 357,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "5A7ZQ0KaBcA",
+        "video_url": "https://www.youtube.com/watch?v=5A7ZQ0KaBcA",
+        "caption": "Media Asing Soroti Skandal Penyadapan Prabowo oleh Eks Kapolri Jenderal Listyo Sigit",
+        "video_title": "Media Asing Soroti Skandal Penyadapan Prabowo oleh Eks Kapolri Jenderal Listyo Sigit",
+        "channel_name": "Kompas.com",
+        "published_at": "2026-11-03",
+        "views": "14,865",
+        "views_int": 14865,
+        "video_likes": 0,
+        "comment_count": 14,
+        "total_likes": 27,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "qGE0qdsrM-g",
+        "video_url": "https://www.youtube.com/watch?v=qGE0qdsrM-g",
+        "caption": "Mahfud MD: Penyadapan Presiden Kejahatan yang Biadab | iNews Pagi 4/11",
+        "video_title": "Mahfud MD: Penyadapan Presiden Kejahatan yang Biadab | iNews Pagi 4/11",
+        "channel_name": "Official iNews",
+        "published_at": "2026-11-03",
+        "views": "85,209",
+        "views_int": 85209,
+        "video_likes": 0,
+        "comment_count": 139,
+        "total_likes": 167,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "_qJ_Uk7fgCQ",
+        "video_url": "https://www.youtube.com/watch?v=_qJ_Uk7fgCQ",
+        "caption": "Analisis David Pajung Soal Penyadapan Presiden Prabowo oleh Listyo Sigit",
+        "video_title": "Analisis David Pajung Soal Penyadapan Presiden Prabowo oleh Listyo Sigit",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-06",
+        "views": "215,182",
+        "views_int": 215182,
+        "video_likes": 0,
+        "comment_count": 123,
+        "total_likes": 177,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "q1xL59V7fdE",
+        "video_url": "https://www.youtube.com/watch?v=q1xL59V7fdE",
+        "caption": "Kasus Penyadapan Presiden, Alat Ditemukan di Rumah Irjen Pol Ahrie Sonta | Sindo Prime | 04/11",
+        "video_title": "Kasus Penyadapan Presiden, Alat Ditemukan di Rumah Irjen Pol Ahrie Sonta | Sindo Prime | 04/11",
+        "channel_name": "SINDOnews",
+        "published_at": "2026-11-04",
+        "views": "83,125",
+        "views_int": 83125,
+        "video_likes": 0,
+        "comment_count": 142,
+        "total_likes": 141,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "eOUCVEYjtW4",
+        "video_url": "https://www.youtube.com/watch?v=eOUCVEYjtW4",
+        "caption": "🔴BREAKING NEWS - Eks Kapolri Listyo Sigit Tersangka Penyadapan Presiden",
+        "video_title": "🔴BREAKING NEWS - Eks Kapolri Listyo Sigit Tersangka Penyadapan Presiden",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-03",
+        "views": "102,369",
+        "views_int": 102369,
+        "video_likes": 0,
+        "comment_count": 32,
+        "total_likes": 45,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "72oa-TUD6co",
+        "video_url": "https://www.youtube.com/watch?v=72oa-TUD6co",
+        "caption": "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+        "video_title": "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-03",
+        "views": "896,257",
+        "views_int": 896257,
+        "video_likes": 0,
+        "comment_count": 2438,
+        "total_likes": 8020,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "YT_INcUYSxQ",
+        "video_url": "https://www.youtube.com/watch?v=YT_INcUYSxQ",
+        "caption": "Terungkap! Ternyata Kapolri Suyudi yang Melaporkan Kasus Penyadapan Presiden kepada Prabowo",
+        "video_title": "Terungkap! Ternyata Kapolri Suyudi yang Melaporkan Kasus Penyadapan Presiden kepada Prabowo",
+        "channel_name": "Harian Surya",
+        "published_at": "2026-11-03",
+        "views": "47,610",
+        "views_int": 47610,
+        "video_likes": 0,
+        "comment_count": 74,
+        "total_likes": 120,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "8OO4OrG8K6Q",
+        "video_url": "https://www.youtube.com/watch?v=8OO4OrG8K6Q",
+        "caption": "Siapa Dalang Dan Motif Penyadapan Presiden?",
+        "video_title": "Siapa Dalang Dan Motif Penyadapan Presiden?",
+        "channel_name": "CNN Indonesia",
+        "published_at": "2026-11-04",
+        "views": "40,047",
+        "views_int": 40047,
+        "video_likes": 0,
+        "comment_count": 68,
+        "total_likes": 31,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "UlLa3AsE5t0",
+        "video_url": "https://www.youtube.com/watch?v=UlLa3AsE5t0",
+        "caption": "Penyadapan Presiden Terbongkar, Istana Tingkatkan Kewaspadaan & Bersih-bersih di Lingkaran Prabowo",
+        "video_title": "Penyadapan Presiden Terbongkar, Istana Tingkatkan Kewaspadaan & Bersih-bersih di Lingkaran Prabowo",
+        "channel_name": "Tribunnews",
+        "published_at": "2026-11-06",
+        "views": "8,181",
+        "views_int": 8181,
+        "video_likes": 0,
+        "comment_count": 15,
+        "total_likes": 13,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "iUTB6WtSpM0",
+        "video_url": "https://www.youtube.com/watch?v=iUTB6WtSpM0",
+        "caption": "Bagaimana Awal Mula Presiden Tahu Dirinya Jadi Target Penyadapan oleh Listyo Sigit Dkk?",
+        "video_title": "Bagaimana Awal Mula Presiden Tahu Dirinya Jadi Target Penyadapan oleh Listyo Sigit Dkk?",
+        "channel_name": "Tribunnews",
+        "published_at": "2026-11-04",
+        "views": "40,135",
+        "views_int": 40135,
+        "video_likes": 0,
+        "comment_count": 57,
+        "total_likes": 58,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "FqKOs-Sijew",
+        "video_url": "https://www.youtube.com/watch?v=FqKOs-Sijew",
+        "caption": "Listyo Sigit Jadi Tersangka Penyadapan Presiden, ini Respon Usman Hamid & Islah Bahrawi",
+        "video_title": "Listyo Sigit Jadi Tersangka Penyadapan Presiden, ini Respon Usman Hamid & Islah Bahrawi",
+        "channel_name": "Kompas TV Medan",
+        "published_at": "2026-11-04",
+        "views": "56,539",
+        "views_int": 56539,
+        "video_likes": 0,
+        "comment_count": 125,
+        "total_likes": 94,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "PUGyaB_DVFU",
+        "video_url": "https://www.youtube.com/watch?v=PUGyaB_DVFU",
+        "caption": "Julius Ibrani Bicara Soal Penegakan Hukum Penanganan Kasus Penyadapan Presiden Prabowo",
+        "video_title": "Julius Ibrani Bicara Soal Penegakan Hukum Penanganan Kasus Penyadapan Presiden Prabowo",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-06",
+        "views": "93,925",
+        "views_int": 93925,
+        "video_likes": 0,
+        "comment_count": 17,
+        "total_likes": 20,
+        "dominant_sentiment": "Negatif"
+      }
+    ],
+    "top_videos": [
+      {
+        "video_id": "mANMtfCn0OE",
+        "video_url": "https://www.youtube.com/watch?v=mANMtfCn0OE",
+        "caption": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN",
+        "channel_name": "Astronacci",
+        "published_at": "2026-11-06",
+        "views": "2,044,411",
+        "views_int": 2044411,
+        "video_likes": 0,
+        "comment_count": 16052,
+        "total_likes": 25811,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "8UYkaLY495c",
+        "video_url": "https://www.youtube.com/watch?v=8UYkaLY495c",
+        "caption": "Kapten Jack Resmi Jadi Tersangka Baru Penyadapan Presiden! | Sindo Prime | 07/11",
+        "video_title": "Kapten Jack Resmi Jadi Tersangka Baru Penyadapan Presiden! | Sindo Prime | 07/11",
+        "channel_name": "SINDOnews",
+        "published_at": "2026-11-07",
+        "views": "1,596,035",
+        "views_int": 1596035,
+        "video_likes": 0,
+        "comment_count": 2133,
+        "total_likes": 2605,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "zjFyzqxZiVI",
+        "video_url": "https://www.youtube.com/watch?v=zjFyzqxZiVI",
+        "caption": "TERBONGKAR DALANG PENYADAPAN PRESIDEN PRABOWO OLEH MANTAN KAPOLRI LISTYO SIGIT BUKAN JOKOWI GIBRAM 2",
+        "video_title": "TERBONGKAR DALANG PENYADAPAN PRESIDEN PRABOWO OLEH MANTAN KAPOLRI LISTYO SIGIT BUKAN JOKOWI GIBRAM 2",
+        "channel_name": "News Klenc Official",
+        "published_at": "2026-11-07",
+        "views": "1,483,203",
+        "views_int": 1483203,
+        "video_likes": 0,
+        "comment_count": 2497,
+        "total_likes": 2674,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "ToFtmFOuARw",
+        "video_url": "https://www.youtube.com/watch?v=ToFtmFOuARw",
+        "caption": "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP",
+        "video_title": "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP",
+        "channel_name": "Abraham Samad SPEAK UP",
+        "published_at": "2026-11-04",
+        "views": "1,256,988",
+        "views_int": 1256988,
+        "video_likes": 0,
+        "comment_count": 4251,
+        "total_likes": 9445,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "i03nc2uxjbM",
+        "video_url": "https://www.youtube.com/watch?v=i03nc2uxjbM",
+        "caption": "🔴BREAKING NEWS - Polri Tetapkan Tersangka Baru Kasus Penyadapan Presiden Prabowo",
+        "video_title": "🔴BREAKING NEWS - Polri Tetapkan Tersangka Baru Kasus Penyadapan Presiden Prabowo",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-05",
+        "views": "910,530",
+        "views_int": 910530,
+        "video_likes": 0,
+        "comment_count": 1071,
+        "total_likes": 2949,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "72oa-TUD6co",
+        "video_url": "https://www.youtube.com/watch?v=72oa-TUD6co",
+        "caption": "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+        "video_title": "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan",
+        "channel_name": "KOMPASTV",
+        "published_at": "2026-11-03",
+        "views": "896,257",
+        "views_int": 896257,
+        "video_likes": 0,
+        "comment_count": 2438,
+        "total_likes": 8020,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "FIGKEo-CtrM",
+        "video_url": "https://www.youtube.com/watch?v=FIGKEo-CtrM",
+        "caption": "Tersangka Penyadapan Presiden Bertambah | Breaking News",
+        "video_title": "Tersangka Penyadapan Presiden Bertambah | Breaking News",
+        "channel_name": "tvOneNews",
+        "published_at": "2026-11-05",
+        "views": "593,141",
+        "views_int": 593141,
+        "video_likes": 0,
+        "comment_count": 962,
+        "total_likes": 2034,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "D6t03bLw5I4",
+        "video_url": "https://www.youtube.com/watch?v=D6t03bLw5I4",
+        "caption": "Muncul Sosok Ketum Parpol di Balik Skandal Penyadapan Presiden Prabowo! | Sindo Prime | 06/11",
+        "video_title": "Muncul Sosok Ketum Parpol di Balik Skandal Penyadapan Presiden Prabowo! | Sindo Prime | 06/11",
+        "channel_name": "SINDOnews",
+        "published_at": "2026-11-06",
+        "views": "520,985",
+        "views_int": 520985,
+        "video_likes": 0,
+        "comment_count": 970,
+        "total_likes": 903,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "61id8c4ahO4",
+        "video_url": "https://www.youtube.com/watch?v=61id8c4ahO4",
+        "caption": "LISTYO SIGIT APES❗ Jokowi Bereaksi Soal Kasus Penyadapan Presiden Prabowo",
+        "video_title": "LISTYO SIGIT APES❗ Jokowi Bereaksi Soal Kasus Penyadapan Presiden Prabowo",
+        "channel_name": "Tribun MedanTV",
+        "published_at": "2026-11-05",
+        "views": "435,231",
+        "views_int": 435231,
+        "video_likes": 0,
+        "comment_count": 749,
+        "total_likes": 939,
+        "dominant_sentiment": "Negatif"
+      },
+      {
+        "video_id": "Sl_XoPmH4Gk",
+        "video_url": "https://www.youtube.com/watch?v=Sl_XoPmH4Gk",
+        "caption": "Tersangka Baru Penyadapan Presiden Prabowo | AKIM tvOne",
+        "video_title": "Tersangka Baru Penyadapan Presiden Prabowo | AKIM tvOne",
+        "channel_name": "tvOneNews",
+        "published_at": "2026-11-06",
+        "views": "396,113",
+        "views_int": 396113,
+        "video_likes": 0,
+        "comment_count": 488,
+        "total_likes": 766,
+        "dominant_sentiment": "Negatif"
+      }
+    ],
+    "top_comments": [
+      {
+        "comment_id": "UgxtIUaAPvt2RRwidvx4AaABAg",
+        "username": "@widaryantopresent",
+        "comment_text": "Mulai detik ini.. Saya rakyat jelata.. Dukung penuh prabowo.dari lubuk hati nasionalisme bukan bayaran",
+        "like_count": 3300,
+        "reply_count": 275,
+        "ai_sentiment": "Negatif",
+        "threat_domain": "Provokasi SARA & Separatisme",
+        "business_category": "Provokasi SARA & Separatisme",
+        "is_hearted": false,
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN"
+      },
+      {
+        "comment_id": "UgwwvgFVPXTPVHkZB_54AaABAg",
+        "username": "@achesliembankkir1723",
+        "comment_text": "Pak bennix \nProf gema G\nAnda semua adalah pahlawan ekonomi\nDalam melawan A3 antek-antek asing .",
+        "like_count": 1700,
+        "reply_count": 163,
+        "ai_sentiment": "Negatif",
+        "threat_domain": "Provokasi SARA & Separatisme",
+        "business_category": "Provokasi SARA & Separatisme",
+        "is_hearted": false,
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN"
+      },
+      {
+        "comment_id": "Ugws6eeFCO197CF-HEl4AaABAg",
+        "username": "@charllygerard5005",
+        "comment_text": "Doa dan dukungan setinggi langit untuk presiden kita!!",
+        "like_count": 1100,
+        "reply_count": 26,
+        "ai_sentiment": "Negatif",
+        "threat_domain": "Provokasi SARA & Separatisme",
+        "business_category": "Provokasi SARA & Separatisme",
+        "is_hearted": false,
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN"
+      },
+      {
+        "comment_id": "UgwV86U8sk9vwx30gJ94AaABAg",
+        "username": "@lilyliawati3862",
+        "comment_text": "Ini jadi bukti Tuhan masih menjaga bangsa kita🙏🏻🙏🏻",
+        "like_count": 840,
+        "reply_count": 24,
+        "ai_sentiment": "Positif",
+        "threat_domain": "Apresiasi & Dukungan Publik",
+        "business_category": "Apresiasi & Dukungan Publik",
+        "is_hearted": false,
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN"
+      },
+      {
+        "comment_id": "UgyA4i5jeoQxIXUeN2Z4AaABAg",
+        "username": "@mumet17",
+        "comment_text": "Rakyat akan bahagia kalau smua yg terlibat sampai BOS besarnya bisa diringkus dan hukum mati smua.wah.bahagianya",
+        "like_count": 773,
+        "reply_count": 76,
+        "ai_sentiment": "Negatif",
+        "threat_domain": "Provokasi SARA & Separatisme",
+        "business_category": "Provokasi SARA & Separatisme",
+        "is_hearted": false,
+        "video_title": "Sri Radjasa: Ada Keterlibatan Jokowi? di Balik Penyadapan Presiden oleh Eks Kapolri Cs | #SPEAKUP"
+      },
+      {
+        "comment_id": "UgxW5MYJSXvoHrI6LqV4AaABAg",
+        "username": "@fahriaditya-speed",
+        "comment_text": "dukung kapolri suyudi beserta jajaran🎉",
+        "like_count": 739,
+        "reply_count": 40,
+        "ai_sentiment": "Negatif",
+        "threat_domain": "Provokasi SARA & Separatisme",
+        "business_category": "Provokasi SARA & Separatisme",
+        "is_hearted": false,
+        "video_title": "Kasus Penyadapan Presiden Prabowo, Jenderal Listyo Sigit dan 2 Tersangka Lain Ditahan"
+      },
+      {
+        "comment_id": "Ugy19_qp3A9Gv4d399J4AaABAg",
+        "username": "@Andri-um2pz",
+        "comment_text": "Rakyat bersama pak presiden Prabowo Subianto NKRI harga mati",
+        "like_count": 718,
+        "reply_count": 36,
+        "ai_sentiment": "Negatif",
+        "threat_domain": "Provokasi SARA & Separatisme",
+        "business_category": "Provokasi SARA & Separatisme",
+        "is_hearted": false,
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN"
+      },
+      {
+        "comment_id": "UgzASRHxEG58m6fbW4Z4AaABAg",
+        "username": "@ywijaya77",
+        "comment_text": "Rapatkan barisan temen2 🇮🇩 indonesia, jangan sampai di adu domba.",
+        "like_count": 588,
+        "reply_count": 20,
+        "ai_sentiment": "Positif",
+        "threat_domain": "Apresiasi & Dukungan Publik",
+        "business_category": "Apresiasi & Dukungan Publik",
+        "is_hearted": false,
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN"
+      },
+      {
+        "comment_id": "UgxQj0D5itEaZiEezpt4AaABAg",
+        "username": "@astronacciinternational",
+        "comment_text": "Selamat Menonton!\r\n\r\nDapatkan rekomendasi trading dari Master Gema di sini: https://astronacci.org/perangcognitive\r\n\r\nPEMBAHASAN VIDEO:\r\n00:00 SIAPA YANG SURUH SADAP PRESIDEN??\r\n01:07 UANG MUKA 25 TRILIUN BUAT SADAP PRES",
+        "like_count": 587,
+        "reply_count": 489,
+        "ai_sentiment": "Negatif",
+        "threat_domain": "Disinformasi Pertahanan",
+        "business_category": "Disinformasi Pertahanan",
+        "is_hearted": false,
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN"
+      },
+      {
+        "comment_id": "UgxQj0D5itEaZiEezpt4AaABAg",
+        "username": "@astronacciinternational",
+        "comment_text": "Selamat Menonton!\r\n\r\nDapatkan rekomendasi trading dari Master Gema di sini: https://astronacci.org/perangcognitive\r\n\r\nPEMBAHASAN VIDEO:\r\n00:00 SIAPA YANG SURUH SADAP PRESIDEN??\r\n01:07 UANG MUKA 25 TRILIUN BUAT SADAP PRES",
+        "like_count": 586,
+        "reply_count": 489,
+        "ai_sentiment": "Negatif",
+        "threat_domain": "Disinformasi Pertahanan",
+        "business_category": "Disinformasi Pertahanan",
+        "is_hearted": false,
+        "video_title": "SIAPA YANG NYURUH SADAP PRESIDEN??! INI SKANDAL Rp50 TRILIUN"
+      }
+    ]
+  },
+  "meta": {
+    "app_name": "Kata Kunci Pencarian: \"Penyadapan Presiden\" (98 Video)",
+    "video_id": "1PAinblAcjg",
+    "video_url": "https://www.youtube.com/watch?v=1PAinblAcjg",
+    "video_title": "Kata Kunci Pencarian: \"Penyadapan Presiden\" (98 Video)",
+    "channel_name": "98 Video Lintas 35 Kanal (KOMPASTV, SINDOnews, METRO TV, +32 kanal lainnya)",
+    "search_keyword": "Penyadapan Presiden",
+    "total_videos": 98,
+    "unique_channels_count": 35,
+    "date_range": {
+      "start": "2026-10-25",
+      "end": "2026-11-08"
+    }
+  }
+}

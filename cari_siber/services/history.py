@@ -110,6 +110,122 @@ class HistoryService:
             """)
             conn.commit()
 
+            # Daftarkan run prebuilt bawaan sebagai contoh siap pakai
+            HistoryService.seed_prebuilt_runs(conn)
+
+    @staticmethod
+    def seed_prebuilt_runs(conn=None):
+        """
+        Otomatis mendaftarkan korpus/analisis prebuilt bawaan (contoh multi-video yang sudah siap)
+        ke dalam basis data riwayat operasi (history.db) sehingga pengguna dapat langsung melihat
+        contoh hasil SITREP tanpa perlu melakukan scraping terlebih dahulu.
+        """
+        from cari_siber.paths import get_prebuilt_runs_dir, get_runs_dir
+
+        prebuilt_dir = get_prebuilt_runs_dir()
+        if not os.path.exists(prebuilt_dir):
+            return
+
+        KNOWN_PREBUILTS = {
+            "20261108_232226_5bbf0f": {
+                "target_url": 'Kata Kunci: "Penyadapan Presiden" (98 Video)',
+                "video_title": 'Kata Kunci Pencarian: "Penyadapan Presiden" (98 Video)',
+                "channel_name": "98 Video Lintas 35 Kanal (KOMPASTV, SINDOnews, METRO TV, +32 kanal lainnya)",
+                "total_comments": 46183,
+                "cib_score": 0.08,
+                "cib_level": "LOW",
+                "polarization_index": 0.72,
+                "created_at": "2026-11-08 23:22:26",
+                "completed_at": "2026-11-09 00:31:20",
+                "sha256_hash": "429f3cd79c07262dda720053a76624638feae363834fe16e7ecd5423635de98d",
+            },
+            "20261108_013609_1a64cc": {
+                "target_url": 'Kata Kunci: "PAPUA Propaganda Separatis Separatisme KKB" (34 Video)',
+                "video_title": 'Kata Kunci Pencarian: "PAPUA Propaganda Separatis Separatisme KKB" (34 Video)',
+                "channel_name": "34 Video Lintas 26 Kanal (CNN Indonesia, The Papua Darkside, BBC News Indonesia, +23 kanal lainnya)",
+                "total_comments": 5729,
+                "cib_score": 0.14,
+                "cib_level": "LOW",
+                "polarization_index": 0.26,
+                "created_at": "2026-11-08 01:36:09",
+                "completed_at": "2026-11-08 01:49:44",
+                "sha256_hash": "6aae164d1a63e300b2253f99bd32a8b94d8f0a91f46667b1ff30612583e25a38",
+            },
+        }
+
+        should_close = False
+        if conn is None:
+            conn = HistoryService._get_connection()
+            should_close = True
+
+        try:
+            for rid in os.listdir(prebuilt_dir):
+                pb_path = os.path.join(prebuilt_dir, rid)
+                if not os.path.isdir(pb_path):
+                    continue
+
+                user_run_dir = os.path.join(get_runs_dir(), rid)
+                if not os.path.exists(user_run_dir):
+                    try:
+                        shutil.copytree(pb_path, user_run_dir, dirs_exist_ok=True)
+                    except Exception:
+                        user_run_dir = pb_path
+
+                meta = KNOWN_PREBUILTS.get(rid, {})
+                v_title = meta.get("video_title")
+                c_name = meta.get("channel_name")
+                tot_c = meta.get("total_comments")
+                cib_s = meta.get("cib_score", 0.0)
+                cib_l = meta.get("cib_level", "LOW")
+                pol_i = meta.get("polarization_index", 0.0)
+                c_at = meta.get("created_at", "2026-11-08 00:00:00")
+                done_at = meta.get("completed_at", "2026-11-08 01:00:00")
+                sha_hash = meta.get("sha256_hash", "")
+                t_url = meta.get("target_url", v_title)
+
+                if not v_title:
+                    eda_f = os.path.join(pb_path, "json", "youtube_eda_summary.json")
+                    if os.path.exists(eda_f):
+                        try:
+                            with open(eda_f, "r", encoding="utf-8") as ef:
+                                eda_d = json.load(ef)
+                                m = eda_d.get("meta", {})
+                                v_title = m.get("video_title", "Prebuilt Corpus")
+                                c_name = m.get("channel_name", "")
+                                tot_c = int(m.get("total_comments", 0))
+                        except Exception:
+                            pass
+                    manifest_f = os.path.join(pb_path, "json", "forensic_manifest.json")
+                    if os.path.exists(manifest_f):
+                        try:
+                            with open(manifest_f, "r", encoding="utf-8") as mf:
+                                sha_hash = json.load(mf).get("primary_sha256", "")
+                        except Exception:
+                            pass
+
+                cur = conn.execute("SELECT id FROM runs WHERE id = ?", (rid,))
+                existing = cur.fetchone()
+                if not existing:
+                    conn.execute("""
+                        INSERT INTO runs (
+                            id, target_url, video_title, channel_name, total_comments,
+                            cib_score, cib_level, polarization_index, status,
+                            created_at, completed_at, run_dir, sha256_hash
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'COMPLETED', ?, ?, ?, ?)
+                    """, (rid, t_url, v_title, c_name, tot_c, cib_s, cib_l, pol_i, c_at, done_at, user_run_dir, sha_hash))
+                else:
+                    conn.execute("""
+                        UPDATE runs
+                        SET video_title = ?, channel_name = ?, sha256_hash = ?, status = 'COMPLETED', run_dir = ?
+                        WHERE id = ?
+                    """, (v_title, c_name, sha_hash, user_run_dir, rid))
+            conn.commit()
+        except Exception as e:
+            print(f"[HISTORY WARNING] Gagal seeding prebuilt runs: {e}")
+        finally:
+            if should_close:
+                conn.close()
+
     @staticmethod
     def create_run(run_id: str, target_url: str, run_dir: str) -> Dict[str, Any]:
         now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
