@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Monitor } from 'lucide-react';
 import { Sidebar } from './components/Sidebar';
+import { AboutModal } from './components/AboutModal';
 import { NewAnalysisPage } from './pages/NewAnalysisPage';
 import { ProgressPage } from './pages/ProgressPage';
 import { ResultPage } from './pages/ResultPage';
@@ -16,6 +17,7 @@ export const App: React.FC = () => {
   const [reuseRunId, setReuseRunId] = useState<string | undefined>(undefined);
   const [isBusy, setIsBusy] = useState(false);
   const [isBriefingMode, setIsBriefingMode] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
 
   const [progress, setProgress] = useState({
     status: 'IDLE',
@@ -123,6 +125,7 @@ export const App: React.FC = () => {
             currentTab={currentTab}
             onSelectTab={(tab) => setCurrentTab(tab as any)}
             isBusy={isBusy}
+            onOpenAbout={() => setIsAboutOpen(true)}
           />
         )}
 
@@ -166,6 +169,7 @@ export const App: React.FC = () => {
                 isBusy={isBusy}
                 initialReuseRunId={reuseRunId}
                 onClearReuseRunId={() => setReuseRunId(undefined)}
+                onOpenAbout={() => setIsAboutOpen(true)}
               />
             )}
 
@@ -201,6 +205,7 @@ export const App: React.FC = () => {
           </ErrorBoundary>
         </main>
       </div>
+      <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
     </ErrorBoundary>
   );
 };

@@ -27,6 +27,7 @@ interface NewAnalysisPageProps {
   isBusy: boolean;
   initialReuseRunId?: string;
   onClearReuseRunId?: () => void;
+  onOpenAbout?: () => void;
 }
 
 type MissionProfileId = 'tactical' | 'operational' | 'strategic';
@@ -36,6 +37,7 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
   isBusy,
   initialReuseRunId,
   onClearReuseRunId,
+  onOpenAbout,
 }) => {
   // Mode sumber target: 'unified' (Omnibox Keyword/URL) vs 'offline' (Korpus Lokal / Simulasi Militer)
   const [sourceMode, setSourceMode] = useState<'unified' | 'offline'>(
@@ -370,6 +372,62 @@ export const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({
           <span>{error}</span>
         </div>
       )}
+
+      {/* Banner Edukatif & Penjelasan Prototipe untuk Pengguna Awam */}
+      <div style={{
+        background: 'linear-gradient(90deg, rgba(14, 23, 42, 0.9) 0%, rgba(15, 30, 55, 0.85) 100%)',
+        border: '1px solid rgba(56, 189, 248, 0.25)',
+        borderRadius: '10px',
+        padding: '12px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '12px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: '280px' }}>
+          <div style={{
+            background: 'rgba(56, 189, 248, 0.15)',
+            borderRadius: '8px',
+            padding: '6px',
+            color: '#38bdf8',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}>
+            <Sparkles size={18} />
+          </div>
+          <div style={{ fontSize: '0.82rem', color: '#cbd5e1', lineHeight: 1.45 }}>
+            <span style={{ fontWeight: 700, color: '#f8fafc' }}>Maksud & Tujuan Aplikasi: </span>
+            Menganalisis percakapan publik untuk memisahkan aspirasi warga asli dari manipulasi pasukan bot/buzzer (*CIB*). 
+            <span style={{ color: '#facc15', fontWeight: 600 }}> [Prototipe / PoC]:</span> Saat ini menganalisis per isu/video untuk mengejar deadline singkat, siap diintegrasikan menjadi sistem monitoring 24/7 non-stop.
+          </div>
+        </div>
+        {onOpenAbout && (
+          <button
+            type="button"
+            onClick={onOpenAbout}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '6px',
+              border: '1px solid rgba(56, 189, 248, 0.4)',
+              background: 'rgba(2, 132, 199, 0.15)',
+              color: '#38bdf8',
+              fontSize: '0.78rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <Info size={14} />
+            <span>Pelajari Alur Sistem</span>
+          </button>
+        )}
+      </div>
 
       {/* ===================================================================== */}
       {/* LANGKAH 1: PILIH SUMBER TARGET (OMNIBOX ONLINE VS KORPUS OFFLINE)     */}

@@ -1,13 +1,14 @@
 import React from 'react';
-import { Shield, PlusCircle, Activity, BarChart3, History, Settings } from 'lucide-react';
+import { Shield, PlusCircle, Activity, BarChart3, History, Settings, HelpCircle, AlertTriangle } from 'lucide-react';
 
 interface SidebarProps {
   currentTab: string;
   onSelectTab: (tab: string) => void;
   isBusy: boolean;
+  onOpenAbout?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, isBusy }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, isBusy, onOpenAbout }) => {
   const menuItems = [
     { id: 'new', label: '1. Operasi Baru', icon: PlusCircle },
     { id: 'progress', label: '2. Monitor Pipeline', icon: Activity, badge: isBusy ? 'Running' : null },
@@ -40,11 +41,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, isBus
             <Shield size={20} color="#ffffff" />
           </div>
           <div>
-            <div style={{ fontSize: '1rem', fontWeight: '700', letterSpacing: '0.04em', color: '#f8fafc' }}>
-              CaRI-Siber ID
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '1rem', fontWeight: '700', letterSpacing: '0.04em', color: '#f8fafc' }}>
+                CaRI-Siber ID
+              </span>
+              <span style={{
+                fontSize: '0.6rem',
+                fontWeight: 700,
+                color: '#facc15',
+                backgroundColor: 'rgba(234, 179, 8, 0.15)',
+                border: '1px solid rgba(234, 179, 8, 0.35)',
+                padding: '1px 5px',
+                borderRadius: '4px',
+              }}>
+                PROTOTYPE
+              </span>
             </div>
-            <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '600', letterSpacing: '0.02em' }}>
-              COGNITIVE DOMAIN INTELLIGENCE
+            <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: '600', letterSpacing: '0.02em', marginTop: '1px' }}>
+              COGNITIVE DOMAIN INTEL
             </div>
           </div>
         </div>
@@ -95,12 +109,46 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, isBus
             </button>
           );
         })}
+
+        {/* Tombol Bantuan / Panduan Awam */}
+        {onOpenAbout && (
+          <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
+            <button
+              onClick={onOpenAbout}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '9px 12px',
+                borderRadius: '8px',
+                border: '1px solid rgba(56, 189, 248, 0.25)',
+                background: 'rgba(2, 132, 199, 0.08)',
+                color: '#38bdf8',
+                cursor: 'pointer',
+                textAlign: 'left',
+                fontWeight: '600',
+                fontSize: '0.8rem',
+                transition: 'all 0.15s ease',
+              }}
+              title="Pelajari maksud, fungsi untuk orang awam, dan status prototipe sistem ini"
+            >
+              <HelpCircle size={16} />
+              <span>Panduan & Info PoC</span>
+            </button>
+          </div>
+        )}
       </nav>
 
       {/* Footer Info */}
-      <div style={{ padding: '14px 16px', borderTop: '1px solid rgba(51, 65, 85, 0.4)', fontSize: '0.75rem', color: '#475569' }}>
-        <div>Prototipe Analisis Intelijen Siber</div>
-        <div style={{ marginTop: '2px', color: '#334155' }}>IndoBERT + 4 Hardened Gates + SHA256</div>
+      <div style={{ padding: '14px 16px', borderTop: '1px solid rgba(51, 65, 85, 0.4)', fontSize: '0.73rem', color: '#64748b' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#facc15', fontWeight: 600 }}>
+          <AlertTriangle size={12} />
+          <span>Proof-of-Concept (PoC)</span>
+        </div>
+        <div style={{ marginTop: '3px', color: '#475569', fontSize: '0.7rem' }}>
+          Batch Snapshot • Target 24/7 Engine
+        </div>
       </div>
     </aside>
   );
