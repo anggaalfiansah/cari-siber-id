@@ -207,7 +207,7 @@ cari-siber-id/
 │   ├── paths.py                    # Resolusi path lintas platform (Appdata/Local)
 │   ├── settings.py                 # Keyring terenkripsi OS & manajemen konfigurasi
 │   └── ui_dist/                    # Bundle hasil kompilasi frontend produksi
-├── frontend/                       # Source Code Antarmuka Desktop (React 18 + TS + Vite)
+├── frontend/                       # Source Code Antarmuka Desktop (React 19 + TypeScript + Vite 8)
 │   ├── src/
 │   │   ├── components/             # AboutModal (Info PoC), Sidebar, KpiCard, TopicTable
 │   │   ├── pages/                  # NewAnalysis, Progress, Result (SITREP), History, Settings
