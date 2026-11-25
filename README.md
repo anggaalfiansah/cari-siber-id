@@ -10,17 +10,15 @@
 
 ---
 
-> ### ⚠️ PEMBERITAHUAN PENTING: STATUS PROTOTIPE CEPAT (PROOF-OF-CONCEPT)
+> ### ⚠️ STATUS PROYEK: PROTOTIPE (PROOF-OF-CONCEPT)
 > 
-> **Aplikasi CaRI-Siber ID saat ini merupakan PROTOTIPE FUNGSIONAL (Proof-of-Concept / PoC)** yang dikembangkan dalam kurun waktu singkat untuk mengejar tenggat waktu (*deadline*).
+> **CaRI-Siber ID adalah aplikasi prototipe (Proof-of-Concept / PoC)** yang dikembangkan dalam waktu sekitar satu minggu untuk mengikuti sebuah hackathon.
 > 
-> **Fokus Saat Ini:**  
-> Versi desktop mandiri (*standalone desktop app*) ini menyajikan contoh simpel dan teruji untuk membuktikan keandalan algoritma:
-> 1. Mengambil cuplikan percakapan berbasis insiden/isu pada **YouTube** (atau impor berkas log **X, TikTok, Instagram, Telegram** secara *offline*).
-> 2. Menjalankan ekstraksi semantik **IndoBERT**, klastering **BERTopic**, deteksi pola buzzer (**CIB Dual-Track**), penyegelan bukti **SHA-256**, dan laporan eksekutif **KIRKA Excel**.
+> **Latar Belakang & Fokus Saat Ini:**  
+> Kombinasi **IndoBERT, BERTopic, dan LLM** yang menjadi *core engine* proyek ini merupakan adaptasi dari pendekatan yang sebelumnya telah dikembangkan untuk studi kasus lain, lalu diterapkan untuk menganalisis sentimen publik dan mengidentifikasi pola aktivitas mencurigakan di ruang siber (dengan **YouTube** sebagai salah satu sumber data utama, serta dukungan impor berkas CSV secara *offline*).
 > 
-> **Visi & Rencana Masa Depan (Sistem Pemantauan 24/7):**  
-> Konsep dan kode dalam proyek ini dirancang secara modular agar dapat di-scale menjadi **Sistem Pemantauan Siber 24/7 Non-Stop** berbasis server/cloud yang terus mendengarkan percakapan seluruh media sosial di Indonesia secara otomatis tanpa henti, dilengkapi peringatan instan (*real-time push alert*) ke Pusat Komando Operasi (Puskodal).  
+> **Ruang Pengembangan Lanjutan:**  
+> Prototipe ini masih memiliki ruang untuk pengembangan lebih lanjut, terutama pada validasi hasil deteksi, akurasi klasifikasi, dan pengujian pada skenario dunia nyata, serta cetak biru transisi menuju **Sistem Pemantauan Siber 24/7**.  
 > 📖 _Baca cetak biru transisi teknis selengkapnya di [docs/ARSITEKTUR_DAN_ROADMAP_24_7.md](file:///d:/UNSIA/review-analysis/cari-siber-id/docs/ARSITEKTUR_DAN_ROADMAP_24_7.md)._
 
 ---
@@ -48,35 +46,25 @@ Sering kali jutaan orang setuju atau tidak setuju dengan suatu hal, tetapi merek
 
 ---
 
-## 🔍 Alur Kerja Pipeline 5 Langkah (Sederhana & Terukur)
+## 🔍 Tahapan Pemrosesan Utama
 
 ```
-[Sumber Data: YouTube / Berkas CSV Medsos]
-                   │
-                   ▼
-[1. Akuisisi & Segel Bukti] ───► Segel SHA-256 langsung dicatat (forensic_manifest.json)
-                   │
-                   ▼
-[2. Pembersihan Bahasa Slang] ─► Mengubah kata gaul/singkatan Indonesia ke kata baku
-                   │
-                   ▼
-[3. Pemodelan Topik IndoBERT] ─► Mengelompokkan ribuan komentar ke dalam klaster tema utama
-                   │
-                   ▼
-[4. Deteksi Buzzer & 4 Gates] ─► Menyaring copypasta, akun berisiko, & audit angka bebas halusinasi
-                   │
-                   ▼
-[5. Peta Situasi & Laporan] ───► Dashboard SITREP taktis + Ekspor Dokumen Intelijen KIRKA (.xlsx)
+[1. Data Collection & Relevance Filtering] ──► Cari video YouTube terkait topik & kurasi relevansi via LLM
+                    │
+                    ▼
+[2. Topic Modeling & Sentiment Analysis]  ──► Normalisasi slang + IndoBERT & BERTopic + kurasi/label LLM
+                    │
+                    ▼
+[3. Data Mining & Insight Generation]     ──► Ekstraksi pola & tren → ringkasan insight LLM → Dashboard
+                    │
+                    ▼
+[4. Bot, Buzzer & Provocateur Detection]  ──► Analisis pola aktivitas akun, copypasta, & laporan (.xlsx)
 ```
 
-1. **Langkah 1 (Akuisisi Target)**: Memasukkan kata kunci isu atau link video YouTube, atau mengimpor berkas CSV komentar dari medsos lain.
-2. **Langkah 2 (Pembersihan Bahasa)**: Kamus slang Indonesia (Nasalsabila) menormalkan bahasa gaul (misal: `"yg"` jadi `"yang"`, `"bgt"` jadi `"banget"`).
-3. **Langkah 3 (Ekstraksi Semantik)**: Model transformer **IndoBERT** membaca makna kalimat dan **BERTopic** mengelompokkannya ke topik-topik spesifik secara otomatis.
-4. **Langkah 4 (Penyaringan Buzzer & Verifikasi AI)**:
-   - **Track A (CIB Engine)**: Melacak copypasta dan pengiriman pesan serentak (*burst*).
-   - **Track B (Threat Domain)**: Mengelompokkan bahaya ke 6 domain (Disinformasi, Separatisme, Kekerasan, SARA, Siber/OT, Organik).
-   - **4 Hardened Gates**: Verifikasi silang deterministik agar angka dan analisis 100% faktual tanpa halusinasi AI.
-5. **Langkah 5 (Laporan Intelijen KIRKA)**: Hasil ditampilkan dalam dashboard grafis dan dapat diunduh sebagai berkas Excel resmi multi-sheet (*Perkiraan Intelijen Siber*).
+1. **Data Collection & Relevance Filtering**: Pengguna memasukkan topik yang ingin dianalisis. Sistem mencari video YouTube terkait (atau menerima impor berkas CSV secara *offline*) dan mengkurasi relevansinya menggunakan *Large Language Model* (LLM).
+2. **Topic Modeling & Sentiment Analysis**: Data komentar dinormalkan dari bahasa gaul/singkatan Indonesia, lalu diproses dengan **IndoBERT** dan **BERTopic** untuk pengelompokan topik. Hasilnya dikurasi kembali oleh LLM untuk pelabelan topik otomatis serta klasifikasi sentimen (**negatif, netral, positif**).
+3. **Data Mining & Insight Generation**: Sistem melakukan *data mining* untuk menemukan pola dan kecenderungan dalam data, lalu mengolahnya melalui LLM menjadi ringkasan *insight* yang ditampilkan di dashboard interaktif.
+4. **Bot, Buzzer & Provocateur Detection**: Modul untuk mengelompokkan komentar dan menganalisis pola aktivitas akun guna mengidentifikasi indikasi *bot*, *buzzer* (CIB), provokator, serta perilaku tidak wajar lainnya, lengkap dengan segel bukti **SHA-256** dan ekspor laporan Excel (**KIRKA**).
 
 ---
 
@@ -135,7 +123,7 @@ Sering kali jutaan orang setuju atau tidak setuju dengan suatu hal, tetapi merek
 ### 1. Kloning Repositori & Persiapan Python
 
 ```bash
-git clone https://github.com/username/cari-siber-id.git
+git clone https://github.com/anggaalfiansah/cari-siber-id.git
 cd cari-siber-id
 
 # Buat virtual environment
