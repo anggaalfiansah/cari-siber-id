@@ -68,6 +68,30 @@ Sering kali jutaan orang setuju atau tidak setuju dengan suatu hal, tetapi merek
 
 ---
 
+## 📸 Tangkapan Layar
+
+### 1. Inisialisasi Operasi & Kurasi Target AI (*Data Collection & Relevance Filtering*)
+![Inisialisasi Operasi & Kurasi Target AI](docs/screenshots/01-data-collection-kurasi-ai.jpg)
+_Pencarian video YouTube berdasarkan topik isu serta kurasi relevansi otomatis menggunakan LLM sebelum pengumpulan komentar._
+
+### 2. Monitor Pipeline (*Topic Modeling & IndoBERT*)
+![Monitor Pipeline Topic Modeling](docs/screenshots/02-topic-modeling-pipeline.jpg)
+_Proses normalisasi slang dan pemodelan topik berbasis IndoBERT + BERTopic secara real-time._
+
+### 3. Dashboard Peta Situasi (*Data Mining, Sentimen & Klaster Isu*)
+![Dashboard Peta Situasi SITREP](docs/screenshots/03-dashboard-sitrep.jpg)
+_Ringkasan distribusi sentimen, peta klaster isu hasil kurasi LLM, indeks polarisasi, serta rasio mayoritas organik vs distorsi CIB._
+
+### 4. Ringkasan Narasi & Insight (*LLM Insight Generation*)
+![Ringkasan Narasi & Insight](docs/screenshots/04-insight-narasi-kirka.jpg)
+_Sintesis narasi analitis otomatis berbasis LLM yang merangkum pola temuan utama dan indikator taktik operasi informasi._
+
+### 5. Deteksi Bot, Buzzer & Provokator (*Account Dossier*)
+![Deteksi Bot Buzzer dan Provokator](docs/screenshots/05-deteksi-bot-buzzer-dossier.jpg)
+_Pemetaan skor provokasi vs skor bot per akun beserta indikator forensik dan fitur kalibrasi Human-in-the-Loop._
+
+---
+
 ## 🏛️ Kapabilitas Utama & Keunggulan Taktis
 
 ### 1. 🔐 Integritas Bukti Kriptografis SHA-256 (*Chain of Custody*)
